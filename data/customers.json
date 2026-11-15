@@ -1,0 +1,32 @@
+[
+  {
+    "id": "tom",
+    "name": "Tom R.",
+    "balance": 4800,
+    "balance90DaysAgo": 6000,
+    "products": [
+      { "type": "home_loan", "name": "Home loan", "repayment": 2400 },
+      { "type": "credit_card", "name": "Credit card", "limit": 8000, "balance": 5760, "balance90DaysAgo": 3200 }
+    ],
+    "consents": { "alerts": true }
+  },
+  {
+    "id": "sarah",
+    "name": "Sarah K.",
+    "balance": 1900,
+    "balance90DaysAgo": 5200,
+    "products": [{ "type": "home_loan", "name": "Home loan", "repayment": 2850 }],
+    "consents": { "alerts": true }
+  },
+  {
+    "id": "mia",
+    "name": "Mia L.",
+    "balance": 40,
+    "balance90DaysAgo": 2100,
+    "products": [
+      { "type": "personal_loan", "name": "Personal loan", "repayment": 480 },
+      { "type": "credit_card", "name": "Credit card", "limit": 3000, "balance": 1650, "balance90DaysAgo": 1500 }
+    ],
+    "consents": { "alerts": true }
+  }
+]

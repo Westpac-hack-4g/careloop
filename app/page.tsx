@@ -1,101 +1,103 @@
-import Image from "next/image";
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { Phone } from "@/components/phone/phone";
+import { PresenterBar } from "@/components/presenter-bar";
+import { StaffConsole } from "@/components/staff/console";
+import { api } from "@/lib/client/api";
+import type { AuditEntry, CustomerId, QueueRow, SessionView } from "@/lib/contract";
+
+// One page, both sides: the customer's phone on the left, the staff console on the right.
+
+const POLL_MS = 1500;
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [customerId, setCustomerId] = useState<CustomerId>("sarah");
+  const [view, setView] = useState<SessionView | null>(null);
+  const [queue, setQueue] = useState<QueueRow[]>([]);
+  const [selectedCase, setSelectedCase] = useState<CustomerId | null>(null);
+  const [demo, setDemo] = useState<{ aiMode: string; audit: AuditEntry[] }>({ aiMode: "", audit: [] });
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [showPresenter, setShowPresenter] = useState(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  const refresh = useCallback(async () => {
+    try {
+      const [session, cases, info] = await Promise.all([api.session(customerId), api.queue(), api.demoInfo()]);
+      setView(session);
+      setQueue(cases.queue);
+      setDemo(info);
+    } catch {
+      // The next poll tries again.
+    }
+  }, [customerId]);
+
+  useEffect(() => {
+    void refresh();
+    const timer = setInterval(() => void refresh(), POLL_MS);
+    return () => clearInterval(timer);
+  }, [refresh]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const typing = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      if (e.key === "`" && !typing) setShowPresenter((shown) => !shown);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const run = async (work: () => Promise<unknown>) => {
+    setNotice("");
+    try {
+      await work();
+    } catch {
+      setNotice("That didn't go through. Try again.");
+    }
+    await refresh();
+  };
+
+  const sendText = async (text: string) => {
+    // Show the customer's message straight away while the reply is on its way.
+    setView((v) => v && { ...v, lockScreenBanner: false, messages: [...v.messages, { id: "pending", role: "customer", text, at: "" }] });
+    setBusy(true);
+    await run(() => api.sendText(customerId, text));
+    setBusy(false);
+  };
+
+  return (
+    <main className="mx-auto flex min-h-screen max-w-[1280px] flex-col gap-3 p-4">
+      {showPresenter && (
+        <PresenterBar
+          customerId={customerId}
+          alertsOn={view?.alertsOn ?? true}
+          aiMode={demo.aiMode}
+          notice={notice}
+          audit={demo.audit}
+          onPick={(id) => {
+            setView(null);
+            setCustomerId(id);
+          }}
+          onSendAlert={() =>
+            run(async () => {
+              const result = await api.sendAlert(customerId);
+              if (!result.sent) setNotice(result.reason ?? "No alert sent.");
+            })
+          }
+          onToggleAlerts={() => run(() => api.sendAction(customerId, "toggle_alerts"))}
+          onReset={() =>
+            run(async () => {
+              await api.reset();
+              setSelectedCase(null);
+            })
+          }
+        />
+      )}
+      <div className="flex flex-wrap items-start justify-center gap-6">
+        <Phone view={view} busy={busy} onText={sendText} onAction={(action) => run(() => api.sendAction(customerId, action))} />
+        <StaffConsole queue={queue} selected={selectedCase} onSelect={setSelectedCase} onReply={(id, text) => run(() => api.staffReply(id, text))} onStartReview={(id) => run(() => api.startReview(id))} />
+      </div>
+      <p className="text-center text-[11px] text-[#8b9094]">Hackathon prototype on made-up customers. Not a Westpac product.</p>
+    </main>
   );
 }

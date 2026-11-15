@@ -1,0 +1,38 @@
+[
+  {
+    "customerId": "tom",
+    "upcomingPays": [
+      { "date": "2026-11-20", "amount": 3200 },
+      { "date": "2026-12-04", "amount": 3200 }
+    ],
+    "upcomingRepayments": [{ "date": "2026-12-01", "amount": 2400, "product": "Home loan" }],
+    "pastRepayments": [
+      { "date": "2026-09-01", "amount": 2400, "product": "Home loan", "status": "paid" },
+      { "date": "2026-10-01", "amount": 2400, "product": "Home loan", "status": "paid" },
+      { "date": "2026-11-01", "amount": 2400, "product": "Home loan", "status": "paid" }
+    ]
+  },
+  {
+    "customerId": "sarah",
+    "upcomingPays": [
+      { "date": "2026-11-20", "amount": 1560 },
+      { "date": "2026-12-04", "amount": 1560 }
+    ],
+    "upcomingRepayments": [{ "date": "2026-11-28", "amount": 2850, "product": "Home loan" }],
+    "pastRepayments": [
+      { "date": "2026-08-28", "amount": 2850, "product": "Home loan", "status": "paid" },
+      { "date": "2026-09-28", "amount": 2850, "product": "Home loan", "status": "paid" },
+      { "date": "2026-10-28", "amount": 2850, "product": "Home loan", "status": "paid" }
+    ]
+  },
+  {
+    "customerId": "mia",
+    "upcomingPays": [],
+    "upcomingRepayments": [{ "date": "2026-12-05", "amount": 480, "product": "Personal loan" }],
+    "pastRepayments": [
+      { "date": "2026-09-05", "amount": 480, "product": "Personal loan", "status": "paid" },
+      { "date": "2026-10-05", "amount": 480, "product": "Personal loan", "status": "paid" },
+      { "date": "2026-11-05", "amount": 480, "product": "Personal loan", "status": "failed" }
+    ]
+  }
+]
