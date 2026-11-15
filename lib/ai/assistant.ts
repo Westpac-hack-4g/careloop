@@ -22,18 +22,35 @@ export function aiMode(): "claude" | "sample" {
 
 let client: Anthropic | null = null;
 // 25 seconds, then fall back to the scripted reply rather than stall on stage.
-const getClient = () => (client ??= new Anthropic({ timeout: 25_000, maxRetries: 1 }));
+// Some keys are not tied to one workspace; those need the workspace id sent with every request.
+const workspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
+const getClient = () =>
+  (client ??= new Anthropic({
+    timeout: 25_000,
+    maxRetries: 1,
+    ...(workspaceId ? { defaultHeaders: { "anthropic-workspace-id": workspaceId } } : {}),
+  }));
 
 function stateBlock(session: Session): string {
   const draft = toDraft(session.draftFields);
   return [
     `step: ${session.phase}`,
+    `tools that work at this step: ${TOOLS_BY_PHASE[session.phase].join(", ") || "none"}`,
     `permission to look at accounts: ${session.analysisConsent ? "given" : "not given"}`,
     session.draftFields.length
       ? `request form still missing: ${draft.missing.map((m) => m.field).join(", ") || "nothing"}`
       : "request form: not started",
   ].join("\n");
 }
+
+// The model always sees the same tool list: changing it mid-conversation invalidates the model's
+// earlier reasoning. The backend still refuses any tool that does not belong to the current step.
+const TOOLS: Anthropic.Beta.BetaTool[] = (Object.keys(TOOL_DEFINITIONS) as (keyof typeof TOOL_DEFINITIONS)[]).map((name) => ({
+  name,
+  description: TOOL_DEFINITIONS[name].description,
+  input_schema: TOOL_DEFINITIONS[name].input_schema as Anthropic.Beta.BetaTool["input_schema"],
+  strict: true,
+}));
 
 async function claudeReply(session: Session, text: string): Promise<AssistantReply> {
   const history = session.llmHistory;
@@ -45,13 +62,6 @@ async function claudeReply(session: Session, text: string): Promise<AssistantRep
   if (session.analysisConsent) trusted += `\n${JSON.stringify(getTierResult(session.customerId).projection.assumptions)}`;
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-    // Tools are rebuilt every round: a tool call can move the conversation to a new step.
-    const tools: Anthropic.Beta.BetaTool[] = TOOLS_BY_PHASE[session.phase].map((name) => ({
-      name,
-      description: TOOL_DEFINITIONS[name].description,
-      input_schema: TOOL_DEFINITIONS[name].input_schema as Anthropic.Beta.BetaTool["input_schema"],
-      strict: true,
-    }));
     // Server-side fallback: if a safety classifier declines, the API re-runs on a fallback model.
     const withFallback = !MODEL.includes("haiku");
     const response = await getClient().beta.messages.create({
@@ -59,7 +69,7 @@ async function claudeReply(session: Session, text: string): Promise<AssistantRep
       max_tokens: 16000,
       output_config: { effort: "low" },
       system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-      tools,
+      tools: TOOLS,
       messages: history,
       ...(withFallback ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const } : {}),
     });
@@ -100,7 +110,7 @@ export async function assistantReply(session: Session, text: string): Promise<As
     const reason =
       error instanceof Anthropic.RateLimitError ? "rate limited"
       : error instanceof Anthropic.APIConnectionError ? "connection or timeout"
-      : error instanceof Anthropic.APIError ? `API error ${error.status}`
+      : error instanceof Anthropic.APIError ? `API error ${error.status}: ${error.message.slice(0, 300)}`
       : error instanceof Error ? error.message
       : "unknown error";
     audit(session.customerId, "safety", `AI unavailable (${reason}); scripted fallback used`);

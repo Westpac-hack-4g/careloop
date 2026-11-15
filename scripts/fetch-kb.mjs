@@ -20,7 +20,6 @@ const PAGES = [
   { slug: "financial-counsellors", topic: "third party help", path: "/help/support-with-tough-times/support-for-financial-counsellors/" },
   { slug: "family-violence", topic: "priority assist", path: "/help/support-with-tough-times/domestic-violence-and-financial-abuse/" },
   { slug: "gambling", topic: "priority assist", path: "/help/support-with-tough-times/gambling/" },
-  { slug: "deceased-estates", topic: "priority assist", path: "/help/lifemoments/managing-unplanned-moments/deceased-estates/" },
 ];
 
 const MAX_PASSAGE = 700;

@@ -31,7 +31,7 @@ Press the backtick key to hide it on stage.
 |---|---|---|
 | `lib/contract.ts` | The shared data shapes. Change this first. | Everyone |
 | `data/` | Tom, Sarah, Mia: customers, schedule, 90 days of transactions | Developer |
-| `data/kb/` | Westpac's public support pages the assistant answers from (13 pages, saved by `npm run kb`) | AI engineer |
+| `data/kb/` | Westpac's public support pages the assistant answers from (12 pages, saved by `npm run kb`) | AI engineer |
 | `lib/tier/` | Signals, 30 day projection, tier rules, thresholds. No AI. | Developer |
 | `lib/conversation/` | Steps, button taps, tools the AI may use per step, consent gate, form | Developer |
 | `lib/ai/` | System prompt, Claude loop, reply safety checks, scripted fallback | AI engineer |
@@ -51,8 +51,7 @@ Press the backtick key to hide it on stage.
 
 ## Still to do
 
-- Run the live AI once with a key in `.env.local` (only sample mode has been run so far) and tune `lib/ai/prompt.ts`.
-- Test the live Claude path and run the 24 test prompts from the build plan.
+- Run the 24 test prompts from the build plan against the live AI and record the pass rate. Sarah's path and a handful of rule-breaking questions have been run by hand.
 - Staff case summary is built by code; the plan has the AI write it.
 - Staff cannot record a decision yet. Ask for info and Book a call draft a reply; Start review tells the customer a person has picked it up.
 - Screens are a first pass with GEL buttons only; the designer owns the rest.
