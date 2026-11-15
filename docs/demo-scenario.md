@@ -1,0 +1,85 @@
+# CareLoop demo scenario
+
+As of 16 Nov 2026.
+
+## Summary
+
+The demo follows one customer, Sarah, from an early heads-up about a $620 shortfall to a filed support request that a Westpac Assist staff member picks up. It runs on one page: Sarah's phone on the left, the staff console on the right. It takes 13 steps and about three minutes.
+
+The split we show the judges: AI handles the words, rules handle money and deadlines, people make the decisions. The AI answers at 4 of the 13 steps. The other 9 are plain code and come out the same on every run.
+
+The app runs on made-up customers. Nothing in it is a real Westpac system.
+
+## Before you start
+
+1. Run `npm install`, then copy `.env.example` to `.env.local` and put your own Claude API key after `ANTHROPIC_API_KEY=`. The key file is never committed, so each person needs their own.
+2. Run `npm run dev` and open http://localhost:3000.
+3. In the grey presenter bar at the top, press **Reset**. This clears every chat and filed request.
+4. Check that **Sarah (tier 2)** is selected.
+5. Check the right end of the presenter bar. "AI: Claude (live)" means the real AI answers. "sample mode" means there is no key and scripted replies are used instead.
+
+The backtick key (left of the 1 key) hides and shows the presenter bar. Hide it on stage.
+
+## The script
+
+Type the customer lines as written. Steps marked AI are answered by Claude; the wording of those replies changes a little each run.
+
+| # | What you do | What appears | Answered by |
+| --- | --- | --- | --- |
+| 1 | Presenter bar: **Send the heads-up** | A banner on Sarah's lock screen. It does not mention money. | Code |
+| 2 | Tap the banner to open the app | A card saying she may be about $620 short on 28 Nov | Code (amount from the rule engine) |
+| 3 | Type: `Will asking for help hurt my credit score?` | An answer taken from Westpac's own pages, with source links | **AI** |
+| 4 | Tap **Show me why** | A card asking permission to look at 90 days of transactions | Code |
+| 5 | Tap **Allow** | A 30 day balance forecast chart | Code |
+| 6 | Tap **Prepare a request** | A request form, part filled from her accounts, and the question "what's changed?" | Code |
+| 7 | Type: `My shifts were cut in October, probably until February. I also have a car loan, $320 a month.` | Four form fields fill from that one sentence, then the next question | **AI** |
+| 8 | Type: `No, just me` | The joint borrower field fills, then the last question | **AI** |
+| 9 | Type: `Lower repayments for a while` | The full request for her to check | **AI** |
+| 10 | Tap **Looks right** | A card: start the request? | Code |
+| 11 | Tap **Yes, start** | A receipt with case number CL-1002 and a reply-by date of 7 Dec 2026 | Code |
+| 12 | Staff console: click Sarah's row | The case summary, each field with the customer's own words, and the 21 day deadline | Code |
+| 13 | Staff console: **Start review** | Sarah's chat says a person has started looking at her request | Code |
+
+The figures behind step 2: $1,900 balance today, plus $1,560 pay on 20 Nov, minus about $1,230 of everyday spending, minus the $2,850 repayment on 28 Nov, leaves her $620 short.
+
+## What the AI does at its four steps
+
+Only typed messages go to the AI. Every button tap is handled by code.
+
+- **Step 3, answering a worry.** The AI searches 12 saved Westpac public pages and answers only from what it finds, with links. If the pages do not cover the question, it says it is not sure and offers the Westpac Assist team.
+- **Step 7, turning a story into a form.** This is the moment to slow down on. One ordinary sentence fills the reason, the start date, the expected length and other debts. Each field keeps the customer's exact words as evidence, and staff see them in step 12.
+- **Steps 8 and 9, asking only for what is missing.** The AI puts each short answer in the right field. When nothing is missing it shows the full request.
+
+Any other question typed along the way also goes to the AI. In testing it turned down these correctly: "approve my request", "roughly how many dollars would I save", "is Westpac better than CommBank", and an off-topic request for the weather and a poem.
+
+## What is fixed and what can vary
+
+The AI's wording is not guaranteed. So far the full script has been run once on the live AI, and the rule-breaking questions once.
+
+| Fixed on every run (code enforces it) | Can vary between runs (the AI decides) |
+| --- | --- |
+| The $620, the dates and the 21 day deadline | The exact sentences in steps 3, 7, 8 and 9 |
+| Every card and the lines shown after a button tap | Which Westpac page it links to |
+| The AI cannot read account data before **Allow** | Whether step 7 fills all four fields or asks one of them again, which changes the order of the questions |
+| A request is filed only when the customer taps **Yes, start** | Reply time: 2 to 7 seconds in testing |
+| A reply that promises approval, or states an amount the rules did not produce, is blocked before the customer sees it | A correct reply can be blocked by mistake and replaced by an offer to bring in the Assist team |
+| If the AI fails or takes over 25 seconds, a scripted reply is used | |
+| Words about abuse, gambling or bereavement stop the form and pass the chat to Priority Assist | |
+
+## If something goes wrong on stage
+
+- **A reply takes too long.** Keep talking. After 25 seconds the app answers with a scripted reply and the scenario carries on.
+- **The AI asks an extra question at step 7 or 8.** Answer it in a few words. The form still fills and you reach the same check screen.
+- **A reply reads oddly.** Press **Reset** and start again from step 1. A full run is about three minutes.
+- **No network or the API is down.** Set `CARELOOP_AI=sample` in `.env.local` and restart the server. Every step then uses scripted replies. There is no on-screen switch for this yet.
+- **Why did that happen?** Open **Audit log** in the presenter bar. It lists every tool the AI called, every blocked reply and every consent change.
+
+## Open items for the team
+
+- [ ] Confirm with the organisers what must be submitted (slides, a recording, the repository, a hosted link).
+- [ ] Run the script 10 to 20 times on the live AI and record how often it goes to plan.
+- [ ] Run the 24 test prompts from the build plan and record the pass rate for the pitch.
+- [ ] Decide whether to add a one-click switch to scripted replies in the presenter bar.
+- [ ] Record one clean run of our own screen as a backup.
+- [ ] Decide who types and who talks during the demo.
+- [ ] Check the sources for the problem figures used in the pitch (the ASIC and AFCA numbers in the proposal).

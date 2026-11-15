@@ -49,6 +49,10 @@ Press the backtick key to hide it on stage.
 - A sensitive disclosure stops the form and shows the handover card.
 - Every message, tool call and consent change is written to the audit log.
 
+## Demo
+
+The step by step script for the demo is in [docs/demo-scenario.md](docs/demo-scenario.md).
+
 ## Still to do
 
 - Run the 24 test prompts from the build plan against the live AI and record the pass rate. Sarah's path and a handful of rule-breaking questions have been run by hand.
