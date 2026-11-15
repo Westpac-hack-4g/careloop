@@ -18,6 +18,7 @@ export function PresenterBar({
   onPick,
   onSendAlert,
   onToggleAlerts,
+  onCheckIn,
   onReset,
 }: {
   customerId: CustomerId;
@@ -28,6 +29,7 @@ export function PresenterBar({
   onPick: (id: CustomerId) => void;
   onSendAlert: () => void;
   onToggleAlerts: () => void;
+  onCheckIn: (recovered: boolean) => void;
   onReset: () => void;
 }) {
   const button = "rounded border border-dashed border-[#8b9094] px-2.5 py-1 hover:bg-white";
@@ -42,6 +44,9 @@ export function PresenterBar({
         ))}
         <button onClick={onSendAlert} className={button}>Send the heads-up</button>
         <button onClick={onToggleAlerts} className={button}>Alerts: {alertsOn ? "on" : "off"}</button>
+        <span className="ml-2">4 weeks later:</span>
+        <button onClick={() => onCheckIn(true)} className={button}>Check-in, pay recovered</button>
+        <button onClick={() => onCheckIn(false)} className={button}>Check-in, still tight</button>
         <button onClick={onReset} className={button}>Reset</button>
         <span className="ml-auto">AI: {aiMode === "claude" ? "Claude (live)" : "sample mode (scripted, no key)"}</span>
       </div>

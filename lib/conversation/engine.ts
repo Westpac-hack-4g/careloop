@@ -1,7 +1,8 @@
 import { assistantReply } from "../ai/assistant";
-import { formatDate, formatMoney } from "../clock";
+import { addDays, DEMO_TODAY, formatDate, formatMoney } from "../clock";
 import type { Case, CustomerId, QueueRow, SessionView } from "../contract";
 import { getCustomer } from "../data";
+import { CHECK_IN_DAYS, DECISIONS, type DecisionKey } from "../decisions";
 import { addMessage, audit, createCase, customerIds, getOpenCase, getSession, type Session } from "../store";
 import { getTierResult } from "../tier";
 import { isSensitive, saysCantPay } from "./detectors";
@@ -24,6 +25,9 @@ export type Action =
   | "start_yes"
   | "start_not_yet"
   | "start_talk"
+  | "checkin_return"
+  | "checkin_extend"
+  | "checkin_keep"
   | "toggle_alerts";
 
 const say = (session: Session, text: string) => addMessage(session, { role: "careloop", text });
@@ -195,6 +199,28 @@ export function handleAction(customerId: CustomerId, action: Action): void {
       say(session, "No problem. Nothing has been sent, and the door stays open. You can come back to this any time.");
       note(session, "The customer tapped Not yet. Nothing was filed.");
       return;
+    case "checkin_return":
+    case "checkin_extend":
+    case "checkin_keep": {
+      if (session.phase !== "check_in") return;
+      session.phase = "receipt";
+      if (action === "checkin_keep") {
+        say(session, "No problem. Your arrangement stays as it is. I'll check in again before it ends.");
+        note(session, "At the check-in the customer chose to keep the arrangement as it is.");
+        return;
+      }
+      const back = action === "checkin_return";
+      session.followUp = back ? "Wants to go back to normal repayments" : "Asked for more time on the arrangement";
+      audit(customerId, "case", `Check-in: ${session.followUp}. Sent to staff.`);
+      say(
+        session,
+        back
+          ? "Good to hear things are steadier. I've passed that to the Westpac Assist team. A person will confirm it with you, and nothing changes until they do."
+          : "I've passed that to the Westpac Assist team with everything you've already told us, so you won't need to explain again. A person will reply, and nothing changes until they do.",
+      );
+      note(session, `At the check-in the customer tapped: ${session.followUp}. The Assist team was told. A person decides.`);
+      return;
+    }
     case "start_talk":
     case "talk_to_someone":
       session.wantsHuman = true;
@@ -225,6 +251,40 @@ export function startReview(customerId: CustomerId): boolean {
   return true;
 }
 
+/** A staff member records the outcome. CareLoop only passes it on and books the check-in. */
+export function recordDecision(customerId: CustomerId, key: DecisionKey): boolean {
+  const open = getOpenCase(customerId);
+  if (!open || !["new", "in_review"].includes(open.status)) return false;
+  const { label, approved } = DECISIONS[key];
+  open.decision = { outcome: label, approved, reviewOn: addDays(DEMO_TODAY, CHECK_IN_DAYS) };
+  open.status = approved ? "arrangement" : "closed";
+  const session = getSession(customerId);
+  session.lockScreenBanner = true;
+  addMessage(session, { role: "careloop", card: { type: "decision", outcome: label, approved, reviewOn: open.decision.reviewOn } });
+  note(session, `A Westpac Assist team member recorded a decision on case ${open.id}: ${label}. The backend showed the decision card.`);
+  audit(customerId, "case", `Case ${open.id}: staff recorded "${label}"`);
+  return true;
+}
+
+/**
+ * The check-in that closes the loop, four weeks after an arrangement starts.
+ * On stage the four weeks are simulated: `recovered` picks which way the pay went.
+ */
+export function sendCheckIn(customerId: CustomerId, recovered: boolean): { sent: boolean; reason?: string } {
+  const open = getOpenCase(customerId);
+  if (!open?.decision?.approved) return { sent: false, reason: "No arrangement in place yet. A staff member records the decision first." };
+  const session = getSession(customerId);
+  const { recentPay, earlierPay } = getTierResult(customerId).signals;
+  const payNow = (recovered ? earlierPay : recentPay) ?? 0;
+  session.lockScreenBanner = true;
+  session.phase = "check_in";
+  session.followUp = null;
+  addMessage(session, { role: "careloop", card: { type: "check_in", recovered, payNow, outcome: open.decision.outcome } });
+  note(session, `Four weeks later the backend sent a check-in. Pay over the last 4 weeks: about ${formatMoney(payNow)} (${recovered ? "back to its earlier level" : "still lower"}).`);
+  audit(customerId, "message", `Check-in sent (simulated 4 weeks later, pay ${recovered ? "recovered" : "still lower"})`);
+  return { sent: true };
+}
+
 export function getSessionView(customerId: CustomerId): SessionView {
   const session = getSession(customerId);
   return {
@@ -237,7 +297,7 @@ export function getSessionView(customerId: CustomerId): SessionView {
   };
 }
 
-const URGENCY: Record<Case["status"], number> = { priority_assist: 0, new: 1, in_review: 2, watching: 3 };
+const URGENCY: Record<Case["status"], number> = { priority_assist: 0, new: 1, in_review: 2, arrangement: 3, watching: 4, closed: 5 };
 
 /** The staff queue, most urgent first. */
 export function getQueue(): QueueRow[] {
@@ -254,8 +314,11 @@ export function getQueue(): QueueRow[] {
         status: open?.status ?? "watching",
         case: open,
         reasons: tier.reasons,
+        timeline: tier.timeline,
         ...(session.wantsHuman
           ? { note: "Asked to talk to someone" }
+          : session.followUp
+            ? { note: session.followUp }
           : session.saidCantPay && !open
             ? { note: "Said they can't pay. No request started yet." }
             : {}),

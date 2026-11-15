@@ -20,6 +20,7 @@ export const TOOLS_BY_PHASE: Record<Phase, ToolName[]> = {
   review: ["retrieve_westpac_info", "update_draft", "show_draft"],
   start_request: ["retrieve_westpac_info"],
   receipt: ["retrieve_westpac_info"],
+  check_in: ["retrieve_westpac_info"],
   handover: [],
 };
 

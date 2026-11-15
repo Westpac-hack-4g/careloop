@@ -4,9 +4,9 @@ As of 16 Nov 2026.
 
 ## Summary
 
-The demo follows one customer, Sarah, from an early heads-up about a $620 shortfall to a filed support request that a Westpac Assist staff member picks up. It runs on one page: Sarah's phone on the left, the staff console on the right. It takes 13 steps and about three minutes.
+The demo follows one customer, Sarah, from an early heads-up about a $620 shortfall to a filed support request that a Westpac Assist staff member picks up. It runs on one page: Sarah's phone on the left, the staff console on the right. It takes 17 steps and about four minutes.
 
-The split we show the judges: AI handles the words, rules handle money and deadlines, people make the decisions. The AI answers at 4 of the 13 steps. The other 9 are plain code and come out the same on every run.
+The split we show the judges: AI handles the words, rules handle money and deadlines, people make the decisions. The AI answers at 4 of the 17 steps. The other 13 are plain code and come out the same on every run.
 
 The app runs on made-up customers. Nothing in it is a real Westpac system.
 
@@ -42,6 +42,24 @@ Type the customer lines as written. Steps marked AI are answered by Claude; the 
 
 The figures behind step 2: $1,900 balance today, plus $1,560 pay on 20 Nov, minus about $1,230 of everyday spending, minus the $2,850 repayment on 28 Nov, leaves her $620 short.
 
+### Closing the loop (steps 14 to 17)
+
+This part shows what the name promises: CareLoop comes back after the decision instead of stopping at the form.
+
+| # | What you do | What appears | Answered by |
+| --- | --- | --- | --- |
+| 14 | Staff console: pick **Lower repayments for 3 months**, then **Record decision** | A decision card in Sarah's chat with a check-in date of 14 Dec 2026 | Code (a person decides) |
+| 15 | Presenter bar: **Check-in, pay recovered** | A lock screen banner, then a card: her pay is back to about $2,600, would she like to go back to normal repayments? | Code (rules; the four weeks are simulated) |
+| 16 | Tap **Go back to normal** | CareLoop says it has told the Assist team and nothing changes until a person confirms | Code |
+| 17 | Staff console: look at Sarah's row | A red flag: "Wants to go back to normal repayments" | Code |
+
+For the other ending, press **Check-in, still tight** at step 15. The card then offers **Ask for more time**.
+
+### Two things to point at while you talk
+
+- **The bar above both screens** shows the loop and who does each part: Notice (rules), Explain (AI), Prepare (AI and the customer), Decide (a Westpac person), Check in (rules). The current step is highlighted.
+- **"How CareLoop noticed"** at the top of the staff panel is a dated timeline from the rule engine: pay dropped on 23 Oct, heads-up today, 12 days before the repayment on 28 Nov. Under it: without the heads-up, the first contact would come after the missed repayment.
+
 ## What the AI does at its four steps
 
 Only typed messages go to the AI. Every button tap is handled by code.
@@ -65,6 +83,7 @@ The AI's wording is not guaranteed. So far the full script has been run once on 
 | A reply that promises approval, or states an amount the rules did not produce, is blocked before the customer sees it | A correct reply can be blocked by mistake and replaced by an offer to bring in the Assist team |
 | If the AI fails or takes over 25 seconds, a scripted reply is used | |
 | Words about abuse, gambling or bereavement stop the form and pass the chat to Priority Assist | |
+| The check-in is only sent after a person has recorded an arrangement, and what the customer picks there goes to staff to confirm | |
 
 ## If something goes wrong on stage
 

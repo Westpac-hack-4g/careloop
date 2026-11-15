@@ -57,5 +57,5 @@ The step by step script for the demo is in [docs/demo-scenario.md](docs/demo-sce
 
 - Run the 24 test prompts from the build plan against the live AI and record the pass rate. Sarah's path and a handful of rule-breaking questions have been run by hand.
 - Staff case summary is built by code; the plan has the AI write it.
-- Staff cannot record a decision yet. Ask for info and Book a call draft a reply; Start review tells the customer a person has picked it up.
+- The four weeks before the check-in are simulated from the presenter bar; there is no real clock or later transaction data.
 - Screens are a first pass with GEL buttons only; the designer owns the rest.

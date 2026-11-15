@@ -1,5 +1,5 @@
 import { addDays, daysBetween, formatDate, formatMoney } from "../clock";
-import type { Customer, Projection, ProjectionPoint, Schedule, Signals, Tier, TierResult, Transaction } from "../contract";
+import type { Customer, Projection, ProjectionPoint, Schedule, Signals, Tier, TierResult, TimelineItem, Transaction } from "../contract";
 import { TIER_CONFIG as C, TIER_NAMES } from "./config";
 
 // The tier engine: plain rules over account data. No AI in here.
@@ -49,6 +49,8 @@ export function computeSignals({ customer, transactions, schedule, today, sensit
 
   return {
     incomeChange,
+    recentPay: recent === null ? null : round2(recent),
+    earlierPay: earlier === null ? null : round2(earlier),
     bufferTrend: round2(customer.balance / customer.balance90DaysAgo - 1),
     netFlowNegativeMonths,
     cardUse,
@@ -133,6 +135,36 @@ function explain(signals: Signals, projection: Projection, today: string): strin
   return reasons;
 }
 
+/** The dated facts behind the tier: what changed, when CareLoop speaks up, and what is coming. */
+function buildTimeline(input: TierInput, signals: Signals, projection: Projection, tier: Tier): TimelineItem[] {
+  const { transactions, schedule, today } = input;
+  const items: TimelineItem[] = [];
+  const pays = transactions.filter(isPay).sort((a, b) => a.date.localeCompare(b.date));
+
+  if (signals.earlierPay !== null && signals.incomeChange !== null && signals.incomeChange <= C.incomeChangeFlag) {
+    if (signals.recentPay === null) {
+      const last = pays.at(-1);
+      if (last) items.push({ date: last.date, label: `Last pay received (${formatMoney(last.amount)})`, when: "past" });
+    } else {
+      // The first pay of the lower run: every pay from it onwards is below the flag line.
+      const low = (t: Transaction) => t.amount <= signals.earlierPay! * (1 + C.incomeChangeFlag);
+      const first = pays.find((pay, i) => pays.slice(i).every(low));
+      if (first) items.push({ date: first.date, label: `Pay dropped from ${formatMoney(signals.earlierPay)} to ${formatMoney(first.amount)}`, when: "past" });
+    }
+  }
+  for (const r of schedule.pastRepayments.filter((p) => p.status === "failed")) {
+    items.push({ date: r.date, label: `${r.product} repayment of ${formatMoney(r.amount)} failed`, when: "past" });
+  }
+  if (tier === 3) items.push({ date: today, label: "Help offered after the missed repayment", when: "today" });
+  else if (tier >= 1 && projection.shortfall) {
+    items.push({ date: today, label: `Early heads-up, ${daysBetween(today, projection.shortfall.date)} days before the repayment`, when: "today" });
+  } else if (tier >= 1) items.push({ date: today, label: "Early heads-up", when: "today" });
+  if (projection.shortfall) {
+    items.push({ date: projection.shortfall.date, label: `Repayment due: projected ${formatMoney(projection.shortfall.amount)} short`, when: "ahead" });
+  }
+  return items.sort((a, b) => a.date.localeCompare(b.date));
+}
+
 const NEXT_ACTION: TierResult["nextAction"][] = ["none", "nudge", "heads_up", "missed_payment_help", "specialist_handover"];
 
 export function assessCustomer(input: TierInput): TierResult {
@@ -146,6 +178,7 @@ export function assessCustomer(input: TierInput): TierResult {
     reasons: explain(signals, projection, input.today),
     signals,
     projection,
+    timeline: buildTimeline(input, signals, projection, tier),
     nextAction: NEXT_ACTION[tier],
     // Tier 3 is ordinary missed-payment contact, which banks already make. Tiers 1 and 2 need the opt-in.
     mayContact: tier >= 3 || (tier >= 1 && input.customer.consents.alerts),

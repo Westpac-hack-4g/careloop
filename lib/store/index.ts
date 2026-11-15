@@ -23,6 +23,8 @@ export interface Session {
   saidCantPay: boolean;
   /** The customer asked for a person. */
   wantsHuman: boolean;
+  /** What the customer asked for at a check-in. Shown to staff. */
+  followUp: string | null;
 }
 
 interface Store {
@@ -74,6 +76,7 @@ export function getSession(customerId: CustomerId): Session {
       llmHistory: [],
       saidCantPay: false,
       wantsHuman: false,
+      followUp: null,
     };
     s.sessions.set(customerId, session);
   }

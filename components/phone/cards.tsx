@@ -162,6 +162,60 @@ function ReceiptCard({ caseId, respondBy }: { caseId: string; respondBy: string 
   );
 }
 
+function DecisionCard({ outcome, approved, reviewOn }: { outcome: string; approved: boolean; reviewOn: string }) {
+  return (
+    <Shell title="Decision from Westpac Assist">
+      {approved ? (
+        <>
+          <p>
+            A person in the Westpac Assist team has approved: <span className="font-bold">{outcome}</span>.
+          </p>
+          <p className="mt-1">They will confirm the details in writing.</p>
+          <p className="mt-2 font-bold text-[#1f1c4f]">I&apos;ll check in with you on {shortDate(reviewOn, true)} to see how things are going.</p>
+        </>
+      ) : (
+        <>
+          <p>The Westpac Assist team could not offer a change this time.</p>
+          <p className="mt-1">A team member will contact you to explain why and talk through other options.</p>
+        </>
+      )}
+      <ol className="mt-2 space-y-0.5 text-[12px]">
+        <li>● Received</li>
+        <li>● A Westpac person reviewed it</li>
+        <li>● Decision explained to you</li>
+      </ol>
+    </Shell>
+  );
+}
+
+function CheckInCard({ recovered, payNow, outcome, act, live }: { recovered: boolean; payNow: number; outcome: string; act: Act; live: boolean }) {
+  return (
+    <Shell title="Checking in, as promised">
+      <p>
+        {recovered
+          ? `Your pay over the last 4 weeks is back to about ${money(payNow)}.`
+          : `Your pay over the last 4 weeks is still about ${money(payNow)}, the same as when we set this up.`}
+      </p>
+      <p className="mt-1">
+        Your arrangement is still running: <span className="font-bold">{outcome}</span>.
+      </p>
+      <p className="mt-1">{recovered ? "Would you like to go back to your normal repayments?" : "Would more time help?"}</p>
+      {live && (
+        <Buttons>
+          {recovered ? (
+            <Button size="small" look="primary" onClick={() => act("checkin_return")}>Go back to normal</Button>
+          ) : (
+            <Button size="small" look="primary" onClick={() => act("checkin_extend")}>Ask for more time</Button>
+          )}
+          <Button size="small" look="faint" onClick={() => act("checkin_keep")}>{recovered ? "Keep the arrangement" : "I'm OK for now"}</Button>
+          <Button size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
+        </Buttons>
+      )}
+      <p className="mt-2 text-[11px] text-[#575f65]">Prototype: four weeks later, simulated.</p>
+    </Shell>
+  );
+}
+
 const HandoverCard = () => (
   <div className="rounded-xl border-l-4 border-[#1f1c4f] bg-white p-3 text-[13px] shadow-sm">
     <div className="text-[14px] font-bold text-[#1f1c4f]">Your safety matters most</div>
@@ -191,6 +245,10 @@ export function ChatCard({ card, act, live }: { card: Card; act: Act; live: bool
       return <StartRequestCard act={act} live={live} />;
     case "receipt":
       return <ReceiptCard caseId={card.caseId} respondBy={card.respondBy} />;
+    case "decision":
+      return <DecisionCard outcome={card.outcome} approved={card.approved} reviewOn={card.reviewOn} />;
+    case "check_in":
+      return <CheckInCard recovered={card.recovered} payNow={card.payNow} outcome={card.outcome} act={act} live={live} />;
     case "handover":
       return <HandoverCard />;
   }

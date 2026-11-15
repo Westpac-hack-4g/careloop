@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { checkReply } from "@/lib/ai/safety";
-import { getQueue, getSessionView, handleAction, handleMessage, sendAlert, startReview } from "@/lib/conversation/engine";
+import { getQueue, getSessionView, handleAction, handleMessage, recordDecision, sendAlert, sendCheckIn, startReview } from "@/lib/conversation/engine";
 import { runTool } from "@/lib/conversation/tools";
 import { getAudit, getSession, resetStore } from "@/lib/store";
 
@@ -111,5 +111,40 @@ describe("staff review", () => {
     expect(startReview("sarah")).toBe(true);
     expect(getQueue().find((r) => r.customerId === "sarah")?.status).toBe("in_review");
     expect(getSessionView("sarah").messages.at(-1)?.text).toContain("started looking at your request");
+  });
+});
+
+describe("closing the loop", () => {
+  const file = async () => {
+    await handleMessage("sarah", "I can't pay this month");
+    handleAction("sarah", "start_yes");
+    startReview("sarah");
+  };
+
+  it("sends no check-in before a person has decided", async () => {
+    await file();
+    expect(sendCheckIn("sarah", true).sent).toBe(false);
+  });
+
+  it("passes on the staff decision and books the check-in 28 days later", async () => {
+    await file();
+    expect(recordDecision("sarah", "lower_repayments")).toBe(true);
+    const row = getQueue().find((r) => r.customerId === "sarah");
+    expect(row?.status).toBe("arrangement");
+    expect(row?.case?.decision?.reviewOn).toBe("2026-12-14");
+    expect(cards("sarah").at(-1)).toBe("decision");
+    expect(recordDecision("sarah", "pause")).toBe(false); // Already decided.
+  });
+
+  it("asks at the check-in and leaves the change to a person", async () => {
+    await file();
+    recordDecision("sarah", "lower_repayments");
+    expect(sendCheckIn("sarah", true).sent).toBe(true);
+    const card = getSessionView("sarah").messages.at(-1)?.card;
+    expect(card).toMatchObject({ type: "check_in", recovered: true, payNow: 2600 });
+    handleAction("sarah", "checkin_return");
+    const row = getQueue().find((r) => r.customerId === "sarah");
+    expect(row?.note).toBe("Wants to go back to normal repayments");
+    expect(row?.status).toBe("arrangement"); // Nothing changes until staff act.
   });
 });

@@ -40,6 +40,9 @@ export type Tier = 0 | 1 | 2 | 3 | 4;
 
 export interface Signals {
   incomeChange: number | null; // -0.4 = pay down 40%
+  /** Average pay over the last 4 weeks, and over the 12 weeks before that. */
+  recentPay: number | null;
+  earlierPay: number | null;
   bufferTrend: number; // balance today / balance 90 days ago - 1
   netFlowNegativeMonths: number; // months in a row, most recent first
   cardUse: number | null; // 0..1
@@ -61,6 +64,13 @@ export interface Projection {
   assumptions: string[];
 }
 
+/** One dated fact on the "how CareLoop noticed" timeline. */
+export interface TimelineItem {
+  date: string;
+  label: string;
+  when: "past" | "today" | "ahead";
+}
+
 export interface TierResult {
   customerId: CustomerId;
   tier: Tier;
@@ -68,6 +78,7 @@ export interface TierResult {
   reasons: string[];
   signals: Signals;
   projection: Projection;
+  timeline: TimelineItem[];
   nextAction: "none" | "nudge" | "heads_up" | "missed_payment_help" | "specialist_handover";
   /** Whether a proactive message may be sent (needs the alerts consent). */
   mayContact: boolean;
@@ -83,6 +94,7 @@ export type Phase =
   | "review"
   | "start_request"
   | "receipt"
+  | "check_in"
   | "handover";
 
 export type FieldSource = "from_your_accounts" | "you_told_us";
@@ -115,6 +127,8 @@ export type Card =
   | { type: "review"; draft: DraftRequest }
   | { type: "start_request" }
   | { type: "receipt"; caseId: string; respondBy: string }
+  | { type: "decision"; outcome: string; approved: boolean; reviewOn: string }
+  | { type: "check_in"; recovered: boolean; payNow: number; outcome: string }
   | { type: "handover" };
 
 export interface ChatMessage {
@@ -126,7 +140,7 @@ export interface ChatMessage {
   at: string;
 }
 
-export type CaseStatus = "new" | "in_review" | "watching" | "priority_assist";
+export type CaseStatus = "new" | "in_review" | "arrangement" | "closed" | "watching" | "priority_assist";
 
 export interface Case {
   id: string;
@@ -139,6 +153,8 @@ export interface Case {
   status: CaseStatus;
   summary: string[];
   draft: DraftRequest;
+  /** Recorded by a staff member. CareLoop never decides. */
+  decision?: { outcome: string; approved: boolean; reviewOn: string };
 }
 
 export interface AuditEntry {
@@ -169,4 +185,5 @@ export interface QueueRow {
   /** Short flag for staff, for example "Asked to talk to someone". */
   note?: string;
   reasons: string[];
+  timeline: TimelineItem[];
 }

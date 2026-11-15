@@ -11,6 +11,7 @@ const LIVE_CARD: Partial<Record<Phase, string>> = {
   projection: "projection",
   review: "review",
   start_request: "start_request",
+  check_in: "check_in",
 };
 
 function Bubble({ message }: { message: ChatMessage }) {

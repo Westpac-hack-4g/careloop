@@ -35,3 +35,20 @@ describe("tier engine on the sample customers", () => {
     expect(getTierResult("sarah", { sensitive: true }).tier).toBe(4);
   });
 });
+
+describe("how CareLoop noticed", () => {
+  it("dates Sarah's pay drop, the heads-up and the repayment", () => {
+    const { timeline } = getTierResult("sarah");
+    expect(timeline).toEqual([
+      { date: "2026-10-23", label: "Pay dropped from $2,600 to $1,560", when: "past" },
+      { date: "2026-11-16", label: "Early heads-up, 12 days before the repayment", when: "today" },
+      { date: "2026-11-28", label: "Repayment due: projected $620 short", when: "ahead" },
+    ]);
+  });
+
+  it("dates Mia's last pay and failed repayment", () => {
+    const labels = getTierResult("mia").timeline.map((t) => `${t.date} ${t.label}`);
+    expect(labels[0]).toBe("2026-10-17 Last pay received ($1,900)");
+    expect(labels[1]).toContain("2026-11-05");
+  });
+});

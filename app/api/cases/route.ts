@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getQueue, staffReply, startReview } from "@/lib/conversation/engine";
+import { getQueue, recordDecision, staffReply, startReview } from "@/lib/conversation/engine";
 import { isCustomerId } from "@/lib/data";
+import { isDecisionKey } from "@/lib/decisions";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,11 @@ export async function GET() {
 
 /** A staff member replies in the customer's chat, or picks up a new request. */
 export async function POST(request: Request) {
-  const body = (await request.json()) as { customerId?: unknown; text?: unknown; op?: unknown };
+  const body = (await request.json()) as { customerId?: unknown; text?: unknown; op?: unknown; outcome?: unknown };
+  if (isCustomerId(body.customerId) && body.op === "decide" && isDecisionKey(body.outcome)) {
+    recordDecision(body.customerId, body.outcome);
+    return NextResponse.json({ queue: getQueue() });
+  }
   if (isCustomerId(body.customerId) && body.op === "start_review") {
     startReview(body.customerId);
     return NextResponse.json({ queue: getQueue() });

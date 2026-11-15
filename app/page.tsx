@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { LoopSteps } from "@/components/loop-steps";
 import { Phone } from "@/components/phone/phone";
 import { PresenterBar } from "@/components/presenter-bar";
 import { StaffConsole } from "@/components/staff/console";
@@ -85,6 +86,12 @@ export default function Home() {
             })
           }
           onToggleAlerts={() => run(() => api.sendAction(customerId, "toggle_alerts"))}
+          onCheckIn={(recovered) =>
+            run(async () => {
+              const result = await api.checkIn(customerId, recovered);
+              if (!result.sent) setNotice(result.reason ?? "No check-in sent.");
+            })
+          }
           onReset={() =>
             run(async () => {
               await api.reset();
@@ -93,9 +100,10 @@ export default function Home() {
           }
         />
       )}
+      <LoopSteps view={view} row={queue.find((r) => r.customerId === customerId)} />
       <div className="flex flex-wrap items-start justify-center gap-6">
         <Phone view={view} busy={busy} onText={sendText} onAction={(action) => run(() => api.sendAction(customerId, action))} />
-        <StaffConsole queue={queue} selected={selectedCase} onSelect={setSelectedCase} onReply={(id, text) => run(() => api.staffReply(id, text))} onStartReview={(id) => run(() => api.startReview(id))} />
+        <StaffConsole queue={queue} selected={selectedCase ?? customerId} onSelect={setSelectedCase} onReply={(id, text) => run(() => api.staffReply(id, text))} onStartReview={(id) => run(() => api.startReview(id))} onDecide={(id, outcome) => run(() => api.decide(id, outcome))} />
       </div>
       <p className="text-center text-[11px] text-[#8b9094]">Hackathon prototype on made-up customers. Not a Westpac product.</p>
     </main>
