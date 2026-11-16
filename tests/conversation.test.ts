@@ -148,3 +148,36 @@ describe("closing the loop", () => {
     expect(row?.status).toBe("arrangement"); // Nothing changes until staff act.
   });
 });
+
+describe("answering the heads-up in words", () => {
+  it("gives Tom a heads-up card with buttons, shown on the home screen", () => {
+    expect(sendAlert("tom").sent).toBe(true);
+    expect(cards("tom")).toEqual(["alert"]);
+    expect(getSessionView("tom").home.headsUp).toBe(true);
+  });
+
+  it("closes the chat on a typed no, without pushing, and still answers if they write again", async () => {
+    sendAlert("tom");
+    await handleMessage("tom", "no");
+    const view = getSessionView("tom");
+    expect(view.phase).toBe("idle");
+    expect(view.messages.at(-1)?.card?.type).toBe("closed");
+    expect(view.home.headsUp).toBe(false);
+    await handleMessage("tom", "Will asking for help hurt my credit score?");
+    expect(getSessionView("tom").messages.at(-1)?.role).toBe("careloop");
+  });
+
+  it("treats a typed 'show me the reason' as the Show me why button", async () => {
+    sendAlert("tom");
+    await handleMessage("tom", "show me the reason");
+    expect(getSessionView("tom").phase).toBe("consent");
+    expect(cards("tom").at(-1)).toBe("consent");
+  });
+
+  it("does not take a typed yes as permission to read accounts", async () => {
+    sendAlert("tom");
+    handleAction("tom", "show_why");
+    await handleMessage("tom", "yes");
+    expect(getSession("tom").analysisConsent).toBe(false);
+  });
+});

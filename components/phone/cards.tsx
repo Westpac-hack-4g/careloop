@@ -19,13 +19,11 @@ const Shell = ({ title, children }: { title?: string; children: React.ReactNode 
 
 const Buttons = ({ children }: { children: React.ReactNode }) => <div className="mt-2.5 flex flex-wrap gap-1.5">{children}</div>;
 
-function AlertCard({ shortfall, date, act, live }: { shortfall: number; date: string; act: Act; live: boolean }) {
+function AlertCard({ shortfall, date, text, act, live }: { shortfall?: number; date?: string; text?: string; act: Act; live: boolean }) {
   return (
     <div className="rounded-xl border-l-4 border-[#da1710] bg-white p-3 text-[13px] shadow-sm">
       <div className="text-[14px] font-bold text-[#1f1c4f]">Heads up</div>
-      <p className="mt-1">
-        You may be {money(shortfall)} short before your {shortDate(date)} repayment.
-      </p>
+      <p className="mt-1">{shortfall && date ? `You may be ${money(shortfall)} short before your ${shortDate(date)} repayment.` : text}</p>
       {live && (
         <Buttons>
           <Button size="small" look="primary" onClick={() => act("show_why")}>Show me why</Button>
@@ -232,7 +230,9 @@ const HandoverCard = () => (
 export function ChatCard({ card, act, live }: { card: Card; act: Act; live: boolean }) {
   switch (card.type) {
     case "alert":
-      return <AlertCard shortfall={card.shortfall} date={card.date} act={act} live={live} />;
+      return <AlertCard shortfall={card.shortfall} date={card.date} text={card.text} act={act} live={live} />;
+    case "closed":
+      return <p className="py-1 text-center text-[11px] text-[#8b9094]">Chat closed. Message any time to start again.</p>;
     case "consent":
       return <ConsentCard act={act} live={live} />;
     case "projection":

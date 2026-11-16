@@ -1,12 +1,13 @@
 import { assistantReply } from "../ai/assistant";
 import { addDays, DEMO_TODAY, formatDate, formatMoney } from "../clock";
 import type { Case, CustomerId, QueueRow, SessionView } from "../contract";
-import { getCustomer } from "../data";
+import { getCustomer, getSchedule } from "../data";
 import { CHECK_IN_DAYS, DECISIONS, type DecisionKey } from "../decisions";
 import { addMessage, audit, createCase, customerIds, getOpenCase, getSession, type Session } from "../store";
 import { getTierResult } from "../tier";
 import { isSensitive, saysCantPay } from "./detectors";
 import { toDraft } from "./draft";
+import { handover } from "./handover";
 import { upsertDraftCard } from "./tools";
 
 // The conversation engine. It owns the step (phase) the conversation is at.
@@ -47,26 +48,15 @@ export function sendAlert(customerId: CustomerId): { sent: boolean; reason?: str
   session.lockScreenBanner = true;
   session.phase = "alert";
   const shortfall = tier.projection.shortfall;
-  if (shortfall) addMessage(session, { role: "careloop", card: { type: "alert", shortfall: shortfall.amount, date: shortfall.date } });
-  else if (tier.tier === 3) say(session, "A repayment didn't go through. If things are tight, I can help you look at your options. No pressure.");
-  else say(session, "Your everyday balance has been getting lower over the last few months. Would you like to see why?");
+  // Every heads-up is a card with the same four buttons.
+  const text =
+    tier.tier === 3
+      ? "A repayment didn't go through. If things are tight, I can help you look at your options. No pressure."
+      : "Your everyday balance has been getting lower over the last few months. Would you like to see why?";
+  addMessage(session, { role: "careloop", card: shortfall ? { type: "alert", shortfall: shortfall.amount, date: shortfall.date } : { type: "alert", text } });
+  note(session, `The backend sent the customer a heads-up card: "${shortfall ? "You may be short before your next repayment." : text}" It has four buttons: Show me why, Talk to someone, Not now, This isn't right.`);
   audit(customerId, "message", `Heads-up sent (tier ${tier.tier})`);
   return { sent: true };
-}
-
-function handover(session: Session): void {
-  session.sensitive = true;
-  session.phase = "handover";
-  addMessage(session, { role: "careloop", card: { type: "handover" } });
-  createCase({
-    customerId: session.customerId,
-    customerName: getCustomer(session.customerId).name,
-    tier: 4,
-    status: "priority_assist",
-    summary: ["The customer shared a sensitive situation. Form filling stopped.", "Passed to Priority Assist. Do not ask the customer to repeat details."],
-    draft: toDraft(session.draftFields),
-  });
-  audit(session.customerId, "safety", "Sensitive disclosure: handover card shown, case sent to Priority Assist");
 }
 
 /** A short summary for staff. Facts from the rule engine and the customer's own answers, each from its source. */
@@ -88,6 +78,21 @@ function offerStartRequest(session: Session): void {
   addMessage(session, { role: "careloop", card: { type: "start_request" } });
 }
 
+const SAYS_NO = /^(no|nope|nah|not now|not yet|no thanks?|no thank you|later|maybe later)[\s.!]*$/i;
+const SAYS_YES = /^(yes|yep|yeah|ok|okay|sure|please|go on|yes please)[\s.!]*$/i;
+const ASKS_WHY = /^(why|how come|show me( why| the reason)?|what('s| is) the reason|tell me why)[\s.!?]*$/i;
+
+/** Which button a short typed reply stands for, if any. Giving permission still needs the Allow tap. */
+function typedButton(session: Session, text: string): Action | null {
+  if (session.phase === "alert") {
+    if (SAYS_NO.test(text)) return "not_now";
+    if (SAYS_YES.test(text) || ASKS_WHY.test(text)) return "show_why";
+  }
+  if (session.phase === "consent" && SAYS_NO.test(text)) return "decline_consent";
+  if (session.phase === "start_request" && SAYS_NO.test(text)) return "start_not_yet";
+  return null;
+}
+
 export async function handleMessage(customerId: CustomerId, text: string): Promise<void> {
   const session = getSession(customerId);
   session.lockScreenBanner = false;
@@ -96,7 +101,7 @@ export async function handleMessage(customerId: CustomerId, text: string): Promi
   if (session.phase === "handover") return; // A person takes it from here.
 
   // Two shortcuts that work at any step.
-  if (isSensitive(text)) return handover(session);
+  if (isSensitive(text)) return handover(session, "keyword check");
   if (saysCantPay(text) && !["start_request", "receipt"].includes(session.phase)) {
     session.saidCantPay = true;
     audit(customerId, "cant_pay_logged", `"${text}"`);
@@ -105,9 +110,14 @@ export async function handleMessage(customerId: CustomerId, text: string): Promi
     return offerStartRequest(session);
   }
 
+  // A typed answer to a card counts as the matching button, so a plain "no" never confuses the AI.
+  const typed = typedButton(session, text);
+  if (typed) return handleAction(customerId, typed);
+
   if (session.phase === "idle" || session.phase === "alert") session.phase = "explain";
   const seen = new Set(session.messages.map((m) => m.id));
   const reply = await assistantReply(session, text);
+  if (!reply.text) return; // The assistant handed over to a person; the card says it all.
   const message = addMessage(session, { role: "careloop", text: reply.text, citations: reply.citations });
   // A card the assistant showed during this turn goes under its words, not above them.
   const firstNew = session.messages.findIndex((m) => !seen.has(m.id));
@@ -129,15 +139,25 @@ export function handleAction(customerId: CustomerId, action: Action): void {
       session.alertsOn = !session.alertsOn;
       audit(customerId, "consent", `Early heads-up turned ${session.alertsOn ? "on" : "off"}`);
       return;
-    case "show_why":
+    case "show_why": {
       session.phase = "consent";
-      say(session, "Your pay looks a little different lately, so I wanted to give you an early heads-up rather than a surprise. I can show you exactly why, if that's OK.");
+      const seen = getTierResult(customerId, { alertsOn: session.alertsOn });
+      const what = seen.signals.missedRepayment
+        ? "A repayment didn't go through"
+        : seen.signals.incomeChange !== null && seen.signals.incomeChange < 0
+          ? "Your pay looks a little different lately"
+          : "Your everyday balance has been going down";
+      say(session, `${what}, so I wanted to give you an early heads-up rather than a surprise. I can show you exactly why, if that's OK.`);
       addMessage(session, { role: "careloop", card: { type: "consent" } });
       note(session, "The customer tapped Show me why. The backend showed the consent card.");
       return;
+    }
     case "not_now":
+      // No pushing: one line, then the chat is closed. The door stays open if they write again.
       session.phase = "idle";
-      say(session, "No problem. I'm here whenever you want to look at it.");
+      say(session, "No problem. If you want help later, just message me here.");
+      addMessage(session, { role: "careloop", card: { type: "closed" } });
+      note(session, "The customer said not now. The backend closed the chat. Do not bring the heads-up up again unless they ask.");
       return;
     case "not_right":
       say(session, "Thanks for telling me. What looks wrong? For example, if you're expecting other money to come in, tell me and the Westpac team will see your note.");
@@ -287,13 +307,24 @@ export function sendCheckIn(customerId: CustomerId, recovered: boolean): { sent:
 
 export function getSessionView(customerId: CustomerId): SessionView {
   const session = getSession(customerId);
+  const customer = getCustomer(customerId);
+  const schedule = getSchedule(customerId);
   return {
     customerId,
-    customerName: getCustomer(customerId).name,
+    customerName: customer.name,
     phase: session.phase,
     messages: session.messages,
     lockScreenBanner: session.lockScreenBanner,
     alertsOn: session.alertsOn,
+    home: {
+      balance: customer.balance,
+      tiles: customer.products.map((p) => {
+        if (p.type === "credit_card") return { name: p.name, detail: `${formatMoney(p.balance)} of ${formatMoney(p.limit)} used` };
+        const next = schedule.upcomingRepayments.find((r) => r.product === p.name);
+        return { name: p.name, detail: next ? `Next repayment ${formatMoney(next.amount)} on ${formatDate(next.date)}` : `Repayment ${formatMoney(p.repayment)}` };
+      }),
+      headsUp: session.phase === "alert",
+    },
   };
 }
 

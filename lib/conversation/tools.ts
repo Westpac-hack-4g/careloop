@@ -2,25 +2,26 @@ import type { Citation, Phase } from "../contract";
 import { search, WEAK_MATCH_SCORE } from "../rag";
 import { addMessage, audit, type Session } from "../store";
 import { getTierResult } from "../tier";
+import { handover } from "./handover";
 import { applyCustomerField, CUSTOMER_FIELD_NAMES, prefillFromAccounts, toDraft } from "./draft";
 
 // The only things the AI can do. The backend decides which tools exist in each
 // phase and refuses data tools without consent. The AI never files a request:
 // only the customer's "Yes, start" tap does that (see engine.ts).
 
-export type ToolName = "retrieve_westpac_info" | "request_consent" | "get_tier_result" | "update_draft" | "show_draft";
+export type ToolName = "flag_sensitive" | "retrieve_westpac_info" | "request_consent" | "get_tier_result" | "update_draft" | "show_draft";
 
 export const TOOLS_BY_PHASE: Record<Phase, ToolName[]> = {
-  idle: ["retrieve_westpac_info"],
-  alert: ["retrieve_westpac_info"],
-  explain: ["retrieve_westpac_info", "request_consent"],
-  consent: ["retrieve_westpac_info", "request_consent"],
-  projection: ["retrieve_westpac_info", "get_tier_result"],
-  prepare: ["retrieve_westpac_info", "get_tier_result", "update_draft", "show_draft"],
-  review: ["retrieve_westpac_info", "update_draft", "show_draft"],
-  start_request: ["retrieve_westpac_info"],
-  receipt: ["retrieve_westpac_info"],
-  check_in: ["retrieve_westpac_info"],
+  idle: ["flag_sensitive", "retrieve_westpac_info"],
+  alert: ["flag_sensitive", "retrieve_westpac_info"],
+  explain: ["flag_sensitive", "retrieve_westpac_info", "request_consent"],
+  consent: ["flag_sensitive", "retrieve_westpac_info", "request_consent"],
+  projection: ["flag_sensitive", "retrieve_westpac_info", "get_tier_result"],
+  prepare: ["flag_sensitive", "retrieve_westpac_info", "get_tier_result", "update_draft", "show_draft"],
+  review: ["flag_sensitive", "retrieve_westpac_info", "update_draft", "show_draft"],
+  start_request: ["flag_sensitive", "retrieve_westpac_info"],
+  receipt: ["flag_sensitive", "retrieve_westpac_info"],
+  check_in: ["flag_sensitive", "retrieve_westpac_info"],
   handover: [],
 };
 
@@ -47,6 +48,10 @@ export function runTool(session: Session, name: string, input: Record<string, un
   audit(session.customerId, "tool_call", `${name} ${JSON.stringify(input)}`);
 
   switch (tool) {
+    case "flag_sensitive": {
+      handover(session, "flagged by the AI");
+      return { result: "Done. The form is stopped and the safety card is shown. A specialist takes it from here. Do not write anything else." };
+    }
     case "retrieve_westpac_info": {
       const hits = search(String(input.query ?? ""));
       if (!hits.length || hits[0].score < WEAK_MATCH_SCORE) {
@@ -108,6 +113,11 @@ export function upsertDraftCard(session: Session): void {
 
 /** Tool definitions in the shape the Claude API expects. */
 export const TOOL_DEFINITIONS: Record<ToolName, { description: string; input_schema: Record<string, unknown> }> = {
+  flag_sensitive: {
+    description:
+      "Call this at once, before anything else, when the customer mentions or hints at family or domestic violence, someone controlling their money, feeling unsafe at home, gambling harm, the death of someone close, or thoughts of harming themselves. Hints count: you do not need to be certain. It stops the form and brings in Westpac's specialist team. Never ask for details first.",
+    input_schema: { type: "object", properties: {}, required: [], additionalProperties: false },
+  },
   retrieve_westpac_info: {
     description:
       "Search Westpac's own public pages. Call this before answering any question about hardship help, credit reports, options or support services. Answer only from what it returns.",

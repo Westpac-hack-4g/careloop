@@ -96,6 +96,8 @@ async function claudeReply(session: Session, text: string): Promise<AssistantRep
       return { type: "tool_result", tool_use_id: use.id, content: outcome.result, ...(outcome.isError ? { is_error: true } : {}) };
     });
     history.push({ role: "user", content: results });
+    // flag_sensitive hands the chat to a person: the safety card speaks, the assistant does not.
+    if (session.phase === "handover") return { text: "" };
   }
   throw new Error("Too many tool rounds");
 }

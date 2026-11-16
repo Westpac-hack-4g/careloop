@@ -120,7 +120,10 @@ export interface Citation {
 }
 
 export type Card =
-  | { type: "alert"; shortfall: number; date: string }
+  /** The heads-up. With a projected shortfall it shows the amount; otherwise it shows `text`. */
+  | { type: "alert"; shortfall?: number; date?: string; text?: string }
+  /** The customer said "not now": this chat is over until they write again. */
+  | { type: "closed" }
   | { type: "consent" }
   | { type: "projection"; projection: Projection }
   | { type: "draft"; draft: DraftRequest }
@@ -172,6 +175,8 @@ export interface SessionView {
   messages: ChatMessage[];
   lockScreenBanner: boolean;
   alertsOn: boolean;
+  /** The app's home screen: what the customer sees before opening the chat. */
+  home: { balance: number; tiles: { name: string; detail: string }[]; headsUp: boolean };
 }
 
 /** One row of the staff queue. */

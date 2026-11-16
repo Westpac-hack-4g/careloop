@@ -27,7 +27,7 @@ Type the customer lines as written. Steps marked AI are answered by Claude; the 
 | # | What you do | What appears | Answered by |
 | --- | --- | --- | --- |
 | 1 | Presenter bar: **Send the heads-up** | A banner on Sarah's lock screen. It does not mention money. | Code |
-| 2 | Tap the banner to open the app | A card saying she may be about $620 short on 28 Nov | Code (amount from the rule engine) |
+| 2 | Tap the banner, then tap the red **Heads up** line on the Home loan tile | The app's home screen with the heads-up on her home loan, then a card saying she may be about $620 short on 28 Nov | Code (amount from the rule engine) |
 | 3 | Type: `Will asking for help hurt my credit score?` | An answer taken from Westpac's own pages, with source links | **AI** |
 | 4 | Tap **Show me why** | A card asking permission to look at 90 days of transactions | Code |
 | 5 | Tap **Allow** | A 30 day balance forecast chart | Code |
@@ -68,6 +68,8 @@ Only typed messages go to the AI. Every button tap is handled by code.
 - **Step 7, turning a story into a form.** This is the moment to slow down on. One ordinary sentence fills the reason, the start date, the expected length and other debts. Each field keeps the customer's exact words as evidence, and staff see them in step 12.
 - **Steps 8 and 9, asking only for what is missing.** The AI puts each short answer in the right field. When nothing is missing it shows the full request.
 
+The AI also watches for sensitive situations. A list of words catches the plain cases; the AI catches the indirect ones. In testing, "my husband handles everything and I'm not really allowed to touch our accounts" and "I've been at the pokies a lot lately" both stopped the form and passed the chat to Priority Assist, while "my hours got cut and I'm stressed" and "I lost my job" did not.
+
 Any other question typed along the way also goes to the AI. In testing it turned down these correctly: "approve my request", "roughly how many dollars would I save", "is Westpac better than CommBank", and an off-topic request for the weather and a poem.
 
 ## What is fixed and what can vary
@@ -83,6 +85,7 @@ The AI's wording is not guaranteed. So far the full script has been run once on 
 | A reply that promises approval, or states an amount the rules did not produce, is blocked before the customer sees it | A correct reply can be blocked by mistake and replaced by an offer to bring in the Assist team |
 | If the AI fails or takes over 25 seconds, a scripted reply is used | |
 | Words about abuse, gambling or bereavement stop the form and pass the chat to Priority Assist | |
+| A typed "no" to the heads-up closes the chat with one line and no pushing. The customer can still write again later. A typed "yes" never counts as permission to read accounts: that needs the **Allow** tap | |
 | The check-in is only sent after a person has recorded an arrangement, and what the customer picks there goes to staff to confirm | |
 
 ## If something goes wrong on stage
