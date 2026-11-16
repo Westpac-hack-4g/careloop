@@ -1,17 +1,23 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import type { AuditEntry, CustomerId } from "@/lib/contract";
 
-const CUSTOMERS: { id: CustomerId; label: string }[] = [
-  { id: "tom", label: "Tom (tier 1)" },
-  { id: "sarah", label: "Sarah (tier 2)" },
-  { id: "mia", label: "Mia (tier 3)" },
+/** How long a presenter notice stays on screen. */
+const NOTICE_MS = 4000;
+
+const CUSTOMERS: { id: CustomerId; name: string; tier: number }[] = [
+  { id: "tom", name: "Tom", tier: 1 },
+  { id: "sarah", name: "Sarah", tier: 2 },
+  { id: "mia", name: "Mia", tier: 3 },
 ];
+
+// Below this width the bar drops its less important words to stay on one line.
+const WIDE_ONLY = "max-[1279px]:hidden";
 
 // Every control is a full-height cell, like the loop steps below.
 // Each group is its own white segment with a gap between; cells inside a group get short dividers.
-const CELL = "relative flex h-full cursor-pointer items-center whitespace-nowrap px-2.5 text-[12px] transition-colors";
+const CELL = "relative flex h-full cursor-pointer items-center whitespace-nowrap px-2.5 text-[12px] transition-colors max-[1279px]:px-2";
 const IDLE = `${CELL} text-text-hero hover:bg-surface-hero-faint`;
 
 /** A short divider between cells of the same group. */
@@ -21,7 +27,7 @@ const Tick = () => <span className="my-3 -mx-px w-px shrink-0 bg-border-muted-so
 const Group = ({ label, children, className = "" }: { label?: string; children: React.ReactNode[]; className?: string }) => (
   <div className={`flex h-full items-stretch overflow-visible rounded-lg border border-border-muted-soft bg-background-white shadow-sm [&>:first-child]:rounded-l-lg [&>:last-child]:rounded-r-lg ${className}`}>
     {label && (
-      <span className="flex items-center whitespace-nowrap border-r border-border-muted-soft bg-background-faint px-2 text-[10px] font-bold uppercase text-text-muted">
+      <span className={`flex items-center whitespace-nowrap border-r border-border-muted-soft bg-background-faint px-2 text-[10px] font-bold uppercase text-text-muted ${WIDE_ONLY}`}>
         {label}
       </span>
     )}
@@ -58,11 +64,20 @@ export function PresenterBar({
   onCheckIn: (recovered: boolean) => void;
   onReset: () => void;
 }) {
+  // Display only: hide the notice after a few seconds. The page still owns and clears `notice`.
+  const [noticeShown, setNoticeShown] = useState(false);
+  useEffect(() => {
+    setNoticeShown(Boolean(notice));
+    if (!notice) return;
+    const timer = setTimeout(() => setNoticeShown(false), NOTICE_MS);
+    return () => clearTimeout(timer);
+  }, [notice]);
+
   return (
     <div className="text-text-body">
-      <div className="flex h-[40px] items-stretch gap-2">
+      <div className="flex h-[40px] items-stretch gap-2 max-[1279px]:gap-1.5">
         {/* Label segment, same navy as the current loop step. */}
-        <div className="flex items-center rounded-lg bg-surface-hero px-3 text-[12px] font-bold text-text-mono shadow-sm" title="Press ` to hide">
+        <div className="flex items-center rounded-lg bg-surface-hero px-3 text-[12px] font-bold text-text-mono shadow-sm max-[1279px]:px-2.5" title="Press ` to hide">
           Presenter
         </div>
 
@@ -73,7 +88,8 @@ export function PresenterBar({
               onClick={() => onPick(c.id)}
               className={c.id === customerId ? `${CELL} bg-surface-hero-faint font-bold text-text-hero` : IDLE}
             >
-              {c.label}
+              {c.name}
+              <span className={`ml-1 ${WIDE_ONLY}`}>(tier {c.tier})</span>
               {c.id === customerId && <span className="absolute inset-x-0 bottom-0 h-[3px] bg-surface-primary" />}
             </button>
           ))}
@@ -98,9 +114,12 @@ export function PresenterBar({
         </Group>
 
         <Group className="ml-auto">
-          <span className="flex items-center gap-1.5 whitespace-nowrap px-2.5 text-[11px] text-text-muted">
+          <span
+            className="flex items-center gap-1.5 whitespace-nowrap px-2.5 text-[11px] text-text-muted"
+            title={aiMode === "claude" ? "AI: Claude (live)" : "AI: sample mode (scripted, no key)"}
+          >
             <span className={`size-2 rounded-full ${aiMode === "claude" ? "bg-surface-success" : "bg-surface-muted-mild"}`} aria-hidden />
-            {aiMode === "claude" ? "Claude (live)" : "Sample mode"}
+            <span className={WIDE_ONLY}>{aiMode === "claude" ? "Claude (live)" : "Sample mode"}</span>
           </span>
           {/* Audit log opens as a dropdown so it takes no row of its own. */}
           <details className="relative">
@@ -119,7 +138,7 @@ export function PresenterBar({
           </button>
         </Group>
       </div>
-      {notice && <div className="mt-1.5 rounded-lg border border-border-danger-mild bg-surface-danger-faint px-3 py-1 text-[12px] text-text-danger">{notice}</div>}
+      {notice && noticeShown && <div className="mt-1.5 rounded-lg border border-border-danger-mild bg-surface-danger-faint px-3 py-1 text-[12px] text-text-danger">{notice}</div>}
     </div>
   );
 }
