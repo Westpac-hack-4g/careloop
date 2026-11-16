@@ -186,9 +186,9 @@ export function Phone({
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message"
           aria-label="Message to CareLoop"
-          className="min-w-0 flex-1"
+          className="min-w-0 flex-1 !text-[13px]"
         />
-        <Button type="submit" disabled={busy} look="primary">
+        <Button className="!text-[13px] font-medium" type="submit" disabled={busy} look="primary">
           Send
         </Button>
       </form>

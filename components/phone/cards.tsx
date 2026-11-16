@@ -30,10 +30,10 @@ function AlertCard({ shortfall, date, text, act, live }: { shortfall?: number; d
       <p className="mt-1">{shortfall && date ? `You may be ${money(shortfall)} short before your ${shortDate(date)} repayment.` : text}</p>
       {live && (
         <Buttons>
-          <Button size="small" look="primary" onClick={() => act("show_why")}>Show me why</Button>
-          <Button size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
-          <Button size="small" look="faint" onClick={() => act("not_now")}>Not now</Button>
-          <Button size="small" look="faint" onClick={() => act("not_right")}>This isn&apos;t right</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("show_why")}>Show me why</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_now")}>Not now</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_right")}>This isn&apos;t right</Button>
         </Buttons>
       )}
     </div>
@@ -46,8 +46,8 @@ function ConsentCard({ act, live }: { act: Act; live: boolean }) {
       <p>To check, I&apos;ll look at your last 90 days of transactions, only for this.</p>
       {live && (
         <Buttons>
-          <Button size="small" look="primary" onClick={() => act("allow")}>Allow</Button>
-          <Button size="small" look="faint" onClick={() => act("decline_consent")}>Not now</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("allow")}>Allow</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("decline_consent")}>Not now</Button>
         </Buttons>
       )}
     </Shell>
@@ -80,8 +80,8 @@ function ProjectionCard({ projection, act, live }: { projection: Projection; act
       </ul>
       {live && (
         <Buttons>
-          <Button size="small" look="primary" onClick={() => act("prepare_request")}>Prepare a request</Button>
-          <Button size="small" look="faint" onClick={() => act("not_right")}>This isn&apos;t right</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("prepare_request")}>Prepare a request</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_right")}>This isn&apos;t right</Button>
         </Buttons>
       )}
     </Shell>
@@ -125,7 +125,7 @@ function ReviewCard({ draft, act, live }: { draft: DraftRequest; act: Act; live:
       <p className="mt-2 text-[12px] text-text-muted">Something wrong? Just tell me and I&apos;ll change it.</p>
       {live && (
         <Buttons>
-          <Button size="small" look="primary" onClick={() => act("confirm_review")}>Looks right</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("confirm_review")}>Looks right</Button>
         </Buttons>
       )}
     </Shell>
@@ -138,9 +138,9 @@ function StartRequestCard({ act, live }: { act: Act; live: boolean }) {
       <p>If you say yes, it goes to the Westpac Assist team now. A person decides, and they must reply within 21 days.</p>
       {live && (
         <Buttons>
-          <Button size="small" look="primary" onClick={() => act("start_yes")}>Yes, start</Button>
-          <Button size="small" look="faint" onClick={() => act("start_not_yet")}>Not yet</Button>
-          <Button size="small" look="primary" soft onClick={() => act("start_talk")}>Talk to someone</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("start_yes")}>Yes, start</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("start_not_yet")}>Not yet</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("start_talk")}>Talk to someone</Button>
         </Buttons>
       )}
     </Shell>
@@ -205,12 +205,12 @@ function CheckInCard({ recovered, payNow, outcome, act, live }: { recovered: boo
       {live && (
         <Buttons>
           {recovered ? (
-            <Button size="small" look="primary" onClick={() => act("checkin_return")}>Go back to normal</Button>
+            <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("checkin_return")}>Go back to normal</Button>
           ) : (
-            <Button size="small" look="primary" onClick={() => act("checkin_extend")}>Ask for more time</Button>
+            <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("checkin_extend")}>Ask for more time</Button>
           )}
-          <Button size="small" look="faint" onClick={() => act("checkin_keep")}>{recovered ? "Keep the arrangement" : "I'm OK for now"}</Button>
-          <Button size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("checkin_keep")}>{recovered ? "Keep the arrangement" : "I'm OK for now"}</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
         </Buttons>
       )}
       <p className="mt-2 text-[11px] text-text-muted">Prototype: four weeks later, simulated.</p>
@@ -228,7 +228,7 @@ const HandoverCard = () => (
     </p>
     <p className="mt-1.5 text-[12px]">In danger now? Call 000. 1800RESPECT: 1800 737 732.</p>
     <Buttons>
-      <Button size="small" look="faint" tag="a" href="https://www.google.com">Quick exit</Button>
+      <Button className="!text-[13px] font-medium" size="small" look="faint" tag="a" href="https://www.google.com">Quick exit</Button>
     </Buttons>
   </div>
 );

@@ -162,14 +162,14 @@ export function StaffConsole({
 
           <div className="mt-3 flex flex-wrap gap-2">
             {/* The first two write a draft into the reply box; the staff member edits and sends it. */}
-            <Button size="small" look="primary" soft onClick={() => setReply(`Hi ${firstName}, this is the Westpac Assist team. Thanks for your request. To look at it properly, could you tell us a little more about `)}>
+            <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => setReply(`Hi ${firstName}, this is the Westpac Assist team. Thanks for your request. To look at it properly, could you tell us a little more about `)}>
               Ask for info
             </Button>
-            <Button size="small" look="primary" soft onClick={() => setReply(`Hi ${firstName}, this is the Westpac Assist team. Would a short call suit you? Tell us a day and time that works and we'll ring you.`)}>
+            <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => setReply(`Hi ${firstName}, this is the Westpac Assist team. Would a short call suit you? Tell us a day and time that works and we'll ring you.`)}>
               Book a call
             </Button>
             {row.case?.status === "new" && (
-              <Button size="small" look="primary" onClick={() => onStartReview(row.customerId)}>
+              <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => onStartReview(row.customerId)}>
                 Start review
               </Button>
             )}
@@ -185,12 +185,13 @@ export function StaffConsole({
                   aria-label="Decision"
                   size="small"
                   width="auto"
+                  className="!text-[13px]"
                 >
                   {(Object.keys(DECISIONS) as DecisionKey[]).map((key) => (
                     <option key={key} value={key}>{DECISIONS[key].label}</option>
                   ))}
                 </Select>
-                <Button size="small" look="primary" onClick={() => onDecide(row.customerId, outcome)}>
+                <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => onDecide(row.customerId, outcome)}>
                   Record decision
                 </Button>
               </>
@@ -211,9 +212,9 @@ export function StaffConsole({
               onChange={(e) => setReply(e.target.value)}
               placeholder={`Reply in ${row.customerName.split(" ")[0]}'s chat`}
               aria-label="Reply to customer"
-              className="min-w-0 flex-1"
+              className="min-w-0 flex-1 !text-[13px]"
             />
-            <Button look="primary" type="submit">Send</Button>
+            <Button className="!text-[13px] font-medium" look="primary" type="submit">Send</Button>
           </form>
         </section>
       )}
