@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CareLoop System Architecture</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+  /* Layout: one reading column; the diagram is the widest thing and scrolls inside its own frame. */
+  :root {
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --fg: #1a1c2b;
+    --muted: #5a6074;
+    --line: #d3d7e1;
+    --built: #2f4bd8;        /* service 2: built in the prototype */
+    --built-tint: #e9edfd;
+    --standin: #a15c00;      /* service 1: a stand-in today */
+    --standin-tint: #fbf1df;
+    --later-tint: #eef0f4;   /* service 3: not built */
+    --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12141c; --surface: #1b1e29; --fg: #e9ebf3; --muted: #a2a8ba; --line: #363b4b;
+      --built: #8ea2ff; --built-tint: #232a4d; --standin: #e2a64a; --standin-tint: #3a2e17; --later-tint: #232632;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12141c; --surface: #1b1e29; --fg: #e9ebf3; --muted: #a2a8ba; --line: #363b4b;
+    --built: #8ea2ff; --built-tint: #232a4d; --standin: #e2a64a; --standin-tint: #3a2e17; --later-tint: #232632;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    padding-block: 40px 64px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .page { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+  .prose { max-width: 68ch; }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.2; }
+  h1 { font-size: 30px; font-weight: 600; }
+  h2 { font-size: 21px; font-weight: 600; margin-bottom: 10px; }
+  h3 { font-size: 15px; font-weight: 600; }
+  p { margin: 0 0 10px; }
+  p:last-child { margin-bottom: 0; }
+  .lead { font-size: 17px; margin-top: 12px; }
+  .meta { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+
+  /* Diagram frame */
+  figure { margin: 0; }
+  .frame { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+  .frame svg { display: block; min-width: 980px; width: 100%; height: auto; color: var(--fg); font-family: var(--font-body); }
+  figcaption { color: var(--muted); font-size: 13px; margin-top: 8px; max-width: 80ch; }
+  .svc { stroke: currentColor; stroke-width: 1.5; }
+  .svc-1 { fill: var(--standin-tint); stroke: var(--standin); }
+  .svc-2 { fill: var(--built-tint); stroke: var(--built); }
+  .svc-3 { fill: var(--later-tint); stroke: var(--muted); stroke-dasharray: 6 4; }
+  .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.25; }
+  .outside { fill: none; stroke: var(--muted); stroke-width: 1.25; }
+  .t-title { font-family: var(--font-display); font-size: 15px; font-weight: 600; fill: currentColor; }
+  .t-name { font-size: 13px; font-weight: 600; fill: currentColor; }
+  .t-sub { font-size: 11px; fill: var(--muted); }
+  .t-flow { font-size: 11px; font-weight: 500; fill: currentColor; }
+  .t-badge { font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; }
+  .b1 { fill: var(--standin); } .b2 { fill: var(--built); } .b3 { fill: var(--muted); }
+  .flow { fill: none; stroke: currentColor; stroke-width: 1.5; }
+  .flow-dash { stroke-dasharray: 5 4; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--muted); margin-top: 12px; }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid; flex: none; }
+  .sw1 { background: var(--standin-tint); border-color: var(--standin); }
+  .sw2 { background: var(--built-tint); border-color: var(--built); }
+  .sw3 { background: var(--later-tint); border-color: var(--muted); border-style: dashed; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: 0; }
+  th { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+  .tag1 { background: var(--standin-tint); color: var(--standin); }
+  .tag2 { background: var(--built-tint); color: var(--built); }
+  .tag3 { background: var(--later-tint); color: var(--muted); }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; background: var(--later-tint); padding: 1px 5px; border-radius: 4px; }
+
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .two > div { min-width: 0; }
+  .answer { border-left: 3px solid var(--built); padding-left: 16px; }
+</style>
+
+</head>
+<body>
+<div class="page">
+  <header class="prose">
+    <h1>CareLoop System Architecture</h1>
+    <p class="meta">Draft for the team · 16 Nov 2026 · proposals are marked as such</p>
+    <p class="lead">CareLoop is three services with two hand-offs between them. Risk Tracking works out who is heading for trouble, CareLoop talks to that customer and gets a request to a person, and Risk Reporting tells Westpac staff what is coming, by area, without names.</p>
+  </header>
+
+  <section>
+    <h2>Where one service ends and the next begins</h2>
+    <figure>
+      <div class="frame">
+        <svg viewBox="0 0 1170 750" role="img" aria-label="Three services. Risk Tracking reads consented account data nightly and sends a risk event to CareLoop. CareLoop handles the heads-up, chat, request, staff console and check-in. Risk Reporting combines daily tiers from Risk Tracking and outcomes from CareLoop into a daily area view and a monthly portfolio report, and its findings feed back into the rules.">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="currentColor" />
+            </marker>
+          </defs>
+
+          <!-- Westpac today: data -->
+          <text x="20" y="84" class="t-sub">WESTPAC TODAY</text>
+          <rect x="20" y="100" width="150" height="50" rx="6" class="outside" />
+          <text x="95" y="121" text-anchor="middle" class="t-name">Data platform</text>
+          <text x="95" y="138" text-anchor="middle" class="t-sub">accounts, transactions</text>
+          <text x="95" y="170" text-anchor="middle" class="t-flow">opted-in customers</text>
+          <text x="95" y="184" text-anchor="middle" class="t-flow">only</text>
+
+          <!-- Service 1 -->
+          <rect x="220" y="60" width="280" height="260" rx="10" class="svc svc-1" />
+          <text x="240" y="86" class="t-title">1 · Risk Tracking</text>
+          <text x="480" y="86" text-anchor="end" class="t-badge b1">STAND-IN TODAY</text>
+          <rect x="240" y="100" width="240" height="50" rx="6" class="box" />
+          <text x="360" y="121" text-anchor="middle" class="t-name">AI reads transactions</text>
+          <text x="360" y="138" text-anchor="middle" class="t-sub">sorts them, flags unusual patterns</text>
+          <path d="M360 150 V168" class="flow" marker-end="url(#arrow)" />
+          <rect x="240" y="170" width="240" height="50" rx="6" class="box" />
+          <text x="360" y="191" text-anchor="middle" class="t-name">Rules do the maths</text>
+          <text x="360" y="208" text-anchor="middle" class="t-sub">shortfall, tier 0 to 4</text>
+          <path d="M360 220 V238" class="flow" marker-end="url(#arrow)" />
+          <rect x="240" y="240" width="240" height="50" rx="6" class="box" />
+          <text x="360" y="261" text-anchor="middle" class="t-name">Risk store</text>
+          <text x="360" y="278" text-anchor="middle" class="t-sub">latest result and daily history</text>
+
+          <!-- Service 2 -->
+          <rect x="640" y="60" width="300" height="460" rx="10" class="svc svc-2" />
+          <text x="660" y="86" class="t-title">2 · CareLoop</text>
+          <text x="920" y="86" text-anchor="end" class="t-badge b2">BUILT IN THE PROTOTYPE</text>
+          <rect x="660" y="100" width="260" height="50" rx="6" class="box" />
+          <text x="790" y="121" text-anchor="middle" class="t-name">Message rules</text>
+          <text x="790" y="138" text-anchor="middle" class="t-sub">consent, timing, how often</text>
+          <path d="M790 150 V238" class="flow" marker-end="url(#arrow)" />
+          <rect x="660" y="240" width="260" height="50" rx="6" class="box" />
+          <text x="790" y="261" text-anchor="middle" class="t-name">In-app heads-up and AI chat</text>
+          <text x="790" y="278" text-anchor="middle" class="t-sub">answers only from Westpac's pages</text>
+          <path d="M790 290 V308" class="flow" marker-end="url(#arrow)" />
+          <rect x="660" y="310" width="260" height="50" rx="6" class="box" />
+          <text x="790" y="331" text-anchor="middle" class="t-name">Request form and receipt</text>
+          <text x="790" y="348" text-anchor="middle" class="t-sub">starts the 21-day clock</text>
+          <path d="M790 360 V378" class="flow" marker-end="url(#arrow)" />
+          <rect x="660" y="380" width="260" height="50" rx="6" class="box" />
+          <text x="790" y="401" text-anchor="middle" class="t-name">Staff console</text>
+          <text x="790" y="418" text-anchor="middle" class="t-sub">a person records the decision</text>
+          <path d="M790 430 V448" class="flow" marker-end="url(#arrow)" />
+          <rect x="660" y="450" width="260" height="50" rx="6" class="box" />
+          <text x="790" y="471" text-anchor="middle" class="t-name">Check-in</text>
+          <text x="790" y="488" text-anchor="middle" class="t-sub">28 days after the decision</text>
+
+          <path d="M170 125 H238" class="flow" marker-end="url(#arrow)" />
+          <!-- Hand-off A: risk event, service 1 to service 2 -->
+          <path d="M480 195 H600 V125 H658" class="flow" marker-end="url(#arrow)" />
+          <text x="550" y="174" text-anchor="middle" class="t-flow">A · risk event</text>
+          <text x="550" y="187" text-anchor="middle" class="t-sub">tier changed</text>
+          <!-- Hand-off B: forecast on request, service 2 asks service 1 -->
+          <path d="M660 265 H482" class="flow" marker-end="url(#arrow)" />
+          <text x="570" y="257" text-anchor="middle" class="t-flow">B · forecast</text>
+          <text x="568" y="280" text-anchor="middle" class="t-sub">after the customer allows</text>
+
+          <!-- People on the right -->
+          <text x="1020" y="224" class="t-sub">WESTPAC TODAY</text>
+          <rect x="1020" y="240" width="130" height="50" rx="6" class="outside" />
+          <text x="1085" y="261" text-anchor="middle" class="t-name">Customer</text>
+          <text x="1085" y="278" text-anchor="middle" class="t-sub">in the Westpac app</text>
+          <path d="M922 265 H1018" class="flow" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="970" y="257" text-anchor="middle" class="t-flow">chat</text>
+          <rect x="1020" y="380" width="130" height="50" rx="6" class="outside" />
+          <text x="1085" y="401" text-anchor="middle" class="t-name">Westpac Assist</text>
+          <text x="1085" y="418" text-anchor="middle" class="t-sub">and Priority Assist</text>
+          <path d="M922 405 H1018" class="flow" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="970" y="397" text-anchor="middle" class="t-flow">cases</text>
+
+          <!-- Service 3 -->
+          <rect x="220" y="560" width="720" height="170" rx="10" class="svc svc-3" />
+          <text x="425" y="586" class="t-title">3 · Risk Reporting</text>
+          <text x="920" y="586" text-anchor="end" class="t-badge b3">LATER</text>
+          <rect x="240" y="625" width="230" height="50" rx="6" class="box" />
+          <text x="355" y="646" text-anchor="middle" class="t-name">Combine and de-identify</text>
+          <text x="355" y="663" text-anchor="middle" class="t-sub">totals only, small groups hidden</text>
+          <rect x="560" y="600" width="360" height="46" rx="6" class="box" />
+          <text x="740" y="619" text-anchor="middle" class="t-name">Area view · every day</text>
+          <text x="740" y="635" text-anchor="middle" class="t-sub">by branch or region: how many, how soon</text>
+          <rect x="560" y="666" width="360" height="46" rx="6" class="box" />
+          <text x="740" y="685" text-anchor="middle" class="t-name">Portfolio report · every month</text>
+          <text x="740" y="701" text-anchor="middle" class="t-sub">trends, expected shortfalls, hotspots</text>
+          <path d="M470 640 H520 V623 H558" class="flow" marker-end="url(#arrow)" />
+          <path d="M470 660 H520 V689 H558" class="flow" marker-end="url(#arrow)" />
+
+          <!-- Inputs to service 3 -->
+          <path d="M300 290 V623" class="flow" marker-end="url(#arrow)" />
+          <text x="292" y="440" text-anchor="end" class="t-flow">C · daily tiers</text>
+          <path d="M660 415 H400 V623" class="flow" marker-end="url(#arrow)" />
+          <text x="530" y="394" text-anchor="middle" class="t-flow">D · outcomes</text>
+          <text x="530" y="407" text-anchor="middle" class="t-sub">requests, decisions, check-ins</text>
+
+          <!-- Service 3 to people -->
+          <rect x="1020" y="598" width="130" height="50" rx="6" class="outside" />
+          <text x="1085" y="619" text-anchor="middle" class="t-name">Area managers</text>
+          <text x="1085" y="636" text-anchor="middle" class="t-sub">branch or region</text>
+          <path d="M920 623 H1018" class="flow" marker-end="url(#arrow)" />
+          <text x="970" y="615" text-anchor="middle" class="t-flow">counts</text>
+          <rect x="1020" y="664" width="130" height="50" rx="6" class="outside" />
+          <text x="1085" y="685" text-anchor="middle" class="t-name">Credit risk team</text>
+          <text x="1085" y="702" text-anchor="middle" class="t-sub">head office</text>
+          <path d="M920 689 H1018" class="flow" marker-end="url(#arrow)" />
+          <text x="970" y="681" text-anchor="middle" class="t-flow">report</text>
+
+          <!-- Feedback: reporting tunes the rules -->
+          <path d="M240 650 H195 V195 H238" class="flow flow-dash" marker-end="url(#arrow)" />
+          <text x="186" y="430" text-anchor="end" class="t-flow">E · feedback</text>
+          <text x="186" y="444" text-anchor="end" class="t-sub">outcomes tune the rules</text>
+        </svg>
+      </div>
+      <figcaption>Each coloured frame is one service that could be built and run on its own. The lettered arrows A to E are the only places where services exchange data, so they are the formats the team has to agree on. The dashed arrow is the slow loop: what actually happened to customers is used to adjust the rules.</figcaption>
+    </figure>
+    <div class="legend">
+      <span><i class="swatch sw2"></i>Built in the prototype</span>
+      <span><i class="swatch sw1"></i>A stand-in inside the prototype today, to be replaced by the real service</span>
+      <span><i class="swatch sw3"></i>Not built; for the roadmap slide</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>What each service owns</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Service</th><th>Its job</th><th>Who uses the AI, and for what</th><th>In the repo today</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag1">1 · Risk Tracking</span></td>
+            <td>For every opted-in customer across all of Westpac: read the transactions, work out the tier and any shortfall, keep a daily history.</td>
+            <td>AI sorts transactions and flags unusual patterns. Rules do every calculation.</td>
+            <td>A stand-in: <code>lib/tier/</code> plus pre-sorted sample data. No AI in it yet.</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag2">2 · CareLoop</span></td>
+            <td>Everything the customer and the Assist team touch: heads-up, chat, request, receipt and deadline, staff console, decision, check-in.</td>
+            <td>AI answers from Westpac's pages, turns the customer's words into form fields and flags sensitive situations. It never calculates or decides.</td>
+            <td>Built: <code>lib/conversation/</code>, <code>lib/ai/</code>, <code>lib/rag/</code>, <code>components/</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag3">3 · Risk Reporting</span></td>
+            <td>Turn the daily tiers and the outcomes into counts and trends for staff. No names leave this service.</td>
+            <td>None needed for counting. AI could write the monthly commentary later.</td>
+            <td>Nothing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>The five hand-offs</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Arrow</th><th>From, to</th><th>What is sent</th><th>When</th></tr></thead>
+        <tbody>
+          <tr><td>A · Risk event</td><td>1 to 2</td><td>Customer, tier, the reasons in plain words, any shortfall with its date, and the dated facts behind it (for example: pay dropped on 23 Oct).</td><td>Only when a customer's tier or shortfall changes.</td></tr>
+          <tr><td>B · Forecast</td><td>2 asks 1</td><td>The 30-day balance forecast and its assumptions, for one customer.</td><td>The moment the customer taps Allow.</td></tr>
+          <tr><td>C · Daily tiers</td><td>1 to 3</td><td>Each customer's tier and expected shortfall date, with their branch or region.</td><td>After every nightly run.</td></tr>
+          <tr><td>D · Outcomes</td><td>2 to 3</td><td>What happened next: heads-up sent, request started, decision, check-in result.</td><td>As each one happens.</td></tr>
+          <tr><td>E · Feedback</td><td>3 to 1</td><td>How well the tiers predicted real trouble, so thresholds can be adjusted.</td><td>After each monthly report.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>When each part runs</h2>
+    <p class="prose answer">Reporting runs on a clock, straight after the nightly risk run. It is never set off by one customer's action. The area view refreshes every day because staff act on it this week; the portfolio report is monthly because it is about trends.</p>
+    <div class="table-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>When</th><th>What runs</th><th>Service</th></tr></thead>
+        <tbody>
+          <tr><td>Every night</td><td>Read the day's transactions and recalculate tier and shortfall for every opted-in customer.</td><td><span class="tag tag1">1</span></td></tr>
+          <tr><td>Straight after</td><td>Refresh the area view: how many customers in each branch or region are expected to fall short in the next 30 days, and how that changed since yesterday.</td><td><span class="tag tag3">3</span></td></tr>
+          <tr><td>Next morning</td><td>Send heads-ups to customers whose tier changed. Opening hours only, after payday, at most one a fortnight.</td><td><span class="tag tag2">2</span></td></tr>
+          <tr><td>Any moment</td><td>Chat, form, filing and the staff queue. "I can't pay" and sensitive disclosures reach staff at once; they never wait for a report.</td><td><span class="tag tag2">2</span></td></tr>
+          <tr><td>On Allow</td><td>Fetch that customer's 30-day forecast.</td><td><span class="tag tag2">2</span> asks <span class="tag tag1">1</span></td></tr>
+          <tr><td>Day 28</td><td>Check in with the customer, 28 days after a person recorded an arrangement.</td><td><span class="tag tag2">2</span></td></tr>
+          <tr><td>Every month</td><td>Portfolio risk report for the credit risk team, then review the rules against what happened.</td><td><span class="tag tag3">3</span>, then <span class="tag tag1">1</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="meta">The nightly run, the morning send and the monthly report are proposed timings, not Westpac's.</p>
+  </section>
+
+  <section>
+    <h2>Reports by branch: group by area, leave the names out</h2>
+    <div class="two">
+      <div>
+        <h3>Why grouping by area is right</h3>
+        <ul>
+          <li>Analysis covers all of Westpac, but trouble is local: a large employer cuts shifts, a flood hits one town. It shows up in one area first.</li>
+          <li>An area manager can act on "14 customers here are likely to fall short in the next 30 days, up from 6": more appointment slots, a local outreach day, an early word to the Assist team.</li>
+          <li>The same daily data rolls up into the monthly portfolio report, so there is one source and two views.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Why the area view should not list customers</h3>
+        <ul>
+          <li>The customer agreed to an early heads-up for themselves. They did not agree to appear on a list that branch staff read.</li>
+          <li>Our own workflow already says "totals only, no names" for the report. A small branch needs one more rule: hide any group under 10 so nobody can be worked out.</li>
+          <li>Named follow-up already has a route. A customer who starts a request, says they cannot pay, or asks for a person goes to Westpac Assist through CareLoop.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="prose">
+    <h2>To settle as a team</h2>
+    <ul>
+      <li>Who builds Risk Tracking, and does it arrive as a separate server or as a module in the same repository? That decides how hand-off A is wired.</li>
+      <li>The exact fields of the risk event (A). CareLoop already uses: tier, reasons, shortfall and date, the 30-day forecast, and the dated timeline.</li>
+      <li>Whether the forecast comes with the risk event or on request (B). On request keeps account detail out of CareLoop until the customer allows it.</li>
+      <li>Whether Westpac branches look after a set of customers at all. Hardship is handled centrally by Westpac Assist, so "region" may be the more realistic grouping than "branch". Worth asking a mentor.</li>
+      <li>Whether Risk Reporting stays a roadmap slide or gets one screen in the demo.</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>
