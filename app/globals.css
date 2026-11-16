@@ -5,8 +5,9 @@
 /* Scan the GEL component classes so Tailwind keeps them. */
 @source "../node_modules/@westpac/ui/dist";
 
+/* GEL tokens (WBC theme): pale page, body text, GEL system font stack. */
 body {
-  background: #f3f4f6;
-  color: #1f1c4f;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background-pale);
+  color: var(--text-body);
+  font-family: var(--font-family-sans);
 }

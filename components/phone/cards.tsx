@@ -1,6 +1,8 @@
 "use client";
 
+import { Badge } from "@westpac/ui/badge";
 import { Button } from "@westpac/ui/button";
+import { SecurityIcon, WarningIcon } from "@westpac/ui/icon";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { Card, DraftRequest, Projection } from "@/lib/contract";
 import { money, shortDate } from "@/lib/client/api";
@@ -11,8 +13,8 @@ import { money, shortDate } from "@/lib/client/api";
 type Act = (action: string) => void;
 
 const Shell = ({ title, children }: { title?: string; children: React.ReactNode }) => (
-  <div className="rounded-xl border border-[#d7d2cb] bg-white p-3 text-[13px] leading-snug shadow-sm">
-    {title && <div className="mb-1.5 text-[14px] font-bold text-[#1f1c4f]">{title}</div>}
+  <div className="rounded-xl border border-border-muted-soft bg-background-white p-3 text-[13px] leading-snug text-text-body shadow-sm">
+    {title && <div className="mb-1.5 border-b border-border-muted-soft pb-1.5 text-[14px] font-bold text-text-heading">{title}</div>}
     {children}
   </div>
 );
@@ -21,8 +23,10 @@ const Buttons = ({ children }: { children: React.ReactNode }) => <div className=
 
 function AlertCard({ shortfall, date, text, act, live }: { shortfall?: number; date?: string; text?: string; act: Act; live: boolean }) {
   return (
-    <div className="rounded-xl border-l-4 border-[#da1710] bg-white p-3 text-[13px] shadow-sm">
-      <div className="text-[14px] font-bold text-[#1f1c4f]">Heads up</div>
+    <div className="rounded-xl border border-l-4 border-border-muted-soft border-l-border-primary bg-background-white p-3 text-[13px] text-text-body shadow-sm">
+      <div className="flex items-center gap-1.5 text-[14px] font-bold text-text-heading">
+        <WarningIcon size="small" color="primary" aria-hidden /> Heads up
+      </div>
       <p className="mt-1">{shortfall && date ? `You may be ${money(shortfall)} short before your ${shortDate(date)} repayment.` : text}</p>
       {live && (
         <Buttons>
@@ -57,21 +61,21 @@ function ProjectionCard({ projection, act, live }: { projection: Projection; act
       <div className="h-36 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 6, right: 6, bottom: 0, left: -14 }}>
-            <CartesianGrid stroke="#eee" vertical={false} />
-            <XAxis dataKey="label" tick={{ fontSize: 9 }} interval={6} />
-            <YAxis tick={{ fontSize: 9 }} tickFormatter={(v: number) => money(v)} />
-            <Tooltip formatter={(v) => money(Number(v))} labelStyle={{ fontSize: 11 }} contentStyle={{ fontSize: 11 }} />
-            <ReferenceLine y={0} stroke="#da1710" strokeDasharray="4 3" />
-            <Line type="stepAfter" dataKey="balance" stroke="#1f1c4f" strokeWidth={2} dot={false} isAnimationActive={false} />
+            <CartesianGrid stroke="var(--border-muted-soft)" vertical={false} />
+            <XAxis dataKey="label" tick={{ fontSize: 9, fill: "var(--text-muted)" }} stroke="var(--border-muted-mild)" interval={6} />
+            <YAxis tick={{ fontSize: 9, fill: "var(--text-muted)" }} stroke="var(--border-muted-mild)" tickFormatter={(v: number) => money(v)} />
+            <Tooltip formatter={(v) => money(Number(v))} labelStyle={{ fontSize: 11 }} contentStyle={{ fontSize: 11, borderColor: "var(--border-muted-soft)" }} />
+            <ReferenceLine y={0} stroke="var(--border-primary)" strokeDasharray="4 3" />
+            <Line type="stepAfter" dataKey="balance" stroke="var(--border-hero)" strokeWidth={2} dot={false} isAnimationActive={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
       {projection.shortfall && (
-        <p className="mt-1 font-bold text-[#da1710]">
+        <p className="mt-1 font-bold text-text-primary">
           {money(-projection.shortfall.amount)} on {shortDate(projection.shortfall.date)}
         </p>
       )}
-      <ul className="mt-1.5 list-disc pl-4 text-[12px] text-[#575f65]">
+      <ul className="mt-1.5 list-disc pl-4 text-[12px] text-text-muted">
         {projection.assumptions.map((a) => <li key={a}>{a}</li>)}
       </ul>
       {live && (
@@ -89,19 +93,19 @@ function DraftFields({ draft }: { draft: DraftRequest }) {
     <dl className="space-y-1.5">
       {draft.fields.map((f) => (
         <div key={f.field}>
-          <dt className="text-[11px] text-[#575f65]">
+          <dt className="text-[11px] text-text-muted">
             {f.label}{" "}
-            <span className={`rounded px-1 py-px text-[10px] ${f.source === "you_told_us" ? "bg-[#fdeeee] text-[#99000d]" : "bg-[#eef0f4] text-[#1f1c4f]"}`}>
+            <Badge color={f.source === "you_told_us" ? "primary" : "hero"} soft className="ml-0.5 align-middle">
               {f.source === "you_told_us" ? "You told us" : "From your accounts"}
-            </span>
+            </Badge>
           </dt>
           <dd className="font-medium">{f.value}</dd>
         </div>
       ))}
       {draft.missing.map((m) => (
         <div key={m.field}>
-          <dt className="text-[11px] text-[#575f65]">{m.label}</dt>
-          <dd className="italic text-[#a0a5a8]">Still to add</dd>
+          <dt className="text-[11px] text-text-muted">{m.label}</dt>
+          <dd className="italic text-text-muted/60">Still to add</dd>
         </div>
       ))}
     </dl>
@@ -118,7 +122,7 @@ function ReviewCard({ draft, act, live }: { draft: DraftRequest; act: Act; live:
   return (
     <Shell title="Check your request">
       <DraftFields draft={draft} />
-      <p className="mt-2 text-[12px] text-[#575f65]">Something wrong? Just tell me and I&apos;ll change it.</p>
+      <p className="mt-2 text-[12px] text-text-muted">Something wrong? Just tell me and I&apos;ll change it.</p>
       {live && (
         <Buttons>
           <Button size="small" look="primary" onClick={() => act("confirm_review")}>Looks right</Button>
@@ -149,13 +153,13 @@ function ReceiptCard({ caseId, respondBy }: { caseId: string; respondBy: string 
       <p>
         Case <span className="font-bold">{caseId}</span>
       </p>
-      <p className="mt-1 font-bold text-[#1f1c4f]">We&apos;ll respond by {shortDate(respondBy, true)}.</p>
+      <p className="mt-1 font-bold text-text-heading">We&apos;ll respond by {shortDate(respondBy, true)}.</p>
       <ol className="mt-2 space-y-0.5 text-[12px]">
         <li>● Received today</li>
-        <li className="text-[#a0a5a8]">○ A Westpac person reviews it</li>
-        <li className="text-[#a0a5a8]">○ Decision explained to you</li>
+        <li className="text-text-muted/60">○ A Westpac person reviews it</li>
+        <li className="text-text-muted/60">○ Decision explained to you</li>
       </ol>
-      <p className="mt-2 text-[11px] text-[#575f65]">Prototype: simulated handover. Nothing is sent to Westpac.</p>
+      <p className="mt-2 text-[11px] text-text-muted">Prototype: simulated handover. Nothing is sent to Westpac.</p>
     </Shell>
   );
 }
@@ -169,7 +173,7 @@ function DecisionCard({ outcome, approved, reviewOn }: { outcome: string; approv
             A person in the Westpac Assist team has approved: <span className="font-bold">{outcome}</span>.
           </p>
           <p className="mt-1">They will confirm the details in writing.</p>
-          <p className="mt-2 font-bold text-[#1f1c4f]">I&apos;ll check in with you on {shortDate(reviewOn, true)} to see how things are going.</p>
+          <p className="mt-2 font-bold text-text-heading">I&apos;ll check in with you on {shortDate(reviewOn, true)} to see how things are going.</p>
         </>
       ) : (
         <>
@@ -209,14 +213,16 @@ function CheckInCard({ recovered, payNow, outcome, act, live }: { recovered: boo
           <Button size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
         </Buttons>
       )}
-      <p className="mt-2 text-[11px] text-[#575f65]">Prototype: four weeks later, simulated.</p>
+      <p className="mt-2 text-[11px] text-text-muted">Prototype: four weeks later, simulated.</p>
     </Shell>
   );
 }
 
 const HandoverCard = () => (
-  <div className="rounded-xl border-l-4 border-[#1f1c4f] bg-white p-3 text-[13px] shadow-sm">
-    <div className="text-[14px] font-bold text-[#1f1c4f]">Your safety matters most</div>
+  <div className="rounded-xl border border-l-4 border-border-muted-soft border-l-border-hero bg-background-white p-3 text-[13px] text-text-body shadow-sm">
+    <div className="flex items-center gap-1.5 text-[14px] font-bold text-text-heading">
+      <SecurityIcon size="small" color="hero" aria-hidden /> Your safety matters most
+    </div>
     <p className="mt-1">
       I&apos;ve stopped the form. Westpac&apos;s Priority Assist team are specialists and will take it from here. You won&apos;t need to explain again.
     </p>
@@ -232,7 +238,7 @@ export function ChatCard({ card, act, live }: { card: Card; act: Act; live: bool
     case "alert":
       return <AlertCard shortfall={card.shortfall} date={card.date} text={card.text} act={act} live={live} />;
     case "closed":
-      return <p className="py-1 text-center text-[11px] text-[#8b9094]">Chat closed. Message any time to start again.</p>;
+      return <p className="py-1 text-center text-[11px] text-text-muted">Chat closed. Message any time to start again.</p>;
     case "consent":
       return <ConsentCard act={act} live={live} />;
     case "projection":

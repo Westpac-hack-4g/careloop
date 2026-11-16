@@ -21,22 +21,33 @@ function currentStep(view: SessionView | null, row: QueueRow | undefined): numbe
 export function LoopSteps({ view, row }: { view: SessionView | null; row: QueueRow | undefined }) {
   const current = currentStep(view, row);
   return (
-    <ol className="flex items-stretch gap-1 text-[12px]" aria-label="Where this customer is in the CareLoop">
+    <ol
+      className="flex items-stretch gap-0 overflow-hidden rounded-lg border border-border-muted-soft bg-background-white text-[12px] shadow-sm"
+      aria-label="Where this customer is in the CareLoop"
+    >
       {STEPS.map((step, i) => (
         <li
           key={step.name}
           aria-current={i === current ? "step" : undefined}
-          className={`flex-1 rounded-md border px-3 py-1.5 ${
-            i === current ? "border-[#1f1c4f] bg-[#1f1c4f] text-white" : i < current ? "border-[#c9cdd1] bg-[#eef0f4] text-[#1f1c4f]" : "border-[#e3e5e8] bg-white text-[#8b9094]"
+          className={`relative flex flex-1 items-center gap-2 border-r border-border-muted-soft px-3 py-2 ${
+            i === current ? "bg-surface-hero text-text-mono" : i < current ? "bg-surface-hero-faint text-text-hero" : "bg-background-white text-text-muted"
           }`}
         >
-          <div className="font-bold">
-            {i + 1}. {step.name}
-          </div>
-          <div className="text-[11px] opacity-80">{step.who}</div>
+          <span
+            className={`flex size-[22px] shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+              i === current ? "bg-surface-primary text-text-mono" : i < current ? "bg-surface-hero text-text-mono" : "border border-border-muted-mild text-text-muted"
+            }`}
+          >
+            {i < current ? "✓" : i + 1}
+          </span>
+          <span className="min-w-0">
+            <span className="block font-bold leading-tight">{step.name}</span>
+            <span className="block truncate text-[11px] leading-tight opacity-80">{step.who}</span>
+          </span>
+          {i === current && <span className="absolute inset-x-0 bottom-0 h-[3px] bg-surface-primary" />}
         </li>
       ))}
-      <li className="flex items-center px-1 text-[11px] text-[#575f65]" aria-hidden>
+      <li className="flex items-center px-3 text-[11px] text-text-muted" aria-hidden>
         ↺ back to 1
       </li>
     </ol>

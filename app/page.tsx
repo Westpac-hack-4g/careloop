@@ -105,7 +105,7 @@ export default function Home() {
         <Phone view={view} busy={busy} onText={sendText} onAction={(action) => run(() => api.sendAction(customerId, action))} />
         <StaffConsole queue={queue} selected={selectedCase ?? customerId} onSelect={setSelectedCase} onReply={(id, text) => run(() => api.staffReply(id, text))} onStartReview={(id) => run(() => api.startReview(id))} onDecide={(id, outcome) => run(() => api.decide(id, outcome))} />
       </div>
-      <p className="text-center text-[11px] text-[#8b9094]">Hackathon prototype on made-up customers. Not a Westpac product.</p>
+      <p className="text-center text-[11px] text-text-muted">Hackathon prototype on made-up customers. Not a Westpac product.</p>
     </main>
   );
 }

@@ -1,6 +1,10 @@
 "use client";
 
+import { Badge } from "@westpac/ui/badge";
 import { Button } from "@westpac/ui/button";
+import { Input } from "@westpac/ui/input";
+import { Select } from "@westpac/ui/select";
+import { WBCLogo } from "@westpac/ui/symbol";
 import { useState } from "react";
 import type { CaseStatus, CustomerId, QueueRow, TimelineItem } from "@/lib/contract";
 import { DECISIONS, type DecisionKey } from "@/lib/decisions";
@@ -15,7 +19,17 @@ const STATUS: Record<CaseStatus, string> = {
   priority_assist: "Priority Assist",
 };
 
-const DOT: Record<TimelineItem["when"], string> = { past: "bg-[#575f65]", today: "bg-[#1f5fd0]", ahead: "bg-[#da1710]" };
+// GEL badge colour for each status (presentation only).
+const STATUS_COLOR: Record<CaseStatus, "primary" | "hero" | "success" | "faint" | "info" | "danger"> = {
+  new: "primary",
+  in_review: "info",
+  arrangement: "success",
+  closed: "faint",
+  watching: "hero",
+  priority_assist: "danger",
+};
+
+const DOT: Record<TimelineItem["when"], string> = { past: "bg-surface-muted", today: "bg-surface-info", ahead: "bg-surface-primary" };
 
 /** The dated facts from the rule engine: what changed, when CareLoop spoke up, what is coming. */
 function Timeline({ items }: { items: TimelineItem[] }) {
@@ -24,20 +38,20 @@ function Timeline({ items }: { items: TimelineItem[] }) {
   const early = items.some((i) => i.when === "today" && i.label.startsWith("Early heads-up"));
   const missed = early ? items.find((i) => i.when === "ahead") : undefined;
   return (
-    <div className="mb-3 rounded-lg bg-[#f7f7f8] p-3">
-      <div className="mb-2 text-[11px] font-bold uppercase text-[#575f65]">How CareLoop noticed</div>
+    <div className="mb-3 rounded-lg bg-background-faint p-3">
+      <div className="mb-2 text-[11px] font-bold uppercase text-text-muted">How CareLoop noticed</div>
       <ol className="flex">
         {items.map((item, i) => (
           <li key={item.date + item.label} className="relative flex-1 pr-3">
-            {i < items.length - 1 && <span className="absolute left-2 right-0 top-[5px] h-px bg-[#c9cdd1]" />}
+            {i < items.length - 1 && <span className="absolute left-2 right-0 top-[5px] h-px bg-surface-muted-soft" />}
             <span className={`relative block h-2.5 w-2.5 rounded-full ${DOT[item.when]}`} />
-            <div className="mt-1 text-[11px] font-bold text-[#1f1c4f]">{item.when === "today" ? `Today, ${shortDate(item.date)}` : shortDate(item.date)}</div>
+            <div className="mt-1 text-[11px] font-bold text-text-heading">{item.when === "today" ? `Today, ${shortDate(item.date)}` : shortDate(item.date)}</div>
             <div className="text-[12px] leading-snug">{item.label}</div>
           </li>
         ))}
       </ol>
       {missed && (
-        <p className="mt-2 text-[11px] text-[#575f65]">Without the early heads-up, the first contact would come after the missed repayment on {shortDate(missed.date)}.</p>
+        <p className="mt-2 text-[11px] text-text-muted">Without the early heads-up, the first contact would come after the missed repayment on {shortDate(missed.date)}.</p>
       )}
     </div>
   );
@@ -64,14 +78,19 @@ export function StaffConsole({
   const firstName = row?.customerName.split(" ")[0] ?? "";
 
   return (
-    <div className="flex h-[760px] min-w-0 flex-1 flex-col rounded-xl border border-[#d7d2cb] bg-white">
-      <header className="border-b border-[#d7d2cb] px-4 py-3">
-        <div className="text-[15px] font-bold text-[#1f1c4f]">Staff console · Westpac Assist</div>
-        <div className="text-[11px] text-[#575f65]">Prototype on sample data. Staff make every decision.</div>
+    <div className="flex h-[760px] min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border-muted-soft bg-background-white shadow-sm">
+      <header className="flex items-center gap-3 border-b-4 border-border-primary bg-surface-hero px-4 py-3 text-text-mono">
+        <span className="flex items-center rounded-sm bg-background-white px-1.5 py-1">
+          <WBCLogo className="h-[18px] w-[44px]" aria-label="Westpac" />
+        </span>
+        <div>
+          <div className="text-[15px] font-bold">Staff console · Westpac Assist</div>
+          <div className="text-[11px] opacity-80">Prototype on sample data. Staff make every decision.</div>
+        </div>
       </header>
 
       <table className="w-full text-left text-[13px]">
-        <thead className="text-[11px] uppercase text-[#575f65]">
+        <thead className="bg-background-faint text-[11px] uppercase text-text-muted">
           <tr>
             <th className="px-4 py-2 font-normal">Customer</th>
             <th className="py-2 pr-3 font-normal">Tier</th>
@@ -84,25 +103,33 @@ export function StaffConsole({
             <tr
               key={r.customerId}
               onClick={() => onSelect(r.customerId)}
-              className={`cursor-pointer border-t border-[#eee] ${r.customerId === row?.customerId ? "bg-[#eef0f4]" : "hover:bg-[#f7f7f8]"}`}
+              className={`cursor-pointer border-t border-border-muted-soft ${r.customerId === row?.customerId ? "bg-surface-hero-faint" : "hover:bg-surface-muted-faint"}`}
             >
               <td className="px-4 py-2 font-bold">
                 {r.customerName}
-                {r.note && <span className="ml-2 rounded bg-[#fdeeee] px-1.5 py-px text-[10px] font-normal text-[#99000d]">{r.note}</span>}
+                {r.note && (
+                  <Badge color="primary" soft className="ml-2 align-middle font-normal">
+                    {r.note}
+                  </Badge>
+                )}
               </td>
               <td className="py-2 pr-3">{r.tier}</td>
               <td className="py-2">{r.case?.decision ? "Done" : r.respondBy ? shortDate(r.respondBy) : "-"}</td>
-              <td className="py-2">{STATUS[r.status]}</td>
+              <td className="py-2">
+                <Badge color={STATUS_COLOR[r.status]} soft>
+                  {STATUS[r.status]}
+                </Badge>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
       {row && (
-        <section className="m-4 flex-1 overflow-y-auto rounded-lg border border-[#d7d2cb] p-4 text-[13px]">
+        <section className="m-4 flex-1 overflow-y-auto rounded-lg border border-border-muted-soft p-4 text-[13px]">
           <Timeline items={row.timeline} />
-          <div className="text-[14px] font-bold text-[#1f1c4f]">Case summary · {row.customerName}</div>
-          <div className="mb-2 text-[11px] text-[#575f65]">
+          <div className="text-[14px] font-bold text-text-heading">Case summary · {row.customerName}</div>
+          <div className="mb-2 text-[11px] text-text-muted">
             {row.case ? `${row.case.id} · prepared by CareLoop; a person decides` : "No request yet. Signals from the rule engine:"}
           </div>
           <ul className="space-y-0.5">
@@ -111,26 +138,26 @@ export function StaffConsole({
           </ul>
 
           {row.case && row.case.draft.fields.length > 0 && (
-            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-[#eee] pt-3">
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border-muted-soft pt-3">
               {row.case.draft.fields.map((f) => (
                 <div key={f.field}>
-                  <dt className="text-[11px] text-[#575f65]">
+                  <dt className="text-[11px] text-text-muted">
                     {f.label} · {f.source === "you_told_us" ? "customer said" : "from accounts"}
                   </dt>
                   <dd className="font-medium">{f.value}</dd>
-                  {f.evidence && <dd className="text-[11px] italic text-[#575f65]">&ldquo;{f.evidence}&rdquo;</dd>}
+                  {f.evidence && <dd className="text-[11px] italic text-text-muted">&ldquo;{f.evidence}&rdquo;</dd>}
                 </div>
               ))}
             </dl>
           )}
 
           {row.case?.decision ? (
-            <p className="mt-3 font-bold text-[#1f5fd0]">
+            <p className="mt-3 font-bold text-text-info">
               Decision recorded: {row.case.decision.outcome}
               {row.case.decision.approved && `. CareLoop checks in on ${shortDate(row.case.decision.reviewOn, true)}.`}
             </p>
           ) : (
-            row.respondBy && <p className="mt-3 font-bold text-[#1f5fd0]">Respond by {shortDate(row.respondBy, true)} (21 days)</p>
+            row.respondBy && <p className="mt-3 font-bold text-text-info">Respond by {shortDate(row.respondBy, true)} (21 days)</p>
           )}
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -152,16 +179,17 @@ export function StaffConsole({
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {row.case?.status === "in_review" && (
               <>
-                <select
+                <Select
                   value={outcome}
                   onChange={(e) => setOutcome(e.target.value as DecisionKey)}
                   aria-label="Decision"
-                  className="rounded border border-[#d7d2cb] px-2 py-1.5 text-[13px]"
+                  size="small"
+                  width="auto"
                 >
                   {(Object.keys(DECISIONS) as DecisionKey[]).map((key) => (
                     <option key={key} value={key}>{DECISIONS[key].label}</option>
                   ))}
-                </select>
+                </Select>
                 <Button size="small" look="primary" onClick={() => onDecide(row.customerId, outcome)}>
                   Record decision
                 </Button>
@@ -178,14 +206,14 @@ export function StaffConsole({
               setReply("");
             }}
           >
-            <input
+            <Input
               value={reply}
               onChange={(e) => setReply(e.target.value)}
               placeholder={`Reply in ${row.customerName.split(" ")[0]}'s chat`}
               aria-label="Reply to customer"
-              className="min-w-0 flex-1 rounded border border-[#d7d2cb] px-3 py-2 text-[13px] outline-none focus:border-[#1f1c4f]"
+              className="min-w-0 flex-1"
             />
-            <Button size="small" look="primary" type="submit">Send</Button>
+            <Button look="primary" type="submit">Send</Button>
           </form>
         </section>
       )}
