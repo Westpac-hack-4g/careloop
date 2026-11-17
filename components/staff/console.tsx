@@ -65,6 +65,46 @@ const BAND_ON: Record<Band, string> = {
   High: "bg-surface-danger font-bold text-text-mono",
 };
 
+const TONE: Record<QueueRow["brief"]["headline"]["tone"], string> = {
+  danger: "border-l-border-primary bg-surface-primary-faint text-text-primary",
+  warning: "border-l-border-warning bg-surface-warning-faint text-text-warning",
+  neutral: "border-l-border-muted-mild bg-background-faint text-text-heading",
+};
+
+/** The quick read: what matters most, then each warning signal against the rule's line. */
+function Brief({ brief }: { brief: QueueRow["brief"] }) {
+  return (
+    <div>
+      <div className={`rounded-md border-l-4 px-3 py-2 ${TONE[brief.headline.tone]}`}>
+        <div className="text-[16px] font-bold leading-tight">{brief.headline.title}</div>
+        <div className="mt-0.5 text-[12px] text-text-muted">{brief.headline.detail}</div>
+      </div>
+      {brief.signals.length > 0 && (
+        <table className="mt-2 w-full text-left text-[12px]">
+          <thead className="text-[10px] uppercase text-text-muted">
+            <tr>
+              <th className="py-1 font-normal">Warning signal ({brief.signals.length})</th>
+              <th className="py-1 font-normal">This customer</th>
+              <th className="py-1 font-normal">Flags when</th>
+            </tr>
+          </thead>
+          <tbody>
+            {brief.signals.map((s) => (
+              <tr key={s.code} className="border-t border-border-muted-soft">
+                <td className="py-1 pr-2">{s.label}</td>
+                <td className="py-1 pr-2 font-bold tabular-nums text-text-heading">{s.value}</td>
+                <td className="py-1 text-text-muted">{s.line}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {!brief.signals.length && <p className="mt-2 text-[12px] text-text-muted">No warning signals.</p>}
+      {brief.note && <p className="mt-1 text-[11px] text-text-muted">{brief.note}</p>}
+    </div>
+  );
+}
+
 /** The ML service's score as a second opinion. Shown beside the tier, never used to set it. */
 function MlSecondOpinion({ ml }: { ml: QueueRow["ml"] }) {
   if (ml.status !== "available" || !ml.band) {
@@ -189,12 +229,15 @@ export function StaffConsole({
           <Timeline items={row.timeline} />
           <div className="text-[14px] font-bold text-text-heading">Case summary · {row.customerName}</div>
           <div className="mb-2 text-[11px] text-text-muted">
-            {row.case ? `${row.case.id} · prepared by CareLoop; a person decides` : `No request yet. Tier ${row.tier} from the risk rules, because:`}
+            {row.case ? `${row.case.id} · prepared by CareLoop; a person decides` : `No request yet · Tier ${row.tier} from the risk rules`}
           </div>
-          <ul className="space-y-0.5">
-            {(row.case?.summary ?? row.reasons).map((line) => <li key={line}>{line}</li>)}
-            {!row.case && !row.reasons.length && <li>No risk signals.</li>}
-          </ul>
+          <Brief brief={row.brief} />
+          {row.case && (
+            // The request's own lines: the customer's story and asks. Signals already in the brief are left out.
+            <ul className="mt-3 space-y-0.5">
+              {row.case.summary.filter((line) => !row.reasons.includes(line)).map((line) => <li key={line}>{line}</li>)}
+            </ul>
+          )}
           <MlSecondOpinion ml={row.ml} />
 
           {row.case && row.case.draft.fields.length > 0 && (

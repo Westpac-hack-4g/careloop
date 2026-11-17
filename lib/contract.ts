@@ -194,6 +194,13 @@ export interface MlOpinion {
   drivers: { feature: string; label: string; contribution: number }[];
 }
 
+/** A quick-read brief for staff: the headline, then each warning signal against its rule line. */
+export interface RiskBrief {
+  headline: { tone: "danger" | "warning" | "neutral"; title: string; detail: string };
+  signals: { code: string; label: string; value: string; line: string }[];
+  note?: string;
+}
+
 /** One row of the staff queue. */
 export interface QueueRow {
   customerId: CustomerId;
@@ -206,5 +213,6 @@ export interface QueueRow {
   note?: string;
   reasons: string[];
   timeline: TimelineItem[];
+  brief: RiskBrief;
   ml: MlOpinion;
 }

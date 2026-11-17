@@ -7,6 +7,7 @@ import { addMessage, audit, createCase, customerIds, getOpenCase, getSession, ty
 import { getTierResult } from "../tier";
 import { TIER_CONFIG } from "../tier/config";
 import { mlOpinion } from "../tier/ml";
+import { buildBrief } from "../tier/brief";
 import { isSensitive, saysCantPay } from "./detectors";
 import { toDraft } from "./draft";
 import { handover } from "./handover";
@@ -382,6 +383,7 @@ export function getQueue(): QueueRow[] {
         case: open,
         reasons: tier.reasons,
         timeline: tier.timeline,
+        brief: buildBrief(getMlRecord(customerId), getSchedule(customerId), tier, DEMO_TODAY),
         ml: mlOpinion(getMlRecord(customerId)),
         ...(open?.callbackBy && !["arrangement", "closed"].includes(open.status)
           ? { note: `Call back by ${formatDate(open.callbackBy)}` }
