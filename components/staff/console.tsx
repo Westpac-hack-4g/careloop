@@ -71,6 +71,19 @@ const TONE: Record<QueueRow["brief"]["headline"]["tone"], string> = {
   neutral: "border-l-border-muted-mild bg-background-faint text-text-heading",
 };
 
+/** Bold only the figure inside a phrase: "income covers **83%** of bills". */
+function Emphasis({ text, strong }: { text: string; strong?: string }) {
+  const at = strong ? text.indexOf(strong) : -1;
+  if (!strong || at < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span className="font-bold text-text-heading">{strong}</span>
+      {text.slice(at + strong.length)}
+    </>
+  );
+}
+
 /** The quick read: what matters most, then each warning signal against the rule's line. */
 function Brief({ brief }: { brief: QueueRow["brief"] }) {
   return (
@@ -92,7 +105,9 @@ function Brief({ brief }: { brief: QueueRow["brief"] }) {
             {brief.signals.map((s) => (
               <tr key={s.code} className="border-t border-border-muted-soft">
                 <td className="py-1 pr-2">{s.label}</td>
-                <td className="py-1 pr-2 font-bold tabular-nums text-text-heading">{s.value}</td>
+                <td className="py-1 pr-2 tabular-nums text-text-body">
+                  <Emphasis text={s.value} strong={s.strong} />
+                </td>
                 <td className="py-1 text-text-muted">{s.line}</td>
               </tr>
             ))}

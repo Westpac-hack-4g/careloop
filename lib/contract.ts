@@ -197,7 +197,8 @@ export interface MlOpinion {
 /** A quick-read brief for staff: the headline, then each warning signal against its rule line. */
 export interface RiskBrief {
   headline: { tone: "danger" | "warning" | "neutral"; title: string; detail: string };
-  signals: { code: string; label: string; value: string; line: string }[];
+  /** `strong` is the figure inside `value` to bold, so the eye can scan numbers down the column. */
+  signals: { code: string; label: string; value: string; strong?: string; line: string }[];
   note?: string;
 }
 
