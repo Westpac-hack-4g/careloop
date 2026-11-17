@@ -63,7 +63,7 @@ export function sendAlert(customerId: CustomerId): { sent: boolean; reason?: str
     role: "careloop",
     card: shortfall ? { type: "alert", shortfall: shortfall.amount, date: shortfall.date } : { type: "alert", text, ...(tier.tier === 3 ? { callback: true } : {}) },
   });
-  note(session, `The backend sent the customer a heads-up card: "${shortfall ? "You may be short before your next repayment." : text}" It has these buttons: ${tier.tier === 3 ? "Ask for a call back, Show me why, Not now" : "Show me why, Talk to someone, Not now, This isn't right"}.`);
+  note(session, `The backend sent the customer a heads-up card: "${shortfall ? "You may be short before your next repayment." : text}" It has these buttons: ${tier.tier === 3 ? "Ask for a call back, Show me why, Not now" : "Show me why, Not now, Not quite right?"}.`);
   audit(customerId, "message", `Heads-up sent (tier ${tier.tier})`);
   return { sent: true };
 }
@@ -169,8 +169,8 @@ export function handleAction(customerId: CustomerId, action: Action): void {
       note(session, "The customer said not now. The backend closed the chat. Do not bring the heads-up up again unless they ask.");
       return;
     case "not_right":
-      say(session, "Thanks for telling me. What looks wrong? For example, if you're expecting other money to come in, tell me and the Westpac team will see your note.");
-      note(session, "The customer tapped This isn't right.");
+      say(session, "Thanks for telling me. What's missing or wrong? For example, money you're expecting or a bill I haven't counted. Tell me and the Westpac team will see your note.");
+      note(session, "The customer tapped the correction button (Not quite right? / Something's missing).");
       return;
     case "decline_consent":
       session.phase = "explain";

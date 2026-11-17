@@ -155,7 +155,17 @@ export function Phone({
           <WBCLogo className="h-[22px] w-[54px]" aria-label="Westpac" />
           {screen === "chat" && <span className="text-[13px] font-bold text-text-hero">CareLoop</span>}
         </span>
-        <span className="text-[12px] text-text-muted">{view?.customerName ?? ""}</span>
+        {screen === "chat" && view?.phase !== "handover" ? (
+          // A person is always one tap away, at every step: no loop with only the assistant.
+          <button
+            onClick={() => onAction("talk_to_someone")}
+            className="rounded-full border border-border-hero px-2.5 py-1 text-[11px] font-bold text-text-hero hover:bg-surface-hero-faint"
+          >
+            Talk to a person
+          </button>
+        ) : (
+          <span className="text-[12px] text-text-muted">{view?.customerName ?? ""}</span>
+        )}
       </header>
 
       {view?.lockScreenBanner && (

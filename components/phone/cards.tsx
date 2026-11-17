@@ -39,9 +39,8 @@ function AlertCard({ shortfall, date, text, callback, act, live }: { shortfall?:
       {live && !callback && (
         <Buttons>
           <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("show_why")}>Show me why</Button>
-          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
           <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_now")}>Not now</Button>
-          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_right")}>This isn&apos;t right</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_right")}>Not quite right?</Button>
         </Buttons>
       )}
     </div>
@@ -89,7 +88,7 @@ function ProjectionCard({ projection, act, live }: { projection: Projection; act
       {live && (
         <Buttons>
           <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("prepare_request")}>Prepare a request</Button>
-          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_right")}>This isn&apos;t right</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_right")}>Something&apos;s missing</Button>
         </Buttons>
       )}
     </Shell>
