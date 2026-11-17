@@ -6,6 +6,10 @@ import { Button } from "@westpac/ui/button";
 import { Input } from "@westpac/ui/input";
 import { WBCLogo } from "@westpac/ui/symbol";
 import { money } from "@/lib/client/api";
+import { DEMO_TODAY } from "@/lib/clock";
+
+/** The lock screen's date line, e.g. "Monday 16 November". */
+const LOCK_DATE = new Date(`${DEMO_TODAY}T00:00:00Z`).toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).replace(",", "");
 import { ChatCard } from "./cards";
 
 // Which card is waiting for a tap at each step. Older cards lose their buttons.
@@ -140,20 +144,25 @@ export function Phone({
       </header>
 
       {view?.lockScreenBanner && (
-        // The lock screen never mentions money.
-        <button
-          onClick={() => {
-            // Tapping the banner opens the message. The heads-up also stays on the loan tile on the home screen.
-            setScreen("chat");
-            onAction("open_app");
-          }}
-          className="absolute inset-x-3 top-14 z-10 rounded-2xl border border-border-muted-soft bg-background-white p-3 text-left shadow-lg"
-        >
-          <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase text-text-muted">
-            <WBCLogo className="h-[12px] w-[30px]" aria-hidden /> Westpac · now
-          </div>
-          <div className="text-[13px] text-text-body">You have a new message in the Westpac app.</div>
-        </button>
+        // The phone is locked: nothing from the app shows, and the banner never mentions money.
+        <div className="absolute inset-0 z-20 flex flex-col items-center bg-gradient-to-b from-[#1f1c4f] via-[#2a2560] to-[#0f0d2a] px-3 pt-16 text-white">
+          <div className="text-[13px] opacity-80">{LOCK_DATE}</div>
+          <div className="text-[64px] font-light leading-none tracking-tight">9:41</div>
+          <button
+            onClick={() => {
+              // Unlocking via the banner opens the message. The heads-up also stays on the loan tile on the home screen.
+              setScreen("chat");
+              onAction("open_app");
+            }}
+            className="mt-10 w-full rounded-2xl bg-background-white/90 p-3 text-left text-text-body shadow-lg backdrop-blur"
+          >
+            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase text-text-muted">
+              <WBCLogo className="h-[12px] w-[30px]" aria-hidden /> Westpac · now
+            </div>
+            <div className="text-[13px]">You have a new message in the Westpac app.</div>
+          </button>
+          <div className="mt-auto mb-4 h-1 w-28 rounded-full bg-white/60" aria-hidden />
+        </div>
       )}
 
       {view && screen === "home" ? (
