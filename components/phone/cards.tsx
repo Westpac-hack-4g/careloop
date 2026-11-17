@@ -88,6 +88,7 @@ function ProjectionCard({ projection, act, live }: { projection: Projection; act
       {live && (
         <Buttons>
           <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("prepare_request")}>Prepare a request</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Chat with a person</Button>
           <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_right")}>Something&apos;s missing</Button>
         </Buttons>
       )}
@@ -147,7 +148,7 @@ function StartRequestCard({ act, live }: { act: Act; live: boolean }) {
         <Buttons>
           <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("start_yes")}>Yes, start</Button>
           <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("start_not_yet")}>Not yet</Button>
-          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("start_talk")}>Talk to someone</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("start_talk")}>Chat with a person</Button>
         </Buttons>
       )}
     </Shell>
@@ -252,7 +253,7 @@ function CheckInCard({ recovered, payNow, outcome, act, live }: { recovered: boo
             <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("checkin_extend")}>Ask for more time</Button>
           )}
           <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("checkin_keep")}>{recovered ? "Keep the arrangement" : "I'm OK for now"}</Button>
-          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Chat with a person</Button>
         </Buttons>
       )}
       <p className="mt-2 text-[11px] text-text-muted">Prototype: four weeks later, simulated.</p>

@@ -213,3 +213,16 @@ describe("different help for different tiers", () => {
     expect(mia.ml).toMatchObject({ band: "High", aboveThreshold: true });
   });
 });
+
+describe("handing the chat to a person", () => {
+  it("shows staff where the chat is, so the customer need not repeat it", async () => {
+    sendAlert("sarah");
+    handleAction("sarah", "show_why");
+    handleAction("sarah", "allow");
+    handleAction("sarah", "talk_to_someone");
+    const row = getQueue().find((r) => r.customerId === "sarah")!;
+    expect(row.note).toBe("Asked to chat with a person");
+    expect(row.chat).toMatchObject({ stage: "Has seen the 14-day forecast", consent: true });
+    expect(row.chat.entries.map((e) => e.text)).toContain("Saw the 14-day forecast");
+  });
+});

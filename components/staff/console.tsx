@@ -120,6 +120,53 @@ function Brief({ brief }: { brief: QueueRow["brief"] }) {
   );
 }
 
+const WHO: Record<QueueRow["chat"]["entries"][number]["who"], string> = {
+  customer: "Customer",
+  careloop: "CareLoop",
+  staff: "Westpac",
+  event: "",
+};
+
+/** The conversation so far, so the person who joins never asks the customer to repeat themselves. */
+function ChatSoFarPanel({ chat }: { chat: QueueRow["chat"] }) {
+  if (!chat.entries.length) return null;
+  return (
+    <div className="mt-3 rounded-lg border border-border-muted-soft p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[11px] font-bold uppercase text-text-muted">Chat so far</span>
+        <span className="text-[12px] font-bold text-text-heading">{chat.stage}</span>
+        <span className="text-[11px] text-text-muted">· permission to look at accounts: {chat.consent ? "given" : "not given"}</span>
+      </div>
+      {chat.earlier > 0 && <div className="mt-1 text-[11px] text-text-muted">{chat.earlier} earlier messages not shown</div>}
+      <ol className="mt-2 space-y-1 text-[12px]">
+        {chat.entries.map((e, i) =>
+          e.who === "event" ? (
+            <li key={i} className="text-[11px] italic text-text-muted">— {e.text}</li>
+          ) : (
+            <li key={i} className="grid grid-cols-[64px_minmax(0,1fr)] gap-2">
+              <span className={`text-[11px] font-bold ${e.who === "customer" ? "text-text-hero" : "text-text-muted"}`}>{WHO[e.who]}</span>
+              <span className={e.who === "customer" ? "text-text-body" : "text-text-muted"}>{e.text}</span>
+            </li>
+          ),
+        )}
+      </ol>
+      {chat.draft.length > 0 && (
+        <div className="mt-2 border-t border-border-muted-soft pt-2">
+          <div className="text-[11px] text-text-muted">Unsent request draft</div>
+          <ul className="mt-1 space-y-0.5 text-[12px]">
+            {chat.draft.map((f) => (
+              <li key={f.field}>
+                <span className="text-text-muted">{f.label}:</span> {f.value}
+                <span className="text-[11px] text-text-muted"> · {f.source === "you_told_us" ? "customer said" : "from accounts"}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** The ML service's score as a second opinion. Shown beside the tier, never used to set it. */
 function MlSecondOpinion({ ml }: { ml: QueueRow["ml"] }) {
   if (ml.status !== "available" || !ml.band) {
@@ -254,6 +301,7 @@ export function StaffConsole({
             </ul>
           )}
           <MlSecondOpinion ml={row.ml} />
+          <ChatSoFarPanel chat={row.chat} />
 
           {row.case && row.case.draft.fields.length > 0 && (
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border-muted-soft pt-3">

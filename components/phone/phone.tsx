@@ -161,7 +161,7 @@ export function Phone({
             onClick={() => onAction("talk_to_someone")}
             className="rounded-full border border-border-hero px-2.5 py-1 text-[11px] font-bold text-text-hero hover:bg-surface-hero-faint"
           >
-            Talk to a person
+            Chat with a person
           </button>
         ) : (
           <span className="text-[12px] text-text-muted">{view?.customerName ?? ""}</span>

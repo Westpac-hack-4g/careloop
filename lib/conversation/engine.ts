@@ -8,6 +8,7 @@ import { getTierResult } from "../tier";
 import { TIER_CONFIG } from "../tier/config";
 import { mlOpinion } from "../tier/ml";
 import { buildBrief } from "../tier/brief";
+import { chatSoFar } from "./chat-summary";
 import { isSensitive, saysCantPay } from "./detectors";
 import { toDraft } from "./draft";
 import { handover } from "./handover";
@@ -283,7 +284,7 @@ export function handleAction(customerId: CustomerId, action: Action): void {
     case "talk_to_someone":
       session.wantsHuman = true;
       audit(customerId, "message", "Customer asked for a person");
-      say(session, "Of course. I've asked the Westpac Assist team to join this chat. They can already see what we've covered, so you won't need to repeat yourself.");
+      say(session, "Of course. A person from the Westpac Assist team will join this chat. They can see what we've covered so far, so you won't need to repeat yourself.");
       note(session, "The customer asked to talk to a person. The Assist team was told.");
       return;
   }
@@ -385,10 +386,11 @@ export function getQueue(): QueueRow[] {
         timeline: tier.timeline,
         brief: buildBrief(getMlRecord(customerId), getSchedule(customerId), tier, DEMO_TODAY),
         ml: mlOpinion(getMlRecord(customerId)),
+        chat: chatSoFar(session),
         ...(open?.callbackBy && !["arrangement", "closed"].includes(open.status)
           ? { note: `Call back by ${formatDate(open.callbackBy)}` }
           : session.wantsHuman
-          ? { note: "Asked to talk to someone" }
+          ? { note: "Asked to chat with a person" }
           : session.followUp
             ? { note: session.followUp }
           : session.saidCantPay && !open

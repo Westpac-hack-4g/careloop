@@ -202,6 +202,17 @@ export interface RiskBrief {
   note?: string;
 }
 
+/** The conversation so far, for the staff member who joins it. */
+export interface ChatSoFar {
+  stage: string;
+  consent: boolean;
+  /** How many older messages are not shown. */
+  earlier: number;
+  entries: { who: ChatMessage["role"] | "event"; text: string }[];
+  /** An unsent request draft, if the customer started one. */
+  draft: DraftField[];
+}
+
 /** One row of the staff queue. */
 export interface QueueRow {
   customerId: CustomerId;
@@ -210,10 +221,11 @@ export interface QueueRow {
   respondBy: string | null;
   status: CaseStatus;
   case: Case | null;
-  /** Short flag for staff, for example "Asked to talk to someone". */
+  /** Short flag for staff, for example "Asked to chat with a person". */
   note?: string;
   reasons: string[];
   timeline: TimelineItem[];
   brief: RiskBrief;
   ml: MlOpinion;
+  chat: ChatSoFar;
 }
