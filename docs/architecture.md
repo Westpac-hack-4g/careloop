@@ -23,7 +23,7 @@ These are the only places where services exchange data, so they are the formats 
 | Arrow | From, to | What is sent | When |
 | --- | --- | --- | --- |
 | A. Risk event | 1 to 2 | Customer, tier, the reasons in plain words, any shortfall with its date, and the dated facts behind it. | Only when a customer's tier or shortfall changes. |
-| B. Forecast | 2 asks 1 | The 30-day balance forecast and its assumptions, for one customer. | The moment the customer taps Allow. |
+| B. Forecast | 2 asks 1 | The 14-day balance forecast and its assumptions, for one customer. | The moment the customer taps Allow. |
 | C. Daily tiers | 1 to 3 | Each customer's tier and expected shortfall date, with their branch or region. | After every nightly run. |
 | D. Outcomes | 2 to 3 | Heads-up sent, request started, decision, check-in result. | As each one happens. |
 | E. Feedback | 3 to 1 | How well the tiers predicted real trouble, so thresholds can be adjusted. | After each monthly report. |
@@ -38,7 +38,7 @@ Reporting runs on a clock, straight after the nightly risk run. It is never set 
 | Straight after | Refresh the area view: how many customers in each branch or region are expected to fall short in the next 30 days. | 3 |
 | Next morning | Send heads-ups to customers whose tier changed. Opening hours only, after payday, at most one a fortnight. | 2 |
 | Any moment | Chat, form, filing and the staff queue. "I can't pay" and sensitive disclosures reach staff at once. | 2 |
-| On Allow | Fetch that customer's 30-day forecast. | 2 asks 1 |
+| On Allow | Fetch that customer's 14-day forecast. | 2 asks 1 |
 | Day 28 | Check in with the customer, 28 days after a person recorded an arrangement. | 2 |
 | Every month | Portfolio risk report for the credit risk team, then review the rules against what happened. | 3, then 1 |
 

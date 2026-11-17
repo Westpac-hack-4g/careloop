@@ -6,9 +6,8 @@ export type CustomerId = "tom" | "sarah" | "mia";
 export interface Customer {
   id: CustomerId;
   name: string;
-  /** Everyday account balance today and 90 days ago. */
+  /** Everyday account balance today. */
   balance: number;
-  balance90DaysAgo: number;
   products: Product[];
   consents: {
     /** Level 2: the opt-in early heads-up (nightly check of their own accounts). */
@@ -16,17 +15,10 @@ export interface Customer {
   };
 }
 
-export type Product =
-  | { type: "home_loan" | "personal_loan"; name: string; repayment: number }
-  | { type: "credit_card"; name: string; limit: number; balance: number; balance90DaysAgo: number };
-
-export interface Transaction {
-  customerId: CustomerId;
-  date: string; // YYYY-MM-DD
-  amount: number; // positive = money in, negative = money out
-  merchant: string;
-  category: string;
-  essential: boolean;
+export interface Product {
+  type: "home_loan" | "car_loan" | "personal_loan" | "credit_card";
+  name: string; // "Home loan"
+  repayment: number;
 }
 
 export interface Schedule {
@@ -36,18 +28,21 @@ export interface Schedule {
   pastRepayments: { date: string; amount: number; product: string; status: "paid" | "failed" }[];
 }
 
-export type Tier = 0 | 1 | 2 | 3 | 4;
+/** The financial tier from the ML service's rules (tiers.py). A specialist need is a separate flag, not a tier. */
+export type Tier = 0 | 1 | 2 | 3;
 
+/** What the ML service measured. The app shows these; it never recomputes them. */
 export interface Signals {
-  incomeChange: number | null; // -0.4 = pay down 40%
-  /** Average pay over the last 4 weeks, and over the 12 weeks before that. */
+  incomeChange: number | null; // -0.22 = income 22% below the customer's own usual level
+  /** The latest regular pay, and the usual pay before it dropped. */
   recentPay: number | null;
   earlierPay: number | null;
-  bufferTrend: number; // balance today / balance 90 days ago - 1
-  netFlowNegativeMonths: number; // months in a row, most recent first
-  cardUse: number | null; // 0..1
-  cardUseRising: boolean;
+  /** Days of essential costs the available money covers. */
+  bufferDays: number | null;
+  netCashFlow30d: number | null;
   missedRepayment: boolean;
+  /** Early-warning signal codes, e.g. LOW_BUFFER, INCOME_DROP. */
+  warningSignals: string[];
   sensitive: boolean;
 }
 
@@ -58,9 +53,13 @@ export interface ProjectionPoint {
 }
 
 export interface Projection {
+  /** The base-case 14-day forecast from the ML service, one point per day. */
   points: ProjectionPoint[];
-  /** The first repayment that takes the balance below zero, if any. */
+  /** The first loan or card repayment the balance can't cover, if any. */
   shortfall: { amount: number; date: string } | null;
+  /** The shortfall in the conservative (stress) case: lower pay, higher bills, everyday spending. */
+  stressShortfall: number;
+  confidence: "high" | "medium" | "low";
   assumptions: string[];
 }
 

@@ -57,12 +57,12 @@ function ConsentCard({ act, live }: { act: Act; live: boolean }) {
 function ProjectionCard({ projection, act, live }: { projection: Projection; act: Act; live: boolean }) {
   const data = projection.points.map((p) => ({ ...p, label: shortDate(p.date) }));
   return (
-    <Shell title="Your next 30 days">
+    <Shell title={`Your next ${projection.points.length - 1} days`}>
       <div className="h-36 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 6, right: 6, bottom: 0, left: -14 }}>
             <CartesianGrid stroke="var(--border-muted-soft)" vertical={false} />
-            <XAxis dataKey="label" tick={{ fontSize: 9, fill: "var(--text-muted)" }} stroke="var(--border-muted-mild)" interval={6} />
+            <XAxis dataKey="label" tick={{ fontSize: 9, fill: "var(--text-muted)" }} stroke="var(--border-muted-mild)" interval={2} />
             <YAxis tick={{ fontSize: 9, fill: "var(--text-muted)" }} stroke="var(--border-muted-mild)" tickFormatter={(v: number) => money(v)} />
             <Tooltip formatter={(v) => money(Number(v))} labelStyle={{ fontSize: 11 }} contentStyle={{ fontSize: 11, borderColor: "var(--border-muted-soft)" }} />
             <ReferenceLine y={0} stroke="var(--border-primary)" strokeDasharray="4 3" />

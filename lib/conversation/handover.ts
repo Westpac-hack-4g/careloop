@@ -1,4 +1,5 @@
 import { getCustomer } from "../data";
+import { getTierResult } from "../tier";
 import { addMessage, audit, createCase, type Session } from "../store";
 import { toDraft } from "./draft";
 
@@ -14,7 +15,8 @@ export function handover(session: Session, how: string): void {
   createCase({
     customerId: session.customerId,
     customerName: getCustomer(session.customerId).name,
-    tier: 4,
+    // The financial tier stays as the ML service set it; the specialist need is the status.
+    tier: getTierResult(session.customerId).tier,
     status: "priority_assist",
     summary: ["The customer shared a sensitive situation. Form filling stopped.", "Passed to Priority Assist. Do not ask the customer to repeat details."],
     draft: toDraft(session.draftFields),

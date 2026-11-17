@@ -1,0 +1,2699 @@
+{
+  "source": "CareLoop ML service v1.0.0 (synthetic data)",
+  "as_of_date": "2026-11-16",
+  "forecast_days": 14,
+  "model": "available",
+  "customers": {
+    "alex": {
+      "story": "Stable monthly salary, healthy savings and on-time repayments.",
+      "profile_type": "full_time",
+      "accounts": [
+        {
+          "account_id": "ACC-ALEX-1",
+          "account_type": "everyday",
+          "balance_aud": 9144.58
+        },
+        {
+          "account_id": "ACC-ALEX-2",
+          "account_type": "savings",
+          "balance_aud": 24300.66
+        }
+      ],
+      "pays": [
+        {
+          "date": "2026-08-15",
+          "amount": 6400.0
+        },
+        {
+          "date": "2026-09-15",
+          "amount": 6400.0
+        },
+        {
+          "date": "2026-10-15",
+          "amount": 6400.0
+        },
+        {
+          "date": "2026-11-15",
+          "amount": 6400.0
+        }
+      ],
+      "repayments": [
+        {
+          "date": "2026-07-25",
+          "amount": 450.0,
+          "description": "Credit card repayment",
+          "category": "card_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-08-25",
+          "amount": 450.0,
+          "description": "Credit card repayment",
+          "category": "card_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-09-25",
+          "amount": 450.0,
+          "description": "Credit card repayment",
+          "category": "card_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-25",
+          "amount": 450.0,
+          "description": "Credit card repayment",
+          "category": "card_repayment",
+          "status": "posted"
+        }
+      ],
+      "upcoming": [
+        {
+          "due_date": "2026-11-25",
+          "description": "Credit card repayment",
+          "event_type": "card_repayment",
+          "amount_aud": 450.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-01",
+          "description": "Rent",
+          "event_type": "bill",
+          "amount_aud": 2100.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-03",
+          "description": "Electricity & gas",
+          "event_type": "bill",
+          "amount_aud": 190.0,
+          "amount_status": "estimated"
+        },
+        {
+          "due_date": "2026-12-08",
+          "description": "Insurance premium",
+          "event_type": "bill",
+          "amount_aud": 140.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-12",
+          "description": "Phone & internet",
+          "event_type": "bill",
+          "amount_aud": 95.0,
+          "amount_status": "fixed"
+        }
+      ],
+      "analysis": {
+        "customer_id": "ALEX",
+        "display_name": "Alex",
+        "as_of_date": "2026-11-16",
+        "data_source": "synthetic_demo",
+        "consent_confirmed": true,
+        "assessment_status": "complete",
+        "financial_tier": 0,
+        "tier_label": "Steady",
+        "specialist_support_required": false,
+        "specialist_label": null,
+        "alerts_paused": false,
+        "rule_applied": "No repayment gap and fewer than two early-warning signals",
+        "reason_codes": [],
+        "reasons": [],
+        "warning_signals": [],
+        "features": {
+          "recent_weekly_income": 1440.0,
+          "baseline_weekly_income": 1457.78,
+          "income_change_pct": -0.0122,
+          "income_volatility": 0.0545,
+          "net_cash_flow_30d": 1853.79,
+          "accessible_balance": 33445.24,
+          "essential_outflows_30d": 4057.75,
+          "cash_buffer_days": 247.27,
+          "obligations_next_30d": 2975.0,
+          "conservative_income_next_30d": 6400.0,
+          "repayment_coverage_ratio": 2.1513,
+          "failed_loan_payments_30d": 0,
+          "failed_other_payments_30d": 0,
+          "balance_change_30d_aud": -347.56,
+          "balance_change_30d": -0.0118,
+          "income_30d": 6186.67,
+          "essential_expense_ratio": 0.6559,
+          "income_gap_days": 1,
+          "expected_income_cadence_days": 30.0,
+          "income_gap_ratio": 0.033,
+          "income_regular": true,
+          "projected_shortfall_14d": 0.0,
+          "projected_shortfall_14d_conservative": 0.0
+        },
+        "missing_flags": {},
+        "data_quality": {
+          "history_days": 180,
+          "income_credits_observed": 6,
+          "usable_baseline_weeks": 12,
+          "income_visibility": "adequate",
+          "data_quality": "sufficient",
+          "external_own_account_inflows": false
+        },
+        "income_streams": [
+          {
+            "income_source_id": "INC-ALEX-1",
+            "cadence_days": 30,
+            "regular": true,
+            "last_observed_at": "2026-11-15",
+            "base_amount": 6400.0,
+            "conservative_amount": 6400.0,
+            "amount_cv": 0.0,
+            "status": "active"
+          }
+        ],
+        "forecast": {
+          "scenario": "base",
+          "horizon_days": 14,
+          "as_of_date": "2026-11-16",
+          "start_balance_aud": 33445.24,
+          "shortfall_amount_aud": 0.0,
+          "shortfall_date": null,
+          "planned_repayment_aud": 450.0,
+          "planned_repayment_date": "2026-11-25",
+          "lowest_balance_aud": 32995.24,
+          "lowest_balance_date": "2026-11-25",
+          "assumptions": [
+            "Starts from accessible balance of AUD 33,445.24 at end of 2026-11-16.",
+            "Bills and repayments are scheduled items already known on the as-of date.",
+            "Income not yet confirmed is estimated from the customer's own pay cadence (median of last 3 payments). Income not seen for 2+ cycles is not assumed to resume.",
+            "Everyday discretionary and variable spending is not included in the base case."
+          ],
+          "daily_balances": [
+            {
+              "date": "2026-11-17",
+              "balance": 33445.24
+            },
+            {
+              "date": "2026-11-18",
+              "balance": 33445.24
+            },
+            {
+              "date": "2026-11-19",
+              "balance": 33445.24
+            },
+            {
+              "date": "2026-11-20",
+              "balance": 33445.24
+            },
+            {
+              "date": "2026-11-21",
+              "balance": 33445.24
+            },
+            {
+              "date": "2026-11-22",
+              "balance": 33445.24
+            },
+            {
+              "date": "2026-11-23",
+              "balance": 33445.24
+            },
+            {
+              "date": "2026-11-24",
+              "balance": 33445.24
+            },
+            {
+              "date": "2026-11-25",
+              "balance": 32995.24
+            },
+            {
+              "date": "2026-11-26",
+              "balance": 32995.24
+            },
+            {
+              "date": "2026-11-27",
+              "balance": 32995.24
+            },
+            {
+              "date": "2026-11-28",
+              "balance": 32995.24
+            },
+            {
+              "date": "2026-11-29",
+              "balance": 32995.24
+            },
+            {
+              "date": "2026-11-30",
+              "balance": 32995.24
+            }
+          ],
+          "events": [
+            {
+              "date": "2026-11-25",
+              "description": "Credit card repayment",
+              "category": "card_repayment",
+              "event_type": "card_repayment",
+              "amount_aud": -450.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 32995.24
+            }
+          ],
+          "conservative": {
+            "scenario": "conservative",
+            "horizon_days": 14,
+            "as_of_date": "2026-11-16",
+            "start_balance_aud": 33445.24,
+            "shortfall_amount_aud": 0.0,
+            "shortfall_date": null,
+            "planned_repayment_aud": 450.0,
+            "planned_repayment_date": "2026-11-25",
+            "lowest_balance_aud": 32500.0,
+            "lowest_balance_date": "2026-11-30",
+            "assumptions": [
+              "Starts from accessible balance of AUD 33,445.24 at end of 2026-11-16.",
+              "Bills and repayments are scheduled items already known on the as-of date.",
+              "Stress case: income at the 20th percentile of the last 6 payments; overdue or irregular income assumed late; estimated bills +10%.",
+              "Everyday essentials (groceries, transport) at AUD 35.37/day from the last 30 days."
+            ],
+            "daily_balances": [
+              {
+                "date": "2026-11-17",
+                "balance": 33409.87
+              },
+              {
+                "date": "2026-11-18",
+                "balance": 33374.49
+              },
+              {
+                "date": "2026-11-19",
+                "balance": 33339.12
+              },
+              {
+                "date": "2026-11-20",
+                "balance": 33303.74
+              },
+              {
+                "date": "2026-11-21",
+                "balance": 33268.37
+              },
+              {
+                "date": "2026-11-22",
+                "balance": 33232.99
+              },
+              {
+                "date": "2026-11-23",
+                "balance": 33197.62
+              },
+              {
+                "date": "2026-11-24",
+                "balance": 33162.25
+              },
+              {
+                "date": "2026-11-25",
+                "balance": 32676.87
+              },
+              {
+                "date": "2026-11-26",
+                "balance": 32641.5
+              },
+              {
+                "date": "2026-11-27",
+                "balance": 32606.12
+              },
+              {
+                "date": "2026-11-28",
+                "balance": 32570.75
+              },
+              {
+                "date": "2026-11-29",
+                "balance": 32535.37
+              },
+              {
+                "date": "2026-11-30",
+                "balance": 32500.0
+              }
+            ],
+            "events": [
+              {
+                "date": "2026-11-25",
+                "description": "Credit card repayment",
+                "category": "card_repayment",
+                "event_type": "card_repayment",
+                "amount_aud": -450.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 32676.87
+              }
+            ]
+          },
+          "confidence": "high",
+          "confidence_reasons": [
+            "Regular income timing and amounts."
+          ],
+          "shortfall_range_aud": [
+            0.0,
+            0.0
+          ]
+        },
+        "ml_experiment": {
+          "model_status": "available",
+          "predicted_probability": 0.0,
+          "description": "Synthetic research model only - shown separately, never sets the support tier.",
+          "disclaimer": "This model was trained and evaluated only on synthetically simulated financial histories. Its score describes the simulator's patterns, not a validated probability of hardship or missed payments for real Australian bank customers.",
+          "message": null,
+          "model_version": "careloop-synthetic-lr-1.0.0",
+          "threshold": 0.8642,
+          "above_threshold": false,
+          "top_contributions": [
+            {
+              "feature": "cash_buffer_days",
+              "contribution": -10.685
+            },
+            {
+              "feature": "missingindicator_income_gap_ratio",
+              "contribution": 0.13
+            },
+            {
+              "feature": "repayment_coverage_ratio",
+              "contribution": -0.104
+            },
+            {
+              "feature": "failed_other_payments_30d",
+              "contribution": -0.1
+            }
+          ]
+        },
+        "recommended_action": "No unsolicited alert. The customer can still ask for help at any time.",
+        "support_journey": {
+          "recommended_action": "No unsolicited alert. The customer can still ask for help at any time.",
+          "customer_choices": [
+            "Show me why",
+            "Talk to someone",
+            "Not now",
+            "This isn't right"
+          ],
+          "alerts_paused": false,
+          "specialist_handover_available": true,
+          "human_review_required": true,
+          "automated_decision": false,
+          "response_time_policy_days": 21,
+          "response_time_note": "Configurable, unverified demo setting - not legal advice."
+        },
+        "feature_version": "careloop-features-1.0.0",
+        "disclaimer": "Fictional customers and simulated transactions only. Thresholds are demonstration settings, not Westpac policy. Staff, not software, decide hardship arrangements."
+      }
+    },
+    "tom": {
+      "story": "Casual hospitality worker with naturally variable wages; balance shrinking and buffer thin, but upcoming repayments still covered.",
+      "profile_type": "casual",
+      "accounts": [
+        {
+          "account_id": "ACC-TOM-1",
+          "account_type": "everyday",
+          "balance_aud": 701.55
+        }
+      ],
+      "pays": [
+        {
+          "date": "2026-07-23",
+          "amount": 699.8
+        },
+        {
+          "date": "2026-07-30",
+          "amount": 592.88
+        },
+        {
+          "date": "2026-08-06",
+          "amount": 842.06
+        },
+        {
+          "date": "2026-08-13",
+          "amount": 836.39
+        },
+        {
+          "date": "2026-08-20",
+          "amount": 661.67
+        },
+        {
+          "date": "2026-08-27",
+          "amount": 870.38
+        },
+        {
+          "date": "2026-09-03",
+          "amount": 1010.81
+        },
+        {
+          "date": "2026-09-10",
+          "amount": 710.0
+        },
+        {
+          "date": "2026-09-17",
+          "amount": 819.2
+        },
+        {
+          "date": "2026-09-24",
+          "amount": 841.64
+        },
+        {
+          "date": "2026-10-01",
+          "amount": 753.44
+        },
+        {
+          "date": "2026-10-08",
+          "amount": 812.52
+        },
+        {
+          "date": "2026-10-15",
+          "amount": 764.73
+        },
+        {
+          "date": "2026-10-22",
+          "amount": 853.96
+        },
+        {
+          "date": "2026-10-29",
+          "amount": 610.87
+        },
+        {
+          "date": "2026-11-05",
+          "amount": 648.07
+        },
+        {
+          "date": "2026-11-12",
+          "amount": 790.17
+        }
+      ],
+      "repayments": [
+        {
+          "date": "2026-07-24",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-08-07",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-08-21",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-09-04",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-09-18",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-02",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-16",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-30",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-11-13",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        }
+      ],
+      "upcoming": [
+        {
+          "due_date": "2026-11-17",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-20",
+          "description": "Electricity share",
+          "event_type": "bill",
+          "amount_aud": 90.0,
+          "amount_status": "estimated"
+        },
+        {
+          "due_date": "2026-11-24",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-27",
+          "description": "Car loan repayment",
+          "event_type": "loan_repayment",
+          "amount_aud": 260.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-01",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-08",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-09",
+          "description": "Mobile plan",
+          "event_type": "bill",
+          "amount_aud": 65.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-11",
+          "description": "Car loan repayment",
+          "event_type": "loan_repayment",
+          "amount_aud": 260.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-15",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        }
+      ],
+      "analysis": {
+        "customer_id": "TOM",
+        "display_name": "Tom",
+        "as_of_date": "2026-11-16",
+        "data_source": "synthetic_demo",
+        "consent_confirmed": true,
+        "assessment_status": "complete",
+        "financial_tier": 1,
+        "tier_label": "Squeezed",
+        "specialist_support_required": false,
+        "specialist_label": null,
+        "alerts_paused": false,
+        "rule_applied": "3 independent early-warning signals",
+        "reason_codes": [
+          "LOW_BUFFER",
+          "NEGATIVE_CASHFLOW",
+          "BALANCE_DECLINE"
+        ],
+        "reasons": [
+          {
+            "code": "LOW_BUFFER",
+            "text": "Your available money covers fewer than 14 days of essential costs."
+          },
+          {
+            "code": "NEGATIVE_CASHFLOW",
+            "text": "More money went out than came in over the last 30 days."
+          },
+          {
+            "code": "BALANCE_DECLINE",
+            "text": "Your average balance has fallen noticeably compared with last month."
+          }
+        ],
+        "warning_signals": [
+          "LOW_BUFFER",
+          "NEGATIVE_CASHFLOW",
+          "BALANCE_DECLINE"
+        ],
+        "features": {
+          "recent_weekly_income": 723.95,
+          "baseline_weekly_income": 791.43,
+          "income_change_pct": -0.0853,
+          "income_volatility": 0.0979,
+          "net_cash_flow_30d": -550.18,
+          "accessible_balance": 701.55,
+          "essential_outflows_30d": 2699.99,
+          "cash_buffer_days": 7.8,
+          "obligations_next_30d": 2325.0,
+          "conservative_income_next_30d": 2592.28,
+          "repayment_coverage_ratio": 1.115,
+          "failed_loan_payments_30d": 0,
+          "failed_other_payments_30d": 0,
+          "balance_change_30d_aud": -387.55,
+          "balance_change_30d": -0.3372,
+          "income_30d": 3114.3,
+          "essential_expense_ratio": 0.867,
+          "income_gap_days": 4,
+          "expected_income_cadence_days": 7.0,
+          "income_gap_ratio": 0.571,
+          "income_regular": true,
+          "projected_shortfall_14d": 0.0,
+          "projected_shortfall_14d_conservative": 0.0
+        },
+        "missing_flags": {},
+        "data_quality": {
+          "history_days": 180,
+          "income_credits_observed": 26,
+          "usable_baseline_weeks": 12,
+          "income_visibility": "adequate",
+          "data_quality": "sufficient",
+          "external_own_account_inflows": false
+        },
+        "income_streams": [
+          {
+            "income_source_id": "INC-TOM-1",
+            "cadence_days": 7,
+            "regular": true,
+            "last_observed_at": "2026-11-12",
+            "base_amount": 648.07,
+            "conservative_amount": 648.07,
+            "amount_cv": 0.118,
+            "status": "active"
+          }
+        ],
+        "forecast": {
+          "scenario": "base",
+          "horizon_days": 14,
+          "as_of_date": "2026-11-16",
+          "start_balance_aud": 701.55,
+          "shortfall_amount_aud": 0.0,
+          "shortfall_date": null,
+          "planned_repayment_aud": 260.0,
+          "planned_repayment_date": "2026-11-27",
+          "lowest_balance_aud": 371.55,
+          "lowest_balance_date": "2026-11-17",
+          "assumptions": [
+            "Starts from accessible balance of AUD 701.55 at end of 2026-11-16.",
+            "Bills and repayments are scheduled items already known on the as-of date.",
+            "Income not yet confirmed is estimated from the customer's own pay cadence (median of last 3 payments). Income not seen for 2+ cycles is not assumed to resume.",
+            "Everyday discretionary and variable spending is not included in the base case."
+          ],
+          "daily_balances": [
+            {
+              "date": "2026-11-17",
+              "balance": 371.55
+            },
+            {
+              "date": "2026-11-18",
+              "balance": 371.55
+            },
+            {
+              "date": "2026-11-19",
+              "balance": 1019.62
+            },
+            {
+              "date": "2026-11-20",
+              "balance": 929.62
+            },
+            {
+              "date": "2026-11-21",
+              "balance": 929.62
+            },
+            {
+              "date": "2026-11-22",
+              "balance": 929.62
+            },
+            {
+              "date": "2026-11-23",
+              "balance": 929.62
+            },
+            {
+              "date": "2026-11-24",
+              "balance": 599.62
+            },
+            {
+              "date": "2026-11-25",
+              "balance": 599.62
+            },
+            {
+              "date": "2026-11-26",
+              "balance": 1247.69
+            },
+            {
+              "date": "2026-11-27",
+              "balance": 987.69
+            },
+            {
+              "date": "2026-11-28",
+              "balance": 987.69
+            },
+            {
+              "date": "2026-11-29",
+              "balance": 987.69
+            },
+            {
+              "date": "2026-11-30",
+              "balance": 987.69
+            }
+          ],
+          "events": [
+            {
+              "date": "2026-11-17",
+              "description": "Rent (share house)",
+              "category": "rent",
+              "event_type": "bill",
+              "amount_aud": -330.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 371.55
+            },
+            {
+              "date": "2026-11-19",
+              "description": "Expected income (INC-TOM-1, base)",
+              "category": "income",
+              "event_type": "income",
+              "amount_aud": 648.07,
+              "basis": "estimated from 7-day cadence",
+              "balance_after_aud": 1019.62
+            },
+            {
+              "date": "2026-11-20",
+              "description": "Electricity share",
+              "category": "utilities",
+              "event_type": "bill",
+              "amount_aud": -90.0,
+              "basis": "scheduled (estimated)",
+              "balance_after_aud": 929.62
+            },
+            {
+              "date": "2026-11-24",
+              "description": "Rent (share house)",
+              "category": "rent",
+              "event_type": "bill",
+              "amount_aud": -330.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 599.62
+            },
+            {
+              "date": "2026-11-26",
+              "description": "Expected income (INC-TOM-1, base)",
+              "category": "income",
+              "event_type": "income",
+              "amount_aud": 648.07,
+              "basis": "estimated from 7-day cadence",
+              "balance_after_aud": 1247.69
+            },
+            {
+              "date": "2026-11-27",
+              "description": "Car loan repayment",
+              "category": "loan_repayment",
+              "event_type": "loan_repayment",
+              "amount_aud": -260.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 987.69
+            }
+          ],
+          "conservative": {
+            "scenario": "conservative",
+            "horizon_days": 14,
+            "as_of_date": "2026-11-16",
+            "start_balance_aud": 701.55,
+            "shortfall_amount_aud": 0.0,
+            "shortfall_date": null,
+            "planned_repayment_aud": 260.0,
+            "planned_repayment_date": "2026-11-27",
+            "lowest_balance_aud": 324.63,
+            "lowest_balance_date": "2026-11-18",
+            "assumptions": [
+              "Starts from accessible balance of AUD 701.55 at end of 2026-11-16.",
+              "Bills and repayments are scheduled items already known on the as-of date.",
+              "Stress case: income at the 20th percentile of the last 6 payments; overdue or irregular income assumed late; estimated bills +10%.",
+              "Everyday essentials (groceries, transport) at AUD 23.46/day from the last 30 days."
+            ],
+            "daily_balances": [
+              {
+                "date": "2026-11-17",
+                "balance": 348.09
+              },
+              {
+                "date": "2026-11-18",
+                "balance": 324.63
+              },
+              {
+                "date": "2026-11-19",
+                "balance": 949.23
+              },
+              {
+                "date": "2026-11-20",
+                "balance": 826.77
+              },
+              {
+                "date": "2026-11-21",
+                "balance": 803.31
+              },
+              {
+                "date": "2026-11-22",
+                "balance": 779.85
+              },
+              {
+                "date": "2026-11-23",
+                "balance": 756.38
+              },
+              {
+                "date": "2026-11-24",
+                "balance": 402.92
+              },
+              {
+                "date": "2026-11-25",
+                "balance": 379.46
+              },
+              {
+                "date": "2026-11-26",
+                "balance": 1004.07
+              },
+              {
+                "date": "2026-11-27",
+                "balance": 720.6
+              },
+              {
+                "date": "2026-11-28",
+                "balance": 697.14
+              },
+              {
+                "date": "2026-11-29",
+                "balance": 673.68
+              },
+              {
+                "date": "2026-11-30",
+                "balance": 650.22
+              }
+            ],
+            "events": [
+              {
+                "date": "2026-11-17",
+                "description": "Rent (share house)",
+                "category": "rent",
+                "event_type": "bill",
+                "amount_aud": -330.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 348.09
+              },
+              {
+                "date": "2026-11-19",
+                "description": "Expected income (INC-TOM-1, conservative)",
+                "category": "income",
+                "event_type": "income",
+                "amount_aud": 648.07,
+                "basis": "estimated from 7-day cadence",
+                "balance_after_aud": 972.7
+              },
+              {
+                "date": "2026-11-20",
+                "description": "Electricity share",
+                "category": "utilities",
+                "event_type": "bill",
+                "amount_aud": -99.0,
+                "basis": "scheduled (estimated (+10% stress))",
+                "balance_after_aud": 826.77
+              },
+              {
+                "date": "2026-11-24",
+                "description": "Rent (share house)",
+                "category": "rent",
+                "event_type": "bill",
+                "amount_aud": -330.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 402.92
+              },
+              {
+                "date": "2026-11-26",
+                "description": "Expected income (INC-TOM-1, conservative)",
+                "category": "income",
+                "event_type": "income",
+                "amount_aud": 648.07,
+                "basis": "estimated from 7-day cadence",
+                "balance_after_aud": 1027.53
+              },
+              {
+                "date": "2026-11-27",
+                "description": "Car loan repayment",
+                "category": "loan_repayment",
+                "event_type": "loan_repayment",
+                "amount_aud": -260.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 720.6
+              }
+            ]
+          },
+          "confidence": "medium",
+          "confidence_reasons": [
+            "INC-TOM-1: moderately variable amounts (CV 0.12)."
+          ],
+          "shortfall_range_aud": [
+            0.0,
+            0.0
+          ]
+        },
+        "ml_experiment": {
+          "model_status": "available",
+          "predicted_probability": 0.7807,
+          "description": "Synthetic research model only - shown separately, never sets the support tier.",
+          "disclaimer": "This model was trained and evaluated only on synthetically simulated financial histories. Its score describes the simulator's patterns, not a validated probability of hardship or missed payments for real Australian bank customers.",
+          "message": null,
+          "model_version": "careloop-synthetic-lr-1.0.0",
+          "threshold": 0.8642,
+          "above_threshold": false,
+          "top_contributions": [
+            {
+              "feature": "cash_buffer_days",
+              "contribution": 10.824
+            },
+            {
+              "feature": "repayment_coverage_ratio",
+              "contribution": 0.263
+            },
+            {
+              "feature": "missingindicator_income_gap_ratio",
+              "contribution": 0.13
+            },
+            {
+              "feature": "balance_change_30d",
+              "contribution": 0.117
+            }
+          ]
+        },
+        "recommended_action": "Offer an optional, discreet money check-in (only if the customer opted in to heads-ups).",
+        "support_journey": {
+          "recommended_action": "Offer an optional, discreet money check-in (only if the customer opted in to heads-ups).",
+          "customer_choices": [
+            "Show me why",
+            "Talk to someone",
+            "Not now",
+            "This isn't right"
+          ],
+          "alerts_paused": false,
+          "specialist_handover_available": true,
+          "human_review_required": true,
+          "automated_decision": false,
+          "response_time_policy_days": 21,
+          "response_time_note": "Configurable, unverified demo setting - not legal advice."
+        },
+        "feature_version": "careloop-features-1.0.0",
+        "disclaimer": "Fictional customers and simulated transactions only. Thresholds are demonstration settings, not Westpac policy. Staff, not software, decide hardship arrangements."
+      }
+    },
+    "sarah": {
+      "story": "Part-time aged-care worker whose hours were reduced in October; a home-loan repayment is due on 28 Nov.",
+      "profile_type": "part_time",
+      "accounts": [
+        {
+          "account_id": "ACC-SARAH-1",
+          "account_type": "everyday",
+          "balance_aud": 420.0
+        }
+      ],
+      "pays": [
+        {
+          "date": "2026-07-31",
+          "amount": 1188.77
+        },
+        {
+          "date": "2026-08-14",
+          "amount": 1200.27
+        },
+        {
+          "date": "2026-08-28",
+          "amount": 1214.36
+        },
+        {
+          "date": "2026-09-11",
+          "amount": 1191.95
+        },
+        {
+          "date": "2026-09-25",
+          "amount": 1195.59
+        },
+        {
+          "date": "2026-10-09",
+          "amount": 1197.01
+        },
+        {
+          "date": "2026-10-23",
+          "amount": 900.0
+        },
+        {
+          "date": "2026-11-06",
+          "amount": 900.0
+        }
+      ],
+      "repayments": [
+        {
+          "date": "2026-07-28",
+          "amount": 1000.0,
+          "description": "Home loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-08-28",
+          "amount": 1000.0,
+          "description": "Home loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-09-28",
+          "amount": 1000.0,
+          "description": "Home loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-28",
+          "amount": 1000.0,
+          "description": "Home loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        }
+      ],
+      "upcoming": [
+        {
+          "due_date": "2026-11-18",
+          "description": "Home & contents insurance",
+          "event_type": "bill",
+          "amount_aud": 160.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-21",
+          "description": "Strata levy (unit)",
+          "event_type": "bill",
+          "amount_aud": 110.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-24",
+          "description": "Electricity & water",
+          "event_type": "bill",
+          "amount_aud": 230.0,
+          "amount_status": "estimated"
+        },
+        {
+          "due_date": "2026-11-25",
+          "description": "Car registration renewal (notice received 26 Oct)",
+          "event_type": "bill",
+          "amount_aud": 440.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-28",
+          "description": "Home loan repayment",
+          "event_type": "loan_repayment",
+          "amount_aud": 1000.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-09",
+          "description": "Car insurance",
+          "event_type": "bill",
+          "amount_aud": 125.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-12",
+          "description": "Phone & internet",
+          "event_type": "bill",
+          "amount_aud": 110.0,
+          "amount_status": "fixed"
+        }
+      ],
+      "analysis": {
+        "customer_id": "SARAH",
+        "display_name": "Sarah",
+        "as_of_date": "2026-11-16",
+        "data_source": "synthetic_demo",
+        "consent_confirmed": true,
+        "assessment_status": "complete",
+        "financial_tier": 2,
+        "tier_label": "At risk",
+        "specialist_support_required": false,
+        "specialist_label": null,
+        "alerts_paused": false,
+        "rule_applied": "Base-case repayment shortfall within 14 days",
+        "reason_codes": [
+          "EXPECTED_REPAYMENT_GAP",
+          "LOW_BUFFER",
+          "NEGATIVE_CASHFLOW",
+          "LOW_COVERAGE",
+          "BALANCE_DECLINE",
+          "INCOME_DROP"
+        ],
+        "reasons": [
+          {
+            "code": "EXPECTED_REPAYMENT_GAP",
+            "text": "Based on known bills and expected income, an upcoming repayment may not be fully covered."
+          },
+          {
+            "code": "LOW_BUFFER",
+            "text": "Your available money covers fewer than 14 days of essential costs."
+          },
+          {
+            "code": "NEGATIVE_CASHFLOW",
+            "text": "More money went out than came in over the last 30 days."
+          },
+          {
+            "code": "LOW_COVERAGE",
+            "text": "Expected income for the next 30 days is close to or below your known bills and repayments."
+          },
+          {
+            "code": "BALANCE_DECLINE",
+            "text": "Your average balance has fallen noticeably compared with last month."
+          },
+          {
+            "code": "INCOME_DROP",
+            "text": "Recent income is well below your own usual level."
+          }
+        ],
+        "warning_signals": [
+          "LOW_BUFFER",
+          "NEGATIVE_CASHFLOW",
+          "LOW_COVERAGE",
+          "BALANCE_DECLINE",
+          "INCOME_DROP"
+        ],
+        "features": {
+          "recent_weekly_income": 465.91,
+          "baseline_weekly_income": 599.29,
+          "income_change_pct": -0.2226,
+          "income_volatility": 0.0056,
+          "net_cash_flow_30d": -722.94,
+          "accessible_balance": 420.0,
+          "essential_outflows_30d": 2480.35,
+          "cash_buffer_days": 5.08,
+          "obligations_next_30d": 2175.0,
+          "conservative_income_next_30d": 1800.0,
+          "repayment_coverage_ratio": 0.8276,
+          "failed_loan_payments_30d": 0,
+          "failed_other_payments_30d": 0,
+          "balance_change_30d_aud": -249.05,
+          "balance_change_30d": -0.3059,
+          "income_30d": 2034.65,
+          "essential_expense_ratio": 1.2191,
+          "income_gap_days": 10,
+          "expected_income_cadence_days": 14.0,
+          "income_gap_ratio": 0.714,
+          "income_regular": true,
+          "projected_shortfall_14d": 620.0,
+          "projected_shortfall_14d_conservative": 947.16
+        },
+        "missing_flags": {},
+        "data_quality": {
+          "history_days": 180,
+          "income_credits_observed": 13,
+          "usable_baseline_weeks": 12,
+          "income_visibility": "adequate",
+          "data_quality": "sufficient",
+          "external_own_account_inflows": false
+        },
+        "income_streams": [
+          {
+            "income_source_id": "INC-SARAH-1",
+            "cadence_days": 14,
+            "regular": true,
+            "last_observed_at": "2026-11-06",
+            "base_amount": 900.0,
+            "conservative_amount": 900.0,
+            "amount_cv": 0.129,
+            "status": "active"
+          }
+        ],
+        "forecast": {
+          "scenario": "base",
+          "horizon_days": 14,
+          "as_of_date": "2026-11-16",
+          "start_balance_aud": 420.0,
+          "shortfall_amount_aud": 620.0,
+          "shortfall_date": "2026-11-28",
+          "planned_repayment_aud": 1000.0,
+          "planned_repayment_date": "2026-11-28",
+          "lowest_balance_aud": -620.0,
+          "lowest_balance_date": "2026-11-28",
+          "assumptions": [
+            "Starts from accessible balance of AUD 420.00 at end of 2026-11-16.",
+            "Bills and repayments are scheduled items already known on the as-of date.",
+            "Income not yet confirmed is estimated from the customer's own pay cadence (median of last 3 payments). Income not seen for 2+ cycles is not assumed to resume.",
+            "Everyday discretionary and variable spending is not included in the base case."
+          ],
+          "daily_balances": [
+            {
+              "date": "2026-11-17",
+              "balance": 420.0
+            },
+            {
+              "date": "2026-11-18",
+              "balance": 260.0
+            },
+            {
+              "date": "2026-11-19",
+              "balance": 260.0
+            },
+            {
+              "date": "2026-11-20",
+              "balance": 1160.0
+            },
+            {
+              "date": "2026-11-21",
+              "balance": 1050.0
+            },
+            {
+              "date": "2026-11-22",
+              "balance": 1050.0
+            },
+            {
+              "date": "2026-11-23",
+              "balance": 1050.0
+            },
+            {
+              "date": "2026-11-24",
+              "balance": 820.0
+            },
+            {
+              "date": "2026-11-25",
+              "balance": 380.0
+            },
+            {
+              "date": "2026-11-26",
+              "balance": 380.0
+            },
+            {
+              "date": "2026-11-27",
+              "balance": 380.0
+            },
+            {
+              "date": "2026-11-28",
+              "balance": -620.0
+            },
+            {
+              "date": "2026-11-29",
+              "balance": -620.0
+            },
+            {
+              "date": "2026-11-30",
+              "balance": -620.0
+            }
+          ],
+          "events": [
+            {
+              "date": "2026-11-18",
+              "description": "Home & contents insurance",
+              "category": "insurance",
+              "event_type": "bill",
+              "amount_aud": -160.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 260.0
+            },
+            {
+              "date": "2026-11-20",
+              "description": "Expected income (INC-SARAH-1, base)",
+              "category": "income",
+              "event_type": "income",
+              "amount_aud": 900.0,
+              "basis": "estimated from 14-day cadence",
+              "balance_after_aud": 1160.0
+            },
+            {
+              "date": "2026-11-21",
+              "description": "Strata levy (unit)",
+              "category": "rent",
+              "event_type": "bill",
+              "amount_aud": -110.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 1050.0
+            },
+            {
+              "date": "2026-11-24",
+              "description": "Electricity & water",
+              "category": "utilities",
+              "event_type": "bill",
+              "amount_aud": -230.0,
+              "basis": "scheduled (estimated)",
+              "balance_after_aud": 820.0
+            },
+            {
+              "date": "2026-11-25",
+              "description": "Car registration renewal (notice received 26 Oct)",
+              "category": "transport",
+              "event_type": "bill",
+              "amount_aud": -440.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 380.0
+            },
+            {
+              "date": "2026-11-28",
+              "description": "Home loan repayment",
+              "category": "loan_repayment",
+              "event_type": "loan_repayment",
+              "amount_aud": -1000.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": -620.0
+            }
+          ],
+          "conservative": {
+            "scenario": "conservative",
+            "horizon_days": 14,
+            "as_of_date": "2026-11-16",
+            "start_balance_aud": 420.0,
+            "shortfall_amount_aud": 947.16,
+            "shortfall_date": "2026-11-28",
+            "planned_repayment_aud": 1000.0,
+            "planned_repayment_date": "2026-11-28",
+            "lowest_balance_aud": -997.86,
+            "lowest_balance_date": "2026-11-30",
+            "assumptions": [
+              "Starts from accessible balance of AUD 420.00 at end of 2026-11-16.",
+              "Bills and repayments are scheduled items already known on the as-of date.",
+              "Stress case: income at the 20th percentile of the last 6 payments; overdue or irregular income assumed late; estimated bills +10%.",
+              "Everyday essentials (groceries, transport) at AUD 25.35/day from the last 30 days."
+            ],
+            "daily_balances": [
+              {
+                "date": "2026-11-17",
+                "balance": 394.65
+              },
+              {
+                "date": "2026-11-18",
+                "balance": 209.31
+              },
+              {
+                "date": "2026-11-19",
+                "balance": 183.96
+              },
+              {
+                "date": "2026-11-20",
+                "balance": 1058.61
+              },
+              {
+                "date": "2026-11-21",
+                "balance": 923.26
+              },
+              {
+                "date": "2026-11-22",
+                "balance": 897.92
+              },
+              {
+                "date": "2026-11-23",
+                "balance": 872.57
+              },
+              {
+                "date": "2026-11-24",
+                "balance": 594.22
+              },
+              {
+                "date": "2026-11-25",
+                "balance": 128.88
+              },
+              {
+                "date": "2026-11-26",
+                "balance": 103.53
+              },
+              {
+                "date": "2026-11-27",
+                "balance": 78.18
+              },
+              {
+                "date": "2026-11-28",
+                "balance": -947.16
+              },
+              {
+                "date": "2026-11-29",
+                "balance": -972.51
+              },
+              {
+                "date": "2026-11-30",
+                "balance": -997.86
+              }
+            ],
+            "events": [
+              {
+                "date": "2026-11-18",
+                "description": "Home & contents insurance",
+                "category": "insurance",
+                "event_type": "bill",
+                "amount_aud": -160.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 209.31
+              },
+              {
+                "date": "2026-11-20",
+                "description": "Expected income (INC-SARAH-1, conservative)",
+                "category": "income",
+                "event_type": "income",
+                "amount_aud": 900.0,
+                "basis": "estimated from 14-day cadence",
+                "balance_after_aud": 1083.96
+              },
+              {
+                "date": "2026-11-21",
+                "description": "Strata levy (unit)",
+                "category": "rent",
+                "event_type": "bill",
+                "amount_aud": -110.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 923.26
+              },
+              {
+                "date": "2026-11-24",
+                "description": "Electricity & water",
+                "category": "utilities",
+                "event_type": "bill",
+                "amount_aud": -253.0,
+                "basis": "scheduled (estimated (+10% stress))",
+                "balance_after_aud": 594.22
+              },
+              {
+                "date": "2026-11-25",
+                "description": "Car registration renewal (notice received 26 Oct)",
+                "category": "transport",
+                "event_type": "bill",
+                "amount_aud": -440.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 128.88
+              },
+              {
+                "date": "2026-11-28",
+                "description": "Home loan repayment",
+                "category": "loan_repayment",
+                "event_type": "loan_repayment",
+                "amount_aud": -1000.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": -947.16
+              }
+            ]
+          },
+          "confidence": "medium",
+          "confidence_reasons": [
+            "INC-SARAH-1: moderately variable amounts (CV 0.13)."
+          ],
+          "shortfall_range_aud": [
+            620.0,
+            947.16
+          ]
+        },
+        "ml_experiment": {
+          "model_status": "available",
+          "predicted_probability": 0.8358,
+          "description": "Synthetic research model only - shown separately, never sets the support tier.",
+          "disclaimer": "This model was trained and evaluated only on synthetically simulated financial histories. Its score describes the simulator's patterns, not a validated probability of hardship or missed payments for real Australian bank customers.",
+          "message": null,
+          "model_version": "careloop-synthetic-lr-1.0.0",
+          "threshold": 0.8642,
+          "above_threshold": false,
+          "top_contributions": [
+            {
+              "feature": "cash_buffer_days",
+              "contribution": 11.068
+            },
+            {
+              "feature": "repayment_coverage_ratio",
+              "contribution": 0.365
+            },
+            {
+              "feature": "income_change_pct",
+              "contribution": 0.177
+            },
+            {
+              "feature": "missingindicator_income_gap_ratio",
+              "contribution": 0.13
+            }
+          ]
+        },
+        "recommended_action": "Offer a private, optional conversation about repayment assistance before the due date.",
+        "support_journey": {
+          "recommended_action": "Offer a private, optional conversation about repayment assistance before the due date.",
+          "customer_choices": [
+            "Show me why",
+            "Talk to someone",
+            "Not now",
+            "This isn't right"
+          ],
+          "alerts_paused": false,
+          "specialist_handover_available": true,
+          "human_review_required": true,
+          "automated_decision": false,
+          "response_time_policy_days": 21,
+          "response_time_note": "Configurable, unverified demo setting - not legal advice."
+        },
+        "feature_version": "careloop-features-1.0.0",
+        "disclaimer": "Fictional customers and simulated transactions only. Thresholds are demonstration settings, not Westpac policy. Staff, not software, decide hardship arrangements."
+      }
+    },
+    "mia": {
+      "story": "Retail worker whose job ended in late September; savings ran down and a personal-loan repayment failed on 10 Nov.",
+      "profile_type": "full_time",
+      "accounts": [
+        {
+          "account_id": "ACC-MIA-1",
+          "account_type": "everyday",
+          "balance_aud": 0.0
+        },
+        {
+          "account_id": "ACC-MIA-2",
+          "account_type": "savings",
+          "balance_aud": 23.49
+        }
+      ],
+      "pays": [
+        {
+          "date": "2026-07-22",
+          "amount": 1446.31
+        },
+        {
+          "date": "2026-08-05",
+          "amount": 1445.17
+        },
+        {
+          "date": "2026-08-19",
+          "amount": 1431.21
+        },
+        {
+          "date": "2026-09-02",
+          "amount": 1448.92
+        },
+        {
+          "date": "2026-09-16",
+          "amount": 1434.13
+        },
+        {
+          "date": "2026-09-30",
+          "amount": 2050.0
+        }
+      ],
+      "repayments": [
+        {
+          "date": "2026-07-25",
+          "amount": 120.0,
+          "description": "Credit card repayment",
+          "category": "card_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-08-10",
+          "amount": 380.0,
+          "description": "Personal loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-08-25",
+          "amount": 120.0,
+          "description": "Credit card repayment",
+          "category": "card_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-09-10",
+          "amount": 380.0,
+          "description": "Personal loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-09-25",
+          "amount": 120.0,
+          "description": "Credit card repayment",
+          "category": "card_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-10",
+          "amount": 380.0,
+          "description": "Personal loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-25",
+          "amount": 120.0,
+          "description": "Credit card repayment",
+          "category": "card_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-11-10",
+          "amount": 380.0,
+          "description": "Personal loan repayment",
+          "category": "loan_repayment",
+          "status": "failed"
+        }
+      ],
+      "upcoming": [
+        {
+          "due_date": "2026-11-23",
+          "description": "Rent",
+          "event_type": "bill",
+          "amount_aud": 400.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-25",
+          "description": "Credit card repayment",
+          "event_type": "card_repayment",
+          "amount_aud": 120.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-30",
+          "description": "Rent",
+          "event_type": "bill",
+          "amount_aud": 400.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-06",
+          "description": "Phone & internet",
+          "event_type": "bill",
+          "amount_aud": 70.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-07",
+          "description": "Rent",
+          "event_type": "bill",
+          "amount_aud": 400.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-10",
+          "description": "Personal loan repayment",
+          "event_type": "loan_repayment",
+          "amount_aud": 380.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-14",
+          "description": "Rent",
+          "event_type": "bill",
+          "amount_aud": 400.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-15",
+          "description": "Electricity",
+          "event_type": "bill",
+          "amount_aud": 150.0,
+          "amount_status": "estimated"
+        }
+      ],
+      "analysis": {
+        "customer_id": "MIA",
+        "display_name": "Mia",
+        "as_of_date": "2026-11-16",
+        "data_source": "synthetic_demo",
+        "consent_confirmed": true,
+        "assessment_status": "complete",
+        "financial_tier": 3,
+        "tier_label": "In difficulty",
+        "specialist_support_required": false,
+        "specialist_label": null,
+        "alerts_paused": false,
+        "rule_applied": "Observed failed loan/card repayment in the last 30 days",
+        "reason_codes": [
+          "MISSED_REPAYMENT",
+          "LOW_BUFFER",
+          "NEGATIVE_CASHFLOW",
+          "LOW_COVERAGE",
+          "BALANCE_DECLINE",
+          "INCOME_DROP",
+          "INCOME_OVERDUE",
+          "FAILED_OTHER_PAYMENTS"
+        ],
+        "reasons": [
+          {
+            "code": "MISSED_REPAYMENT",
+            "text": "A loan or card repayment was unsuccessful in the last 30 days."
+          },
+          {
+            "code": "LOW_BUFFER",
+            "text": "Your available money covers fewer than 14 days of essential costs."
+          },
+          {
+            "code": "NEGATIVE_CASHFLOW",
+            "text": "More money went out than came in over the last 30 days."
+          },
+          {
+            "code": "LOW_COVERAGE",
+            "text": "Expected income for the next 30 days is close to or below your known bills and repayments."
+          },
+          {
+            "code": "BALANCE_DECLINE",
+            "text": "Your average balance has fallen noticeably compared with last month."
+          },
+          {
+            "code": "INCOME_DROP",
+            "text": "Recent income is well below your own usual level."
+          },
+          {
+            "code": "INCOME_OVERDUE",
+            "text": "An expected income payment is later than your usual pattern."
+          },
+          {
+            "code": "FAILED_OTHER_PAYMENTS",
+            "text": "Another automatic payment was unsuccessful in the last 30 days."
+          }
+        ],
+        "warning_signals": [
+          "LOW_BUFFER",
+          "NEGATIVE_CASHFLOW",
+          "LOW_COVERAGE",
+          "BALANCE_DECLINE",
+          "INCOME_DROP",
+          "INCOME_OVERDUE",
+          "FAILED_OTHER_PAYMENTS"
+        ],
+        "features": {
+          "recent_weekly_income": 0.0,
+          "baseline_weekly_income": 719.66,
+          "income_change_pct": -1.0,
+          "income_volatility": 0.2809,
+          "net_cash_flow_30d": -625.87,
+          "accessible_balance": 23.49,
+          "essential_outflows_30d": 625.87,
+          "cash_buffer_days": 1.13,
+          "obligations_next_30d": 2320.0,
+          "conservative_income_next_30d": 0,
+          "repayment_coverage_ratio": 0.0,
+          "failed_loan_payments_30d": 1,
+          "failed_other_payments_30d": 12,
+          "balance_change_30d_aud": -258.1,
+          "balance_change_30d": -0.9166,
+          "income_30d": 0.0,
+          "essential_expense_ratio": null,
+          "income_gap_days": 47,
+          "expected_income_cadence_days": 14.0,
+          "income_gap_ratio": 3.357,
+          "income_regular": true,
+          "projected_shortfall_14d": 120.0,
+          "projected_shortfall_14d_conservative": 120.0
+        },
+        "missing_flags": {
+          "essential_expense_ratio": "no_income_in_window"
+        },
+        "data_quality": {
+          "history_days": 180,
+          "income_credits_observed": 10,
+          "usable_baseline_weeks": 12,
+          "income_visibility": "adequate",
+          "data_quality": "sufficient",
+          "external_own_account_inflows": false
+        },
+        "income_streams": [
+          {
+            "income_source_id": "INC-MIA-1",
+            "cadence_days": 14,
+            "regular": true,
+            "last_observed_at": "2026-09-30",
+            "base_amount": 1448.92,
+            "conservative_amount": 1434.13,
+            "amount_cv": 0.147,
+            "status": "lapsed"
+          }
+        ],
+        "forecast": {
+          "scenario": "base",
+          "horizon_days": 14,
+          "as_of_date": "2026-11-16",
+          "start_balance_aud": 23.49,
+          "shortfall_amount_aud": 120.0,
+          "shortfall_date": "2026-11-25",
+          "planned_repayment_aud": 120.0,
+          "planned_repayment_date": "2026-11-25",
+          "lowest_balance_aud": -896.51,
+          "lowest_balance_date": "2026-11-30",
+          "assumptions": [
+            "Starts from accessible balance of AUD 23.49 at end of 2026-11-16.",
+            "Bills and repayments are scheduled items already known on the as-of date.",
+            "Income not yet confirmed is estimated from the customer's own pay cadence (median of last 3 payments). Income not seen for 2+ cycles is not assumed to resume.",
+            "Everyday discretionary and variable spending is not included in the base case."
+          ],
+          "daily_balances": [
+            {
+              "date": "2026-11-17",
+              "balance": 23.49
+            },
+            {
+              "date": "2026-11-18",
+              "balance": 23.49
+            },
+            {
+              "date": "2026-11-19",
+              "balance": 23.49
+            },
+            {
+              "date": "2026-11-20",
+              "balance": 23.49
+            },
+            {
+              "date": "2026-11-21",
+              "balance": 23.49
+            },
+            {
+              "date": "2026-11-22",
+              "balance": 23.49
+            },
+            {
+              "date": "2026-11-23",
+              "balance": -376.51
+            },
+            {
+              "date": "2026-11-24",
+              "balance": -376.51
+            },
+            {
+              "date": "2026-11-25",
+              "balance": -496.51
+            },
+            {
+              "date": "2026-11-26",
+              "balance": -496.51
+            },
+            {
+              "date": "2026-11-27",
+              "balance": -496.51
+            },
+            {
+              "date": "2026-11-28",
+              "balance": -496.51
+            },
+            {
+              "date": "2026-11-29",
+              "balance": -496.51
+            },
+            {
+              "date": "2026-11-30",
+              "balance": -896.51
+            }
+          ],
+          "events": [
+            {
+              "date": "2026-11-23",
+              "description": "Rent",
+              "category": "rent",
+              "event_type": "bill",
+              "amount_aud": -400.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": -376.51
+            },
+            {
+              "date": "2026-11-25",
+              "description": "Credit card repayment",
+              "category": "card_repayment",
+              "event_type": "card_repayment",
+              "amount_aud": -120.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": -496.51
+            },
+            {
+              "date": "2026-11-30",
+              "description": "Rent",
+              "category": "rent",
+              "event_type": "bill",
+              "amount_aud": -400.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": -896.51
+            }
+          ],
+          "conservative": {
+            "scenario": "conservative",
+            "horizon_days": 14,
+            "as_of_date": "2026-11-16",
+            "start_balance_aud": 23.49,
+            "shortfall_amount_aud": 120.0,
+            "shortfall_date": "2026-11-25",
+            "planned_repayment_aud": 120.0,
+            "planned_repayment_date": "2026-11-25",
+            "lowest_balance_aud": -945.92,
+            "lowest_balance_date": "2026-11-30",
+            "assumptions": [
+              "Starts from accessible balance of AUD 23.49 at end of 2026-11-16.",
+              "Bills and repayments are scheduled items already known on the as-of date.",
+              "Stress case: income at the 20th percentile of the last 6 payments; overdue or irregular income assumed late; estimated bills +10%.",
+              "Everyday essentials (groceries, transport) at AUD 3.53/day from the last 30 days."
+            ],
+            "daily_balances": [
+              {
+                "date": "2026-11-17",
+                "balance": 19.96
+              },
+              {
+                "date": "2026-11-18",
+                "balance": 16.43
+              },
+              {
+                "date": "2026-11-19",
+                "balance": 12.9
+              },
+              {
+                "date": "2026-11-20",
+                "balance": 9.37
+              },
+              {
+                "date": "2026-11-21",
+                "balance": 5.85
+              },
+              {
+                "date": "2026-11-22",
+                "balance": 2.32
+              },
+              {
+                "date": "2026-11-23",
+                "balance": -401.21
+              },
+              {
+                "date": "2026-11-24",
+                "balance": -404.74
+              },
+              {
+                "date": "2026-11-25",
+                "balance": -528.27
+              },
+              {
+                "date": "2026-11-26",
+                "balance": -531.8
+              },
+              {
+                "date": "2026-11-27",
+                "balance": -535.33
+              },
+              {
+                "date": "2026-11-28",
+                "balance": -538.86
+              },
+              {
+                "date": "2026-11-29",
+                "balance": -542.39
+              },
+              {
+                "date": "2026-11-30",
+                "balance": -945.92
+              }
+            ],
+            "events": [
+              {
+                "date": "2026-11-23",
+                "description": "Rent",
+                "category": "rent",
+                "event_type": "bill",
+                "amount_aud": -400.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": -401.21
+              },
+              {
+                "date": "2026-11-25",
+                "description": "Credit card repayment",
+                "category": "card_repayment",
+                "event_type": "card_repayment",
+                "amount_aud": -120.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": -528.27
+              },
+              {
+                "date": "2026-11-30",
+                "description": "Rent",
+                "category": "rent",
+                "event_type": "bill",
+                "amount_aud": -400.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": -945.92
+              }
+            ]
+          },
+          "confidence": "medium",
+          "confidence_reasons": [
+            "No current income stream is assumed."
+          ],
+          "shortfall_range_aud": [
+            120.0,
+            120.0
+          ]
+        },
+        "ml_experiment": {
+          "model_status": "available",
+          "predicted_probability": 0.9999,
+          "description": "Synthetic research model only - shown separately, never sets the support tier.",
+          "disclaimer": "This model was trained and evaluated only on synthetically simulated financial histories. Its score describes the simulator's patterns, not a validated probability of hardship or missed payments for real Australian bank customers.",
+          "message": null,
+          "model_version": "careloop-synthetic-lr-1.0.0",
+          "threshold": 0.8642,
+          "above_threshold": true,
+          "top_contributions": [
+            {
+              "feature": "cash_buffer_days",
+              "contribution": 11.423
+            },
+            {
+              "feature": "failed_other_payments_30d",
+              "contribution": 4.795
+            },
+            {
+              "feature": "failed_loan_payments_30d",
+              "contribution": 1.427
+            },
+            {
+              "feature": "income_change_pct",
+              "contribution": 0.816
+            }
+          ]
+        },
+        "recommended_action": "Offer an immediate, easy option to contact the assistance team. Staff decide any arrangement.",
+        "support_journey": {
+          "recommended_action": "Offer an immediate, easy option to contact the assistance team. Staff decide any arrangement.",
+          "customer_choices": [
+            "Show me why",
+            "Talk to someone",
+            "Not now",
+            "This isn't right"
+          ],
+          "alerts_paused": false,
+          "specialist_handover_available": true,
+          "human_review_required": true,
+          "automated_decision": false,
+          "response_time_policy_days": 21,
+          "response_time_note": "Configurable, unverified demo setting - not legal advice."
+        },
+        "feature_version": "careloop-features-1.0.0",
+        "disclaimer": "Fictional customers and simulated transactions only. Thresholds are demonstration settings, not Westpac policy. Staff, not software, decide hardship arrangements."
+      }
+    },
+    "tom_control": {
+      "story": "Fairness control: identical variable wages and spending to Tom, but $16,000 in accessible savings.",
+      "profile_type": "casual",
+      "accounts": [
+        {
+          "account_id": "ACC-TOM_CONTROL-1",
+          "account_type": "everyday",
+          "balance_aud": 701.55
+        },
+        {
+          "account_id": "ACC-TOM_CONTROL-2",
+          "account_type": "savings",
+          "balance_aud": 16000.0
+        }
+      ],
+      "pays": [
+        {
+          "date": "2026-07-23",
+          "amount": 699.8
+        },
+        {
+          "date": "2026-07-30",
+          "amount": 592.88
+        },
+        {
+          "date": "2026-08-06",
+          "amount": 842.06
+        },
+        {
+          "date": "2026-08-13",
+          "amount": 836.39
+        },
+        {
+          "date": "2026-08-20",
+          "amount": 661.67
+        },
+        {
+          "date": "2026-08-27",
+          "amount": 870.38
+        },
+        {
+          "date": "2026-09-03",
+          "amount": 1010.81
+        },
+        {
+          "date": "2026-09-10",
+          "amount": 710.0
+        },
+        {
+          "date": "2026-09-17",
+          "amount": 819.2
+        },
+        {
+          "date": "2026-09-24",
+          "amount": 841.64
+        },
+        {
+          "date": "2026-10-01",
+          "amount": 753.44
+        },
+        {
+          "date": "2026-10-08",
+          "amount": 812.52
+        },
+        {
+          "date": "2026-10-15",
+          "amount": 764.73
+        },
+        {
+          "date": "2026-10-22",
+          "amount": 853.96
+        },
+        {
+          "date": "2026-10-29",
+          "amount": 610.87
+        },
+        {
+          "date": "2026-11-05",
+          "amount": 648.07
+        },
+        {
+          "date": "2026-11-12",
+          "amount": 790.17
+        }
+      ],
+      "repayments": [
+        {
+          "date": "2026-07-24",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-08-07",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-08-21",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-09-04",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-09-18",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-02",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-16",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-10-30",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        },
+        {
+          "date": "2026-11-13",
+          "amount": 260.0,
+          "description": "Car loan repayment",
+          "category": "loan_repayment",
+          "status": "posted"
+        }
+      ],
+      "upcoming": [
+        {
+          "due_date": "2026-11-17",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-20",
+          "description": "Electricity share",
+          "event_type": "bill",
+          "amount_aud": 90.0,
+          "amount_status": "estimated"
+        },
+        {
+          "due_date": "2026-11-24",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-11-27",
+          "description": "Car loan repayment",
+          "event_type": "loan_repayment",
+          "amount_aud": 260.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-01",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-08",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-09",
+          "description": "Mobile plan",
+          "event_type": "bill",
+          "amount_aud": 65.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-11",
+          "description": "Car loan repayment",
+          "event_type": "loan_repayment",
+          "amount_aud": 260.0,
+          "amount_status": "fixed"
+        },
+        {
+          "due_date": "2026-12-15",
+          "description": "Rent (share house)",
+          "event_type": "bill",
+          "amount_aud": 330.0,
+          "amount_status": "fixed"
+        }
+      ],
+      "analysis": {
+        "customer_id": "TOM_CONTROL",
+        "display_name": "Tom (savings control)",
+        "as_of_date": "2026-11-16",
+        "data_source": "synthetic_demo",
+        "consent_confirmed": true,
+        "assessment_status": "complete",
+        "financial_tier": 0,
+        "tier_label": "Steady",
+        "specialist_support_required": false,
+        "specialist_label": null,
+        "alerts_paused": false,
+        "rule_applied": "No repayment gap and fewer than two early-warning signals",
+        "reason_codes": [
+          "RESERVES_COVER_DEFICIT"
+        ],
+        "reasons": [
+          {
+            "code": "RESERVES_COVER_DEFICIT",
+            "text": "Recent spending exceeded income, but your accessible savings comfortably cover essentials."
+          }
+        ],
+        "warning_signals": [],
+        "features": {
+          "recent_weekly_income": 723.95,
+          "baseline_weekly_income": 791.43,
+          "income_change_pct": -0.0853,
+          "income_volatility": 0.0979,
+          "net_cash_flow_30d": -550.18,
+          "accessible_balance": 16701.55,
+          "essential_outflows_30d": 2699.99,
+          "cash_buffer_days": 185.57,
+          "obligations_next_30d": 2325.0,
+          "conservative_income_next_30d": 2592.28,
+          "repayment_coverage_ratio": 1.115,
+          "failed_loan_payments_30d": 0,
+          "failed_other_payments_30d": 0,
+          "balance_change_30d_aud": -387.55,
+          "balance_change_30d": -0.0226,
+          "income_30d": 3114.3,
+          "essential_expense_ratio": 0.867,
+          "income_gap_days": 4,
+          "expected_income_cadence_days": 7.0,
+          "income_gap_ratio": 0.571,
+          "income_regular": true,
+          "projected_shortfall_14d": 0.0,
+          "projected_shortfall_14d_conservative": 0.0
+        },
+        "missing_flags": {},
+        "data_quality": {
+          "history_days": 180,
+          "income_credits_observed": 26,
+          "usable_baseline_weeks": 12,
+          "income_visibility": "adequate",
+          "data_quality": "sufficient",
+          "external_own_account_inflows": false
+        },
+        "income_streams": [
+          {
+            "income_source_id": "INC-TOM_CONTROL-1",
+            "cadence_days": 7,
+            "regular": true,
+            "last_observed_at": "2026-11-12",
+            "base_amount": 648.07,
+            "conservative_amount": 648.07,
+            "amount_cv": 0.118,
+            "status": "active"
+          }
+        ],
+        "forecast": {
+          "scenario": "base",
+          "horizon_days": 14,
+          "as_of_date": "2026-11-16",
+          "start_balance_aud": 16701.55,
+          "shortfall_amount_aud": 0.0,
+          "shortfall_date": null,
+          "planned_repayment_aud": 260.0,
+          "planned_repayment_date": "2026-11-27",
+          "lowest_balance_aud": 16371.55,
+          "lowest_balance_date": "2026-11-17",
+          "assumptions": [
+            "Starts from accessible balance of AUD 16,701.55 at end of 2026-11-16.",
+            "Bills and repayments are scheduled items already known on the as-of date.",
+            "Income not yet confirmed is estimated from the customer's own pay cadence (median of last 3 payments). Income not seen for 2+ cycles is not assumed to resume.",
+            "Everyday discretionary and variable spending is not included in the base case."
+          ],
+          "daily_balances": [
+            {
+              "date": "2026-11-17",
+              "balance": 16371.55
+            },
+            {
+              "date": "2026-11-18",
+              "balance": 16371.55
+            },
+            {
+              "date": "2026-11-19",
+              "balance": 17019.62
+            },
+            {
+              "date": "2026-11-20",
+              "balance": 16929.62
+            },
+            {
+              "date": "2026-11-21",
+              "balance": 16929.62
+            },
+            {
+              "date": "2026-11-22",
+              "balance": 16929.62
+            },
+            {
+              "date": "2026-11-23",
+              "balance": 16929.62
+            },
+            {
+              "date": "2026-11-24",
+              "balance": 16599.62
+            },
+            {
+              "date": "2026-11-25",
+              "balance": 16599.62
+            },
+            {
+              "date": "2026-11-26",
+              "balance": 17247.69
+            },
+            {
+              "date": "2026-11-27",
+              "balance": 16987.69
+            },
+            {
+              "date": "2026-11-28",
+              "balance": 16987.69
+            },
+            {
+              "date": "2026-11-29",
+              "balance": 16987.69
+            },
+            {
+              "date": "2026-11-30",
+              "balance": 16987.69
+            }
+          ],
+          "events": [
+            {
+              "date": "2026-11-17",
+              "description": "Rent (share house)",
+              "category": "rent",
+              "event_type": "bill",
+              "amount_aud": -330.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 16371.55
+            },
+            {
+              "date": "2026-11-19",
+              "description": "Expected income (INC-TOM_CONTROL-1, base)",
+              "category": "income",
+              "event_type": "income",
+              "amount_aud": 648.07,
+              "basis": "estimated from 7-day cadence",
+              "balance_after_aud": 17019.62
+            },
+            {
+              "date": "2026-11-20",
+              "description": "Electricity share",
+              "category": "utilities",
+              "event_type": "bill",
+              "amount_aud": -90.0,
+              "basis": "scheduled (estimated)",
+              "balance_after_aud": 16929.62
+            },
+            {
+              "date": "2026-11-24",
+              "description": "Rent (share house)",
+              "category": "rent",
+              "event_type": "bill",
+              "amount_aud": -330.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 16599.62
+            },
+            {
+              "date": "2026-11-26",
+              "description": "Expected income (INC-TOM_CONTROL-1, base)",
+              "category": "income",
+              "event_type": "income",
+              "amount_aud": 648.07,
+              "basis": "estimated from 7-day cadence",
+              "balance_after_aud": 17247.69
+            },
+            {
+              "date": "2026-11-27",
+              "description": "Car loan repayment",
+              "category": "loan_repayment",
+              "event_type": "loan_repayment",
+              "amount_aud": -260.0,
+              "basis": "scheduled (fixed)",
+              "balance_after_aud": 16987.69
+            }
+          ],
+          "conservative": {
+            "scenario": "conservative",
+            "horizon_days": 14,
+            "as_of_date": "2026-11-16",
+            "start_balance_aud": 16701.55,
+            "shortfall_amount_aud": 0.0,
+            "shortfall_date": null,
+            "planned_repayment_aud": 260.0,
+            "planned_repayment_date": "2026-11-27",
+            "lowest_balance_aud": 16324.63,
+            "lowest_balance_date": "2026-11-18",
+            "assumptions": [
+              "Starts from accessible balance of AUD 16,701.55 at end of 2026-11-16.",
+              "Bills and repayments are scheduled items already known on the as-of date.",
+              "Stress case: income at the 20th percentile of the last 6 payments; overdue or irregular income assumed late; estimated bills +10%.",
+              "Everyday essentials (groceries, transport) at AUD 23.46/day from the last 30 days."
+            ],
+            "daily_balances": [
+              {
+                "date": "2026-11-17",
+                "balance": 16348.09
+              },
+              {
+                "date": "2026-11-18",
+                "balance": 16324.63
+              },
+              {
+                "date": "2026-11-19",
+                "balance": 16949.23
+              },
+              {
+                "date": "2026-11-20",
+                "balance": 16826.77
+              },
+              {
+                "date": "2026-11-21",
+                "balance": 16803.31
+              },
+              {
+                "date": "2026-11-22",
+                "balance": 16779.85
+              },
+              {
+                "date": "2026-11-23",
+                "balance": 16756.38
+              },
+              {
+                "date": "2026-11-24",
+                "balance": 16402.92
+              },
+              {
+                "date": "2026-11-25",
+                "balance": 16379.46
+              },
+              {
+                "date": "2026-11-26",
+                "balance": 17004.07
+              },
+              {
+                "date": "2026-11-27",
+                "balance": 16720.6
+              },
+              {
+                "date": "2026-11-28",
+                "balance": 16697.14
+              },
+              {
+                "date": "2026-11-29",
+                "balance": 16673.68
+              },
+              {
+                "date": "2026-11-30",
+                "balance": 16650.22
+              }
+            ],
+            "events": [
+              {
+                "date": "2026-11-17",
+                "description": "Rent (share house)",
+                "category": "rent",
+                "event_type": "bill",
+                "amount_aud": -330.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 16348.09
+              },
+              {
+                "date": "2026-11-19",
+                "description": "Expected income (INC-TOM_CONTROL-1, conservative)",
+                "category": "income",
+                "event_type": "income",
+                "amount_aud": 648.07,
+                "basis": "estimated from 7-day cadence",
+                "balance_after_aud": 16972.7
+              },
+              {
+                "date": "2026-11-20",
+                "description": "Electricity share",
+                "category": "utilities",
+                "event_type": "bill",
+                "amount_aud": -99.0,
+                "basis": "scheduled (estimated (+10% stress))",
+                "balance_after_aud": 16826.77
+              },
+              {
+                "date": "2026-11-24",
+                "description": "Rent (share house)",
+                "category": "rent",
+                "event_type": "bill",
+                "amount_aud": -330.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 16402.92
+              },
+              {
+                "date": "2026-11-26",
+                "description": "Expected income (INC-TOM_CONTROL-1, conservative)",
+                "category": "income",
+                "event_type": "income",
+                "amount_aud": 648.07,
+                "basis": "estimated from 7-day cadence",
+                "balance_after_aud": 17027.53
+              },
+              {
+                "date": "2026-11-27",
+                "description": "Car loan repayment",
+                "category": "loan_repayment",
+                "event_type": "loan_repayment",
+                "amount_aud": -260.0,
+                "basis": "scheduled (fixed)",
+                "balance_after_aud": 16720.6
+              }
+            ]
+          },
+          "confidence": "medium",
+          "confidence_reasons": [
+            "INC-TOM_CONTROL-1: moderately variable amounts (CV 0.12)."
+          ],
+          "shortfall_range_aud": [
+            0.0,
+            0.0
+          ]
+        },
+        "ml_experiment": {
+          "model_status": "available",
+          "predicted_probability": 0.0,
+          "description": "Synthetic research model only - shown separately, never sets the support tier.",
+          "disclaimer": "This model was trained and evaluated only on synthetically simulated financial histories. Its score describes the simulator's patterns, not a validated probability of hardship or missed payments for real Australian bank customers.",
+          "message": null,
+          "model_version": "careloop-synthetic-lr-1.0.0",
+          "threshold": 0.8642,
+          "above_threshold": false,
+          "top_contributions": [
+            {
+              "feature": "cash_buffer_days",
+              "contribution": -5.143
+            },
+            {
+              "feature": "repayment_coverage_ratio",
+              "contribution": 0.263
+            },
+            {
+              "feature": "missingindicator_income_gap_ratio",
+              "contribution": 0.13
+            },
+            {
+              "feature": "failed_other_payments_30d",
+              "contribution": -0.1
+            }
+          ]
+        },
+        "recommended_action": "No unsolicited alert. The customer can still ask for help at any time.",
+        "support_journey": {
+          "recommended_action": "No unsolicited alert. The customer can still ask for help at any time.",
+          "customer_choices": [
+            "Show me why",
+            "Talk to someone",
+            "Not now",
+            "This isn't right"
+          ],
+          "alerts_paused": false,
+          "specialist_handover_available": true,
+          "human_review_required": true,
+          "automated_decision": false,
+          "response_time_policy_days": 21,
+          "response_time_note": "Configurable, unverified demo setting - not legal advice."
+        },
+        "feature_version": "careloop-features-1.0.0",
+        "disclaimer": "Fictional customers and simulated transactions only. Thresholds are demonstration settings, not Westpac policy. Staff, not software, decide hardship arrangements."
+      }
+    }
+  }
+}

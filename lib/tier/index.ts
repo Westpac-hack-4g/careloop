@@ -1,9 +1,9 @@
 import { DEMO_TODAY } from "../clock";
 import type { CustomerId, TierResult } from "../contract";
-import { getCustomer, getSchedule, getTransactions } from "../data";
+import { getCustomer, getMlRecord, getSchedule } from "../data";
 import { assessCustomer } from "./engine";
 
-/** Run the tier engine for one sample customer. */
+/** The ML service's assessment of one sample customer, in the app's shapes. */
 export function getTierResult(
   customerId: CustomerId,
   options: { sensitive?: boolean; alertsOn?: boolean } = {},
@@ -12,8 +12,8 @@ export function getTierResult(
   return assessCustomer({
     customer:
       options.alertsOn === undefined ? customer : { ...customer, consents: { alerts: options.alertsOn } },
-    transactions: getTransactions(customerId),
     schedule: getSchedule(customerId),
+    record: getMlRecord(customerId),
     today: DEMO_TODAY,
     sensitive: options.sensitive,
   });

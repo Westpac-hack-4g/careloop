@@ -9,7 +9,6 @@
     "lint": "next lint",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "data": "node scripts/generate-transactions.mjs",
     "kb": "node scripts/fetch-kb.mjs"
   },
   "dependencies": {

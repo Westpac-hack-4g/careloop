@@ -5,6 +5,7 @@ import { getCustomer, getSchedule } from "../data";
 import { CHECK_IN_DAYS, DECISIONS, type DecisionKey } from "../decisions";
 import { addMessage, audit, createCase, customerIds, getOpenCase, getSession, type Session } from "../store";
 import { getTierResult } from "../tier";
+import { TIER_CONFIG } from "../tier/config";
 import { isSensitive, saysCantPay } from "./detectors";
 import { toDraft } from "./draft";
 import { handover } from "./handover";
@@ -47,7 +48,8 @@ export function sendAlert(customerId: CustomerId): { sent: boolean; reason?: str
   }
   session.lockScreenBanner = true;
   session.phase = "alert";
-  const shortfall = tier.projection.shortfall;
+  // Tier 2 leads with the projected shortfall. Tier 3 leads with the missed repayment, even if a gap is also ahead.
+  const shortfall = tier.tier === 2 ? tier.projection.shortfall : null;
   // Every heads-up is a card with the same four buttons.
   const text =
     tier.tier === 3
@@ -179,10 +181,10 @@ export function handleAction(customerId: CustomerId, action: Action): void {
         session,
         shortfall
           ? `Thanks. Here's what I can see. Unless something changes, your balance would be about ${formatMoney(shortfall.amount)} short when your repayment comes out on ${formatDate(shortfall.date)}.`
-          : "Thanks. Here's what I can see for the next 30 days.",
+          : `Thanks. Here's what I can see for the next ${TIER_CONFIG.forecastDays} days.`,
       );
       addMessage(session, { role: "careloop", card: { type: "projection", projection: tier.projection } });
-      note(session, "The customer tapped Allow. The backend showed the 30 day projection.");
+      note(session, `The customer tapped Allow. The backend showed the ${TIER_CONFIG.forecastDays} day projection.`);
       return;
     }
     case "prepare_request":
@@ -319,7 +321,6 @@ export function getSessionView(customerId: CustomerId): SessionView {
     home: {
       balance: customer.balance,
       tiles: customer.products.map((p) => {
-        if (p.type === "credit_card") return { name: p.name, detail: `${formatMoney(p.balance)} of ${formatMoney(p.limit)} used` };
         const next = schedule.upcomingRepayments.find((r) => r.product === p.name);
         return { name: p.name, detail: next ? `Next repayment ${formatMoney(next.amount)} on ${formatDate(next.date)}` : `Repayment ${formatMoney(p.repayment)}` };
       }),

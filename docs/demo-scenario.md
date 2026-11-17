@@ -27,10 +27,10 @@ Type the customer lines as written. Steps marked AI are answered by Claude; the 
 | # | What you do | What appears | Answered by |
 | --- | --- | --- | --- |
 | 1 | Presenter bar: **Send the heads-up** | A banner on Sarah's lock screen. It does not mention money. | Code |
-| 2 | Tap the banner, then tap the red **Heads up** line on the Home loan tile | The app's home screen with the heads-up on her home loan, then a card saying she may be about $620 short on 28 Nov | Code (amount from the rule engine) |
+| 2 | Tap the banner | The chat opens on a card saying she may be about $620 short on 28 Nov. (The back arrow shows the same heads-up on her Home loan tile.) | Code (amount from the ML service's forecast) |
 | 3 | Type: `Will asking for help hurt my credit score?` | An answer taken from Westpac's own pages, with source links | **AI** |
 | 4 | Tap **Show me why** | A card asking permission to look at 90 days of transactions | Code |
-| 5 | Tap **Allow** | A 30 day balance forecast chart | Code |
+| 5 | Tap **Allow** | A 14 day balance forecast chart, with every known bill listed | Code |
 | 6 | Tap **Prepare a request** | A request form, part filled from her accounts, and the question "what's changed?" | Code |
 | 7 | Type: `My shifts were cut in October, probably until February. I also have a car loan, $320 a month.` | Four form fields fill from that one sentence, then the next question | **AI** |
 | 8 | Type: `No, just me` | The joint borrower field fills, then the last question | **AI** |
@@ -40,7 +40,19 @@ Type the customer lines as written. Steps marked AI are answered by Claude; the 
 | 12 | Staff console: click Sarah's row | The case summary, each field with the customer's own words, and the 21 day deadline | Code |
 | 13 | Staff console: **Start review** | Sarah's chat says a person has started looking at her request | Code |
 
-The figures behind step 2: $1,900 balance today, plus $1,560 pay on 20 Nov, minus about $1,230 of everyday spending, minus the $2,850 repayment on 28 Nov, leaves her $620 short.
+The figures behind step 2 (the ML service's base forecast, as of 16 Nov):
+
+| Date | Event | Balance |
+| --- | --- | --- |
+| 16 Nov | Start | $420 |
+| 18 Nov | Home & contents insurance -$160 | $260 |
+| 20 Nov | Pay +$900 | $1,160 |
+| 21 Nov | Strata levy -$110 | $1,050 |
+| 24 Nov | Electricity & water -$230 | $820 |
+| 25 Nov | Car registration -$440 | $380 |
+| 28 Nov | Home loan -$1,000 | **-$620** |
+
+Sarah is a part-time aged-care worker. Her hours were cut on 20 Oct: her fortnightly pay went from about $1,196 to $900. In the stress case (lower pay, bills +10%, everyday spending) she would be $947 short; the staff console shows that too.
 
 ### Closing the loop (steps 14 to 17)
 
@@ -49,7 +61,7 @@ This part shows what the name promises: CareLoop comes back after the decision i
 | # | What you do | What appears | Answered by |
 | --- | --- | --- | --- |
 | 14 | Staff console: pick **Lower repayments for 3 months**, then **Record decision** | A decision card in Sarah's chat with a check-in date of 14 Dec 2026 | Code (a person decides) |
-| 15 | Presenter bar: **Check-in, pay recovered** | A lock screen banner, then a card: her pay is back to about $2,600, would she like to go back to normal repayments? | Code (rules; the four weeks are simulated) |
+| 15 | Presenter bar: **Check-in, pay recovered** | A lock screen banner, then a card: her pay is back to about $1,196, would she like to go back to normal repayments? | Code (rules; the four weeks are simulated) |
 | 16 | Tap **Go back to normal** | CareLoop says it has told the Assist team and nothing changes until a person confirms | Code |
 | 17 | Staff console: look at Sarah's row | A red flag: "Wants to go back to normal repayments" | Code |
 

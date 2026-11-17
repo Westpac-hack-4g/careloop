@@ -1,14 +1,11 @@
-// Every threshold the tier rules use lives here, so a pilot can tune them
-// without touching the logic.
+// The tier rules and thresholds live in the ML service (careloop/tiers.py and config.py on
+// the `ml` branch). The app shows their result; these few values are only for wording.
 export const TIER_CONFIG = {
-  incomeChangeFlag: -0.25, // pay down 25% or more
-  bufferTrendFlag: -0.2, // balance down 20% or more over 90 days
-  netFlowNegativeMonths: 3, // spending above income this many months running
-  cardUseFlag: 0.7, // card balance at 70% of the limit or more, and rising
-  projectionDays: 30,
-  essentialsLookbackDays: 30,
-  recentPayWeeks: 4,
-  earlierPayWeeks: 12,
+  /** The base-case forecast looks this many days ahead (LOOKAHEAD_DAYS). */
+  forecastDays: 14,
+  /** LOW_BUFFER fires under this many days of essential costs (WARNING_BUFFER_DAYS). */
+  warningBufferDays: 14,
 } as const;
 
-export const TIER_NAMES = ["Steady", "Squeezed", "At risk", "In difficulty", "Needs special care"] as const;
+/** tiers.py labels. A specialist need is a separate flag, shown as Priority Assist, not a tier. */
+export const TIER_NAMES = ["Steady", "Squeezed", "At risk", "In difficulty"] as const;

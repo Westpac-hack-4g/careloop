@@ -1,6 +1,6 @@
 import { formatDate, formatMoney } from "../clock";
 import type { CustomerId, DraftField, DraftRequest } from "../contract";
-import { getCustomer, getSchedule } from "../data";
+import { getCustomer, getMlRecord, getSchedule } from "../data";
 import { getTierResult } from "../tier";
 
 // The hardship request form. Bank data fills what the bank already knows;
@@ -38,9 +38,11 @@ export function prefillFromAccounts(customerId: CustomerId): DraftField[] {
       fromAccounts("accounts.repayment", `${repayment.product} repayment`, `${formatMoney(repayment.amount)}, due ${formatDate(repayment.date)}`),
     );
   }
-  fields.push(fromAccounts("income.current_pay", "Regular pay now", pay ? `${formatMoney(pay.amount)} a fortnight` : "No regular pay"));
+  const cadence = getMlRecord(customerId).analysis.features.expected_income_cadence_days;
+  const per = cadence === 7 ? "a week" : cadence === 14 ? "a fortnight" : "a month";
+  fields.push(fromAccounts("income.current_pay", "Regular pay now", pay ? `${formatMoney(pay.amount)} ${per}` : "No regular pay"));
   if (tier.signals.incomeChange !== null && tier.signals.incomeChange < 0) {
-    fields.push(fromAccounts("income.change", "Change in pay", `Down ${Math.round(-tier.signals.incomeChange * 100)}% in the last 4 weeks`));
+    fields.push(fromAccounts("income.change", "Change in pay", `Down ${Math.round(-tier.signals.incomeChange * 100)}% on the usual level, last 4 weeks`));
   }
   if (tier.projection.shortfall) {
     fields.push(

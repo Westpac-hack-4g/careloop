@@ -48,7 +48,7 @@ describe("Sarah's demo path", () => {
 
     handleAction("sarah", "allow");
     handleAction("sarah", "prepare_request");
-    await handleMessage("sarah", "My hospital cut my shifts from 5 days to 3 in October. They said until at least February.");
+    await handleMessage("sarah", "My aged-care employer cut my hours in October. They said until at least February.");
     await handleMessage("sarah", "Just a car loan, $320 a month.");
     await handleMessage("sarah", "No, just me.");
     await handleMessage("sarah", "Lower repayments for three months.");
@@ -80,7 +80,7 @@ describe("safety", () => {
   it("stops and hands over on a sensitive disclosure", async () => {
     await handleMessage("sarah", "My partner controls all the money");
     expect(getSessionView("sarah").phase).toBe("handover");
-    expect(getQueue()[0]).toMatchObject({ customerId: "sarah", tier: 4, status: "priority_assist" });
+    expect(getQueue()[0]).toMatchObject({ customerId: "sarah", tier: 2, status: "priority_assist" });
   });
 
   it("blocks approval promises and invented amounts", () => {
@@ -141,7 +141,7 @@ describe("closing the loop", () => {
     recordDecision("sarah", "lower_repayments");
     expect(sendCheckIn("sarah", true).sent).toBe(true);
     const card = getSessionView("sarah").messages.at(-1)?.card;
-    expect(card).toMatchObject({ type: "check_in", recovered: true, payNow: 2600 });
+    expect(card).toMatchObject({ type: "check_in", recovered: true, payNow: 1196.3 });
     handleAction("sarah", "checkin_return");
     const row = getQueue().find((r) => r.customerId === "sarah");
     expect(row?.note).toBe("Wants to go back to normal repayments");
