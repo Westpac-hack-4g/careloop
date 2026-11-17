@@ -143,8 +143,8 @@ export function Phone({
         // The lock screen never mentions money.
         <button
           onClick={() => {
-            // A heads-up opens the home screen, where it sits on the loan tile. Anything else opens the chat.
-            setScreen(view.home.headsUp ? "home" : "chat");
+            // Tapping the banner opens the message. The heads-up also stays on the loan tile on the home screen.
+            setScreen("chat");
             onAction("open_app");
           }}
           className="absolute inset-x-3 top-14 z-10 rounded-2xl border border-border-muted-soft bg-background-white p-3 text-left shadow-lg"
