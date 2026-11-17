@@ -116,9 +116,24 @@ export function Phone({
   const scroller = useRef<HTMLDivElement>(null);
   const count = view?.messages.length ?? 0;
 
+  // When new messages arrive, bring the first new one to the top of the chat, so a tall card
+  // (the forecast) is read from its start instead of scrolled past. Otherwise stay at the bottom.
+  const seenCount = useRef(0);
   useEffect(() => {
-    scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" });
-  }, [count, busy]);
+    const box = scroller.current;
+    const before = seenCount.current;
+    seenCount.current = count;
+    if (!box) return;
+    const firstNew = before > 0 && count > before ? view?.messages[before] : undefined;
+    const node = firstNew && box.querySelector<HTMLElement>(`[data-msg="${firstNew.id}"]`);
+    if (node) box.scrollTo({ top: node.offsetTop - 12, behavior: "smooth" });
+    else if (busy || count < before || before === 0) box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+  }, [count, busy, view?.messages]);
+
+  // Opening the chat from the home screen shows the latest messages.
+  useEffect(() => {
+    if (screen === "chat") scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
+  }, [screen]);
 
   // A fresh customer or a reset starts on the home screen.
   const customerId = view?.customerId;
@@ -169,15 +184,17 @@ export function Phone({
         <Home view={view} onOpenChat={() => setScreen("chat")} />
       ) : (
         <>
-      <div ref={scroller} className="flex-1 space-y-2.5 overflow-y-auto p-3">
+      <div ref={scroller} className="relative flex-1 space-y-2.5 overflow-y-auto p-3">
         {count === 0 && <p className="pt-24 text-center text-[13px] text-text-muted">Ask CareLoop anything about repayments, or wait for a heads-up.</p>}
-        {view?.messages.map((m) =>
-          m.card ? (
-            <ChatCard key={m.id} card={m.card} act={onAction} live={LIVE_CARD[view.phase] === m.card.type && lastOfType(m.card.type) === m.id} />
-          ) : (
-            <Bubble key={m.id} message={m} />
-          ),
-        )}
+        {view?.messages.map((m) => (
+          <div key={m.id} data-msg={m.id}>
+            {m.card ? (
+              <ChatCard card={m.card} act={onAction} live={LIVE_CARD[view.phase] === m.card.type && lastOfType(m.card.type) === m.id} />
+            ) : (
+              <Bubble message={m} />
+            )}
+          </div>
+        ))}
         {busy && <div className="text-[12px] italic text-text-muted">CareLoop is typing…</div>}
       </div>
 
