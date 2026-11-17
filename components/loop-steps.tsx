@@ -12,7 +12,7 @@ const STEPS = [
 /** Where this customer is in the loop, worked out from what has happened so far. */
 function currentStep(view: SessionView | null, row: QueueRow | undefined): number {
   if (view?.messages.some((m) => m.card?.type === "check_in")) return 4;
-  if (row?.case && row.case.draft.fields.length + row.case.summary.length > 0 && view?.messages.some((m) => m.card?.type === "receipt" || m.card?.type === "handover")) return 3;
+  if (row?.case && row.case.draft.fields.length + row.case.summary.length > 0 && view?.messages.some((m) => m.card?.type === "receipt" || m.card?.type === "handover" || m.card?.type === "callback")) return 3;
   if (view && ["prepare", "review", "start_request"].includes(view.phase)) return 2;
   if (view && view.messages.length > 0 && view.phase !== "alert") return 1;
   return 0;

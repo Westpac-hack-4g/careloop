@@ -181,3 +181,35 @@ describe("answering the heads-up in words", () => {
     expect(getSession("tom").analysisConsent).toBe(false);
   });
 });
+
+describe("different help for different tiers", () => {
+  it("gives Tom (tier 1) a money check instead of a shortfall", () => {
+    expect(sendAlert("tom").sent).toBe(true);
+    handleAction("tom", "show_why");
+    handleAction("tom", "allow");
+    expect(cards("tom")).toEqual(["alert", "consent", "projection", "money_check"]);
+    const check = getSessionView("tom").messages.find((m) => m.card?.type === "money_check")!.card!;
+    expect(check.type === "money_check" && check.items.every((i) => i.source.url.startsWith("https://www.westpac.com.au/"))).toBe(true);
+  });
+
+  it("offers Mia (tier 3) a call back by the next business day", () => {
+    expect(sendAlert("mia").sent).toBe(true);
+    const alert = getSessionView("mia").messages.find((m) => m.card?.type === "alert")!.card!;
+    expect(alert).toMatchObject({ type: "alert", callback: true });
+
+    handleAction("mia", "request_callback");
+    expect(cards("mia")).toEqual(["alert", "callback"]);
+    // Mia's existing case gets the call; no second case is opened.
+    const row = getQueue().find((r) => r.customerId === "mia")!;
+    expect(row.case).toMatchObject({ id: "CL-1001", callbackBy: "2026-11-17" });
+    expect(row.note).toBe("Call back by 17 Nov");
+  });
+
+  it("shows staff the ML score as a band, never a percentage", () => {
+    const sarah = getQueue().find((r) => r.customerId === "sarah")!;
+    expect(sarah.ml).toMatchObject({ status: "available", band: "Elevated", aboveThreshold: false });
+    expect(sarah.ml.drivers[0].feature).toBe("cash_buffer_days");
+    const mia = getQueue().find((r) => r.customerId === "mia")!;
+    expect(mia.ml).toMatchObject({ band: "High", aboveThreshold: true });
+  });
+});

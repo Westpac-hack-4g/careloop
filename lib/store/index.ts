@@ -39,16 +39,17 @@ const g = globalThis as unknown as { __careloop?: Store };
 
 function seed(): Store {
   const store: Store = { sessions: new Map(), cases: [], audit: [], nextId: 1 };
-  // Mia missed a repayment on 5 Nov, so her case is already with the Assist team.
+  // Mia's personal loan repayment failed on 10 Nov, so her case is already with the Assist team.
+  // Figures from the ML service (data/ml-results.json).
   store.cases.push({
     id: "CL-1001",
     customerId: "mia",
     customerName: getCustomer("mia").name,
     tier: 3,
-    createdAt: "2026-11-05T09:00:00.000Z",
-    respondBy: addDays("2026-11-05", 21),
+    createdAt: "2026-11-10T09:00:00.000Z",
+    respondBy: addDays("2026-11-10", 21),
     status: "in_review",
-    summary: ["Last salary 17 Oct (job loss)", "Personal loan repayment of $480 failed on 5 Nov", "Balance $40"],
+    summary: ["Last pay 30 Sep (final pay after her job ended)", "Personal loan repayment of $380 failed on 10 Nov", "Available money: $23 across her accounts"],
     draft: { fields: [], missing: [] },
   });
   return store;

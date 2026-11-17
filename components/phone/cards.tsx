@@ -21,14 +21,22 @@ const Shell = ({ title, children }: { title?: string; children: React.ReactNode 
 
 const Buttons = ({ children }: { children: React.ReactNode }) => <div className="mt-2.5 flex flex-wrap gap-1.5">{children}</div>;
 
-function AlertCard({ shortfall, date, text, act, live }: { shortfall?: number; date?: string; text?: string; act: Act; live: boolean }) {
+function AlertCard({ shortfall, date, text, callback, act, live }: { shortfall?: number; date?: string; text?: string; callback?: boolean; act: Act; live: boolean }) {
   return (
     <div className="rounded-xl border border-l-4 border-border-muted-soft border-l-border-primary bg-background-white p-3 text-[13px] text-text-body shadow-sm">
       <div className="flex items-center gap-1.5 text-[14px] font-bold text-text-heading">
         <WarningIcon size="small" color="primary" aria-hidden /> Heads up
       </div>
       <p className="mt-1">{shortfall && date ? `You may be ${money(shortfall)} short before your ${shortDate(date)} repayment.` : text}</p>
-      {live && (
+      {live && callback && (
+        // Tier 3: a person first. Same-day message, call back by the next business day.
+        <Buttons>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("request_callback")}>Ask for a call back</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("show_why")}>Show me why</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_now")}>Not now</Button>
+        </Buttons>
+      )}
+      {live && !callback && (
         <Buttons>
           <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("show_why")}>Show me why</Button>
           <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Talk to someone</Button>
@@ -147,6 +155,41 @@ function StartRequestCard({ act, live }: { act: Act; live: boolean }) {
   );
 }
 
+/** Tier 1: a few self-help steps, each from a Westpac page. */
+function MoneyCheckCard({ items }: { items: Extract<Card, { type: "money_check" }>["items"] }) {
+  return (
+    <Shell title="A quick money check">
+      <ul className="space-y-2">
+        {items.map((item) => (
+          <li key={item.title}>
+            <div className="font-bold text-text-heading">{item.title}</div>
+            <p>{item.text}</p>
+            <a href={item.source.url} target="_blank" rel="noreferrer" className="text-[11px] text-text-link underline">
+              {item.source.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[11px] text-text-muted">Want to set up a change to your repayments anyway? Just tell me.</p>
+    </Shell>
+  );
+}
+
+/** Tier 3: a person calls by the next business day. */
+function CallbackCard({ caseId, callbackBy }: { caseId: string; callbackBy: string }) {
+  return (
+    <Shell title="A call back is booked">
+      <p>
+        A person from the Westpac Assist team will call you by <span className="font-bold">{shortDate(callbackBy, true)}</span>.
+      </p>
+      <p className="mt-1 text-[12px] text-text-muted">
+        Case <span className="font-bold">{caseId}</span>. They can already see your accounts and this chat.
+      </p>
+      <p className="mt-2 text-[11px] text-text-muted">Prototype: simulated handover. Nothing is sent to Westpac.</p>
+    </Shell>
+  );
+}
+
 function ReceiptCard({ caseId, respondBy }: { caseId: string; respondBy: string }) {
   return (
     <Shell title="Request received">
@@ -236,7 +279,11 @@ const HandoverCard = () => (
 export function ChatCard({ card, act, live }: { card: Card; act: Act; live: boolean }) {
   switch (card.type) {
     case "alert":
-      return <AlertCard shortfall={card.shortfall} date={card.date} text={card.text} act={act} live={live} />;
+      return <AlertCard shortfall={card.shortfall} date={card.date} text={card.text} callback={card.callback} act={act} live={live} />;
+    case "money_check":
+      return <MoneyCheckCard items={card.items} />;
+    case "callback":
+      return <CallbackCard caseId={card.caseId} callbackBy={card.callbackBy} />;
     case "closed":
       return <p className="py-1 text-center text-[11px] text-text-muted">Chat closed. Message any time to start again.</p>;
     case "consent":

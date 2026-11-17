@@ -72,6 +72,17 @@ For the other ending, press **Check-in, still tight** at step 15. The card then 
 - **The bar above both screens** shows the loop and who does each part: Notice (rules), Explain (AI), Prepare (AI and the customer), Decide (a Westpac person), Check in (rules). The current step is highlighted.
 - **"How CareLoop noticed"** at the top of the staff panel is a dated timeline from the rule engine: pay dropped on 23 Oct, heads-up today, 12 days before the repayment on 28 Nov. Under it: without the heads-up, the first contact would come after the missed repayment.
 
+### Different help for different tiers (optional, about one minute)
+
+Pick the customer in the presenter bar, then **Send the heads-up**.
+
+| Customer | Tier | What to show | What appears |
+| --- | --- | --- | --- |
+| Tom | 1 Squeezed | Tap the banner, **Show me why**, **Allow** | Nothing is short in 14 days, so instead of a request CareLoop shows **A quick money check**: a budget, "talk to us early", the free National Debt Helpline, each linked to its Westpac page |
+| Mia | 3 In difficulty | Tap the banner, **Ask for a call back** | A kind message and **A call back is booked** for the next business day (17 Nov). Her staff row shows "Call back by 17 Nov" |
+
+In the staff console, every customer also shows an **ML second opinion**: a band (High, Elevated, Low) against the model's flag line, and the four biggest factors. It never changes the tier. Point at the bars: cash buffer days outweighs everything else, which is the model's known weakness.
+
 ## What the AI does at its four steps
 
 Only typed messages go to the AI. Every button tap is handled by code.
@@ -112,7 +123,7 @@ The AI's wording is not guaranteed. So far the full script has been run once on 
 
 - [ ] Confirm with the organisers what must be submitted (slides, a recording, the repository, a hosted link).
 - [ ] Run the script 10 to 20 times on the live AI and record how often it goes to plan.
-- [ ] Run the 24 test prompts from the build plan and record the pass rate for the pitch.
+- [x] Run the 24 test prompts and record the pass rate: 24 of 24 on 17 Nov 2026 ([ai-eval.md](ai-eval.md)).
 - [ ] Decide whether to add a one-click switch to scripted replies in the presenter bar.
 - [ ] Record one clean run of our own screen as a backup.
 - [ ] Decide who types and who talks during the demo.
