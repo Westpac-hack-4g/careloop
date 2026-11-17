@@ -1,0 +1,4 @@
+# Keep data files with LF line endings on every OS, so Windows checkouts parse them the same as Mac.
+*.csv text eol=lf
+*.json text eol=lf
+*.md text eol=lf

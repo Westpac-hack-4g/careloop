@@ -33,7 +33,7 @@ function build() {
   const dir = path.join(process.cwd(), "data", "kb");
   const passages: Passage[] = [];
   for (const file of readdirSync(dir).filter((f) => f.endsWith(".md") && f !== "README.md")) {
-    const [header, body = ""] = readFileSync(path.join(dir, file), "utf8").split(/\n---\n/);
+    const [header, body = ""] = readFileSync(path.join(dir, file), "utf8").replace(/\r\n/g, "\n").split(/\n---\n/); // \r\n: Windows checkouts
     const meta = Object.fromEntries(
       header.split("\n").filter((line) => line.includes(":")).map((line) => {
         const at = line.indexOf(":");
