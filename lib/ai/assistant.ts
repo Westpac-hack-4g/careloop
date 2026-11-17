@@ -11,7 +11,7 @@ import { scriptedReply, type AssistantReply } from "./scripted";
 // The assistant: one Claude conversation with tools. The backend (not the AI)
 // decides which tools exist at each step and runs them.
 
-const MODEL = process.env.CARELOOP_MODEL || "claude-opus-5-5";
+export const MODEL = process.env.CARELOOP_MODEL || "claude-opus-5-5";
 const MAX_TOOL_ROUNDS = 6;
 
 /** Sample mode: no key, or CARELOOP_AI=sample. The scripted assistant answers instead. */
@@ -24,7 +24,7 @@ let client: Anthropic | null = null;
 // 25 seconds, then fall back to the scripted reply rather than stall on stage.
 // Some keys are not tied to one workspace; those need the workspace id sent with every request.
 const workspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
-const getClient = () =>
+export const getClient = () =>
   (client ??= new Anthropic({
     timeout: 25_000,
     maxRetries: 1,

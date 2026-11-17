@@ -1,6 +1,6 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { addDays, DEMO_TODAY, nowIso } from "../clock";
-import type { AuditEntry, Case, ChatMessage, CustomerId, DraftField, Phase } from "../contract";
+import type { AuditEntry, Case, ChatMessage, CustomerId, DraftField, NightlyReport, Phase } from "../contract";
 import { allCustomers, getCustomer } from "../data";
 
 // In-memory store for the demo: sessions, cases and the audit log.
@@ -32,13 +32,15 @@ interface Store {
   cases: Case[];
   audit: AuditEntry[];
   nextId: number;
+  /** The latest nightly report, if one has run. */
+  report: NightlyReport | null;
 }
 
 // Kept on globalThis so the dev server's hot reload does not wipe the demo.
 const g = globalThis as unknown as { __careloop?: Store };
 
 function seed(): Store {
-  const store: Store = { sessions: new Map(), cases: [], audit: [], nextId: 1 };
+  const store: Store = { sessions: new Map(), cases: [], audit: [], nextId: 1, report: null };
   // Mia's personal loan repayment failed on 10 Nov, so her case is already with the Assist team.
   // Figures from the ML service (data/ml-results.json).
   store.cases.push({
@@ -90,7 +92,7 @@ export function addMessage(session: Session, message: Omit<ChatMessage, "id" | "
   return full;
 }
 
-export function audit(customerId: CustomerId, kind: AuditEntry["kind"], detail: string): void {
+export function audit(customerId: AuditEntry["customerId"], kind: AuditEntry["kind"], detail: string): void {
   store().audit.push({ at: nowIso(), customerId, kind, detail });
 }
 
@@ -113,3 +115,8 @@ export function createCase(input: Omit<Case, "id" | "createdAt" | "respondBy">):
 }
 
 export const customerIds = (): CustomerId[] => allCustomers().map((c) => c.id);
+
+export const getReport = (): NightlyReport | null => store().report ?? null;
+export function saveReport(report: NightlyReport): void {
+  store().report = report;
+}

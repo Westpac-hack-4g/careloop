@@ -6,9 +6,10 @@ import { Input } from "@westpac/ui/input";
 import { Select } from "@westpac/ui/select";
 import { WBCLogo } from "@westpac/ui/symbol";
 import { useState } from "react";
-import type { CaseStatus, CustomerId, QueueRow, TimelineItem } from "@/lib/contract";
+import type { CaseStatus, CustomerId, NightlyReport, QueueRow, TimelineItem } from "@/lib/contract";
 import { DECISIONS, type DecisionKey } from "@/lib/decisions";
 import { shortDate } from "@/lib/client/api";
+import { ReportView } from "./report";
 
 const STATUS: Record<CaseStatus, string> = {
   new: "New",
@@ -220,6 +221,9 @@ function MlSecondOpinion({ ml }: { ml: QueueRow["ml"] }) {
 
 export function StaffConsole({
   queue,
+  report,
+  tab,
+  onTab,
   selected,
   onSelect,
   onReply,
@@ -227,6 +231,10 @@ export function StaffConsole({
   onDecide,
 }: {
   queue: QueueRow[];
+  /** The latest nightly report, if one has run. */
+  report: NightlyReport | null;
+  tab: "queue" | "report";
+  onTab: (tab: "queue" | "report") => void;
   selected: CustomerId | null;
   onSelect: (id: CustomerId) => void;
   onReply: (id: CustomerId, text: string) => void;
@@ -250,7 +258,25 @@ export function StaffConsole({
         </div>
       </header>
 
-      <table className="w-full text-left text-[13px]">
+      <nav className="flex border-b border-border-muted-soft bg-background-faint text-[13px]" role="tablist" aria-label="Staff views">
+        {(["queue", "report"] as const).map((name) => (
+          <button
+            key={name}
+            role="tab"
+            aria-selected={tab === name}
+            onClick={() => onTab(name)}
+            className={`relative cursor-pointer px-4 py-2 ${tab === name ? "bg-background-white font-bold text-text-hero" : "text-text-muted hover:text-text-hero"}`}
+          >
+            {name === "queue" ? "Customers" : "Nightly report"}
+            {name === "report" && report && tab !== "report" && <span className="ml-1.5 inline-block size-2 rounded-full bg-surface-primary align-middle" aria-label="New report" />}
+            {tab === name && <span className="absolute inset-x-0 bottom-0 h-[3px] bg-surface-primary" />}
+          </button>
+        ))}
+      </nav>
+
+      {tab === "report" && <ReportView report={report} />}
+
+      {tab === "queue" && <table className="w-full text-left text-[13px]">
         <thead className="bg-background-faint text-[11px] uppercase text-text-muted">
           <tr>
             <th className="px-4 py-2 font-normal">Customer</th>
@@ -284,9 +310,9 @@ export function StaffConsole({
             </tr>
           ))}
         </tbody>
-      </table>
+      </table>}
 
-      {row && (
+      {tab === "queue" && row && (
         <section className="m-4 flex-1 overflow-y-auto rounded-lg border border-border-muted-soft p-4 text-[13px]">
           <Timeline items={row.timeline} />
           <div className="text-[14px] font-bold text-text-heading">Case summary · {row.customerName}</div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Children, Fragment, useEffect, useState } from "react";
 import type { AuditEntry, CustomerId } from "@/lib/contract";
 
 /** How long a presenter notice stays on screen. */
@@ -24,14 +24,14 @@ const IDLE = `${CELL} text-text-hero hover:bg-surface-hero-faint`;
 const Tick = () => <span className="my-3 -mx-px w-px shrink-0 bg-border-muted-soft" aria-hidden />;
 
 /** One group: its own white segment, an optional grey label cell, then its cells. */
-const Group = ({ label, children, className = "" }: { label?: string; children: React.ReactNode[]; className?: string }) => (
+const Group = ({ label, children, className = "" }: { label?: string; children: React.ReactNode; className?: string }) => (
   <div className={`flex h-full items-stretch overflow-visible rounded-lg border border-border-muted-soft bg-background-white shadow-sm [&>:first-child]:rounded-l-lg [&>:last-child]:rounded-r-lg ${className}`}>
     {label && (
       <span className={`flex items-center whitespace-nowrap border-r border-border-muted-soft bg-background-faint px-2 text-[10px] font-bold uppercase text-text-muted ${WIDE_ONLY}`}>
         {label}
       </span>
     )}
-    {children.map((child, i) => (
+    {Children.toArray(children).map((child, i) => (
       <Fragment key={i}>
         {i > 0 && <Tick />}
         {child}
@@ -51,6 +51,8 @@ export function PresenterBar({
   onSendAlert,
   onToggleAlerts,
   onCheckIn,
+  onRunReport,
+  reportBusy,
   onReset,
 }: {
   customerId: CustomerId;
@@ -62,6 +64,8 @@ export function PresenterBar({
   onSendAlert: () => void;
   onToggleAlerts: () => void;
   onCheckIn: (recovered: boolean) => void;
+  onRunReport: () => void;
+  reportBusy: boolean;
   onReset: () => void;
 }) {
   // Display only: hide the notice after a few seconds. The page still owns and clears `notice`.
@@ -110,6 +114,13 @@ export function PresenterBar({
           </button>
           <button onClick={() => onCheckIn(false)} className={IDLE}>
             Still tight
+          </button>
+        </Group>
+
+        {/* In production a timer starts the report after the nightly risk run. Here the presenter is the clock. */}
+        <Group label="Tonight">
+          <button onClick={onRunReport} disabled={reportBusy} className={`${IDLE} disabled:cursor-wait disabled:opacity-60`}>
+            {reportBusy ? "Building report…" : "Run nightly report"}
           </button>
         </Group>
 

@@ -4,7 +4,7 @@ As of 16 Nov 2026.
 
 ## Summary
 
-The demo follows one customer, Sarah, from an early heads-up about a $620 shortfall to a filed support request that a Westpac Assist staff member picks up. It runs on one page: Sarah's phone on the left, the staff console on the right. It takes 17 steps and about four minutes.
+The demo follows one customer, Sarah, from an early heads-up about a $620 shortfall to a filed support request that a Westpac Assist staff member picks up. It runs on one page: Sarah's phone on the left, the staff console on the right. It takes 17 steps and about four minutes, plus two optional steps for the nightly branch report.
 
 The split we show the judges: AI handles the words, rules handle money and deadlines, people make the decisions. The AI answers at 4 of the 17 steps. The other 13 are plain code and come out the same on every run.
 
@@ -66,6 +66,19 @@ This part shows what the name promises: CareLoop comes back after the decision i
 | 17 | Staff console: look at Sarah's row | A red flag: "Wants to go back to normal repayments" | Code |
 
 For the other ending, press **Check-in, still tight** at step 15. The card then offers **Ask for more time**.
+
+### The nightly branch report (steps 18 and 19, about 20 seconds)
+
+The risk run looks at every customer each night, and each branch then gets a report on its own customers. It builds itself on a clock; in the demo the presenter is the clock. The demo data has one branch, Southport.
+
+| # | What you do | What appears | Answered by |
+| --- | --- | --- | --- |
+| 18 | Presenter bar: **Run nightly report** (takes about 5 seconds on the live AI) | The staff console switches to **Nightly report** for the Southport branch: a three-sentence summary, customers by tier, the days repayments may fall short, the most common signals | Code counts every figure. **AI** writes only the summary |
+| 19 | Point at **CareLoop at this branch so far** | Sarah's heads-up and her arrangement are already in the counts, next to how many tier 2 and 3 customers have had no heads-up yet | Code |
+
+Figures at step 18: 1,003 customers, 59 at tier 2 or 3 (4 and 55), 158 at tier 1, and 18 repayments worth $11,294 that may not be covered in 14 days.
+
+The report holds counts only, no names. The customers are synthetic (the ML service's 1,000 simulated customers plus Sarah, Tom and Mia) and the branch is made up. A summary that states a figure the rules did not produce is thrown away and a plain rules-written one is shown instead.
 
 ### Two things to point at while you talk
 

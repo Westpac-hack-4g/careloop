@@ -14,7 +14,7 @@ The full page, with the same diagram, is [architecture.html](architecture.html) 
 | --- | --- | --- | --- |
 | 1. Risk Tracking | For every opted-in customer across Westpac: read the transactions, work out the tier and any shortfall, keep a daily history. | AI sorts transactions and flags unusual patterns. Rules do every calculation. | A stand-in: `lib/tier/` plus pre-sorted sample data. No AI in it yet. |
 | 2. CareLoop | Everything the customer and the Assist team touch: heads-up, chat, request, receipt and deadline, staff console, decision, check-in. | AI answers from Westpac's pages, turns the customer's words into form fields and flags sensitive situations. It never calculates or decides. | Built: `lib/conversation/`, `lib/ai/`, `lib/rag/`, `components/`. |
-| 3. Risk Reporting | Turn the daily tiers and the outcomes into counts and trends for staff. No names leave this service. | None needed for counting. | Nothing. |
+| 3. Risk Reporting | Turn the daily tiers and the outcomes into counts and trends for staff. No names leave this service. | None needed for counting. AI writes the short summary at the top. | A first nightly branch report: `lib/report/` and the **Nightly report** tab of the staff console, counted from the ML service's results for 1,003 synthetic customers in one made-up branch (`data/ml-cohort.json`). No monthly report or trends yet. |
 
 ## The five hand-offs
 

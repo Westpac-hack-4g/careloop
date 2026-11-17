@@ -15,6 +15,8 @@ import { ChatCard } from "./cards";
 // Which card is waiting for a tap at each step. Older cards lose their buttons.
 const LIVE_CARD: Partial<Record<Phase, string>> = {
   alert: "alert",
+  // A question typed after the heads-up moves the chat to "explain"; the heads-up keeps its buttons.
+  explain: "alert",
   consent: "consent",
   projection: "help_options",
   review: "review",

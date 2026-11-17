@@ -1,4 +1,4 @@
-import type { AuditEntry, CustomerId, QueueRow, SessionView } from "../contract";
+import type { AuditEntry, CustomerId, NightlyReport, QueueRow, SessionView } from "../contract";
 
 // Browser-side calls to the API routes. The screens use only these.
 
@@ -21,7 +21,8 @@ export const api = {
   startReview: (customerId: CustomerId) => call<{ queue: QueueRow[] }>("/api/cases", { customerId, op: "start_review" }),
   decide: (customerId: CustomerId, outcome: string) => call<{ queue: QueueRow[] }>("/api/cases", { customerId, op: "decide", outcome }),
   checkIn: (customerId: CustomerId, recovered: boolean) => call<{ sent: boolean; reason?: string }>("/api/demo", { op: "check_in", customerId, recovered }),
-  demoInfo: () => call<{ aiMode: "claude" | "sample"; audit: AuditEntry[] }>("/api/demo"),
+  demoInfo: () => call<{ aiMode: "claude" | "sample"; audit: AuditEntry[]; report: NightlyReport | null }>("/api/demo"),
+  runReport: () => call<{ report: NightlyReport }>("/api/demo", { op: "run_report" }),
   reset: () => call<{ ok: boolean }>("/api/demo", { op: "reset" }),
   sendAlert: (customerId: CustomerId) => call<{ sent: boolean; reason?: string }>("/api/demo", { op: "send_alert", customerId }),
 };

@@ -54,6 +54,8 @@ Press the backtick key to hide it on stage.
 | `data/kb/` | Westpac's public support pages the assistant answers from (12 pages, saved by `npm run kb`) | AI engineer |
 | `lib/tier/` | Turns the ML service's result into the app's shapes: reasons, 14-day projection, timeline. Recomputes nothing. No AI. | Developer |
 | `scripts/export-ml-results.py` | Writes `data/ml-results.json` from the ML service | Data scientist |
+| `data/ml-cohort.json` | One line per customer for the nightly report: branch (one made-up branch), tier, signals, 14-day shortfall and ML band for 1,003 synthetic customers. No names or transactions | Data scientist |
+| `scripts/export-ml-cohort.py` | Writes `data/ml-cohort.json` by running the ML service over its synthetic cohort (needs the trained model: see `ml/README.md`) | Data scientist |
 | `lib/conversation/` | Steps, button taps, tools the AI may use per step, consent gate, form | Developer |
 | `lib/ai/` | System prompt, Claude loop, reply safety checks, scripted fallback | AI engineer |
 | `lib/rag/` | Keyword search (BM25) over `data/kb` | AI engineer |

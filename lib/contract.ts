@@ -169,7 +169,8 @@ export interface Case {
 
 export interface AuditEntry {
   at: string;
-  customerId: CustomerId;
+  /** "report" for entries about the nightly report, which is about no one customer. */
+  customerId: CustomerId | "report";
   kind: "consent" | "tool_call" | "tool_refused" | "message" | "case" | "safety" | "cant_pay_logged";
   detail: string;
 }
@@ -230,4 +231,32 @@ export interface QueueRow {
   brief: RiskBrief;
   ml: MlOpinion;
   chat: ChatSoFar;
+}
+
+/** One branch's nightly report. Counts only: it never names a customer. */
+export interface BranchReport {
+  branch: string;
+  customers: number;
+  /** Customers at each tier from the risk rules, tier 0 first. */
+  tiers: { tier: Tier; name: string; count: number }[];
+  /** Too little history for the rules to place them. */
+  notAssessed: number;
+  /** Repayments the 14-day forecast says may not be covered. */
+  shortfalls: { customers: number; total: number; days: { date: string; customers: number; amount: number }[]; peak: { date: string; customers: number; amount: number } | null };
+  /** The most common early-warning signals among tier 1 to 3 customers. */
+  signals: { code: string; label: string; count: number }[];
+  /** Tier 2 and 3 customers the ML second opinion also ranks High. */
+  mlAgrees: number;
+  /** What CareLoop has done at this branch so far. */
+  careloop: { headsUps: number; requests: number; waiting: number; arrangements: number; callBacks: number; nextDeadline: string | null; notContacted: number };
+  summary: { text: string; by: "ai" | "rules" };
+}
+
+/** The nightly report: the risk run covers every customer, the report goes to each branch. */
+export interface NightlyReport {
+  generatedAt: string;
+  asOf: string;
+  forecastDays: number;
+  totalCustomers: number;
+  branches: BranchReport[];
 }

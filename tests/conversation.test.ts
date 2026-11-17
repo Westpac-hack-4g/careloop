@@ -239,3 +239,30 @@ describe("the forecast and the help options", () => {
     });
   });
 });
+
+describe("nightly report", () => {
+  it("counts every branch from the ML cohort and names no customer", async () => {
+    const { runNightlyReport } = await import("@/lib/report");
+    const report = await runNightlyReport();
+    expect(report.branches.map((b) => b.branch)).toContain("Southport");
+    expect(report.branches.reduce((sum, b) => sum + b.customers, 0)).toBe(report.totalCustomers);
+    for (const b of report.branches) {
+      expect(b.tiers.reduce((sum, t) => sum + t.count, 0) + b.notAssessed).toBe(b.customers);
+      expect(b.shortfalls.days.reduce((sum, d) => sum + d.amount, 0)).toBe(b.shortfalls.total);
+      // Sample mode: the rules write the summary.
+      expect(b.summary.by).toBe("rules");
+    }
+    expect(JSON.stringify(report)).not.toMatch(/Sarah|Tom R|Mia/);
+  });
+
+  it("picks up what CareLoop did for the branch's customers", async () => {
+    const { runNightlyReport } = await import("@/lib/report");
+    const southport = async () => (await runNightlyReport()).branches.find((b) => b.branch === "Southport")!.careloop;
+    const before = await southport();
+    expect(before.headsUps).toBe(0);
+    sendAlert("sarah");
+    const after = await southport();
+    expect(after.headsUps).toBe(1);
+    expect(after.notContacted).toBe(before.notContacted - 1);
+  });
+});

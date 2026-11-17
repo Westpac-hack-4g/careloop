@@ -6,7 +6,7 @@ import { Phone } from "@/components/phone/phone";
 import { PresenterBar } from "@/components/presenter-bar";
 import { StaffConsole } from "@/components/staff/console";
 import { api } from "@/lib/client/api";
-import type { AuditEntry, CustomerId, QueueRow, SessionView } from "@/lib/contract";
+import type { AuditEntry, CustomerId, NightlyReport, QueueRow, SessionView } from "@/lib/contract";
 
 // One page, both sides: the customer's phone on the left, the staff console on the right.
 
@@ -17,7 +17,9 @@ export default function Home() {
   const [view, setView] = useState<SessionView | null>(null);
   const [queue, setQueue] = useState<QueueRow[]>([]);
   const [selectedCase, setSelectedCase] = useState<CustomerId | null>(null);
-  const [demo, setDemo] = useState<{ aiMode: string; audit: AuditEntry[] }>({ aiMode: "", audit: [] });
+  const [demo, setDemo] = useState<{ aiMode: string; audit: AuditEntry[]; report: NightlyReport | null }>({ aiMode: "", audit: [], report: null });
+  const [staffTab, setStaffTab] = useState<"queue" | "report">("queue");
+  const [reportBusy, setReportBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [showPresenter, setShowPresenter] = useState(true);
@@ -92,10 +94,21 @@ export default function Home() {
               if (!result.sent) setNotice(result.reason ?? "No check-in sent.");
             })
           }
+          reportBusy={reportBusy}
+          onRunReport={async () => {
+            // The summaries are written by the AI, so this takes a few seconds.
+            setReportBusy(true);
+            await run(async () => {
+              await api.runReport();
+              setStaffTab("report");
+            });
+            setReportBusy(false);
+          }}
           onReset={() =>
             run(async () => {
               await api.reset();
               setSelectedCase(null);
+              setStaffTab("queue");
             })
           }
         />
@@ -103,7 +116,7 @@ export default function Home() {
       <LoopSteps view={view} row={queue.find((r) => r.customerId === customerId)} />
       <div className="flex flex-wrap items-start justify-center gap-6">
         <Phone view={view} busy={busy} onText={sendText} onAction={(action) => run(() => api.sendAction(customerId, action))} />
-        <StaffConsole queue={queue} selected={selectedCase ?? customerId} onSelect={setSelectedCase} onReply={(id, text) => run(() => api.staffReply(id, text))} onStartReview={(id) => run(() => api.startReview(id))} onDecide={(id, outcome) => run(() => api.decide(id, outcome))} />
+        <StaffConsole queue={queue} report={demo.report} tab={staffTab} onTab={setStaffTab} selected={selectedCase ?? customerId} onSelect={setSelectedCase} onReply={(id, text) => run(() => api.staffReply(id, text))} onStartReview={(id) => run(() => api.startReview(id))} onDecide={(id, outcome) => run(() => api.decide(id, outcome))} />
       </div>
       <p className="text-center text-[11px] text-text-muted">Hackathon prototype on made-up customers. Not a Westpac product.</p>
     </main>

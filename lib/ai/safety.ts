@@ -15,7 +15,7 @@ const toNumber = (raw: string): number => Number(raw.replace(/[$\s,]/g, ""));
 /** Dollar amounts the reply states. */
 const amountsIn = (text: string): number[] => (text.match(/\$\s?\d[\d,]*(\.\d+)?/g) ?? []).map(toNumber);
 /** Every number in the trusted text. Tool results carry amounts as plain numbers, with no dollar sign. */
-const numbersIn = (text: string): number[] => (text.match(/\d[\d,]*(\.\d+)?/g) ?? []).map(toNumber);
+export const numbersIn = (text: string): number[] => (text.match(/\d[\d,]*(\.\d+)?/g) ?? []).map(toNumber);
 
 export interface SafetyVerdict {
   ok: boolean;
