@@ -123,6 +123,8 @@ export type Card =
   | { type: "alert"; shortfall?: number; date?: string; text?: string; callback?: boolean }
   /** Tier 1: no shortfall ahead, so a few self-help steps from Westpac's own pages instead of a request. */
   | { type: "money_check"; items: { title: string; text: string; source: Citation }[] }
+  /** After the forecast: Westpac's own wording about help, then the three ways to go on. */
+  | { type: "help_options"; text: string }
   /** Tier 3: a person will call by the next business day. */
   | { type: "callback"; caseId: string; callbackBy: string }
   /** The customer said "not now": this chat is over until they write again. */

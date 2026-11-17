@@ -16,7 +16,7 @@ import { ChatCard } from "./cards";
 const LIVE_CARD: Partial<Record<Phase, string>> = {
   alert: "alert",
   consent: "consent",
-  projection: "projection",
+  projection: "help_options",
   review: "review",
   start_request: "start_request",
   check_in: "check_in",

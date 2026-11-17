@@ -56,7 +56,7 @@ describe("Sarah's demo path", () => {
 
     handleAction("sarah", "confirm_review");
     handleAction("sarah", "start_yes");
-    expect(cards("sarah")).toEqual(["alert", "consent", "projection", "review", "start_request", "receipt"]);
+    expect(cards("sarah")).toEqual(["alert", "consent", "projection", "help_options", "review", "start_request", "receipt"]);
 
     const row = getQueue()[0];
     expect(row.customerId).toBe("sarah");
@@ -187,7 +187,7 @@ describe("different help for different tiers", () => {
     expect(sendAlert("tom").sent).toBe(true);
     handleAction("tom", "show_why");
     handleAction("tom", "allow");
-    expect(cards("tom")).toEqual(["alert", "consent", "projection", "money_check"]);
+    expect(cards("tom")).toEqual(["alert", "consent", "projection", "money_check", "help_options"]);
     const check = getSessionView("tom").messages.find((m) => m.card?.type === "money_check")!.card!;
     expect(check.type === "money_check" && check.items.every((i) => i.source.url.startsWith("https://www.westpac.com.au/"))).toBe(true);
   });
@@ -224,5 +224,18 @@ describe("handing the chat to a person", () => {
     expect(row.note).toBe("Asked to chat with a person");
     expect(row.chat).toMatchObject({ stage: "Has seen the 14-day forecast", consent: true });
     expect(row.chat.entries.map((e) => e.text)).toContain("Saw the 14-day forecast");
+  });
+});
+
+describe("the forecast and the help options", () => {
+  it("shows Westpac's own wording after the forecast, with the buttons below it", () => {
+    sendAlert("sarah");
+    handleAction("sarah", "show_why");
+    handleAction("sarah", "allow");
+    const last = getSessionView("sarah").messages.at(-1)!.card!;
+    expect(last).toEqual({
+      type: "help_options",
+      text: "Feeling the pinch? We have financial hardship arrangements available – our Assist Team is just a phone call away, or you can chat with us or apply online.",
+    });
   });
 });

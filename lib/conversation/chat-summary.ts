@@ -24,6 +24,7 @@ const CARD: Record<Card["type"], string> = {
   consent: "Saw the permission card",
   projection: "Saw the 14-day forecast",
   money_check: "Saw the money check",
+  help_options: "Saw the options for getting help",
   draft: "Saw the request draft",
   review: "Saw the request to check",
   start_request: "Asked whether to send the request",

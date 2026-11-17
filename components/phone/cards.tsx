@@ -61,7 +61,7 @@ function ConsentCard({ act, live }: { act: Act; live: boolean }) {
   );
 }
 
-function ProjectionCard({ projection, act, live }: { projection: Projection; act: Act; live: boolean }) {
+function ProjectionCard({ projection }: { projection: Projection }) {
   const data = projection.points.map((p) => ({ ...p, label: shortDate(p.date) }));
   return (
     <Shell title={`Your next ${projection.points.length - 1} days`}>
@@ -85,14 +85,23 @@ function ProjectionCard({ projection, act, live }: { projection: Projection; act
       <ul className="mt-1.5 list-disc pl-4 text-[12px] text-text-muted">
         {projection.assumptions.map((a) => <li key={a}>{a}</li>)}
       </ul>
+    </Shell>
+  );
+}
+
+/** After the forecast: Westpac's own wording about help, then three ways to go on. The buttons go quiet once the step is over. */
+function HelpOptionsCard({ text, act, live }: { text: string; act: Act; live: boolean }) {
+  return (
+    <div className="max-w-[92%] rounded-2xl rounded-bl-sm border border-border-muted-soft bg-background-white px-3 py-2 text-[13px] leading-snug text-text-body shadow-sm">
+      <p>{text}</p>
       {live && (
         <Buttons>
-          <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("prepare_request")}>Prepare a request</Button>
+          <Button className="!text-[13px] font-medium" size="small" look="primary" onClick={() => act("prepare_request")}>Fill in a request with me</Button>
           <Button className="!text-[13px] font-medium" size="small" look="primary" soft onClick={() => act("talk_to_someone")}>Chat with a person</Button>
           <Button className="!text-[13px] font-medium" size="small" look="faint" onClick={() => act("not_right")}>Something&apos;s missing</Button>
         </Buttons>
       )}
-    </Shell>
+    </div>
   );
 }
 
@@ -289,7 +298,9 @@ export function ChatCard({ card, act, live }: { card: Card; act: Act; live: bool
     case "consent":
       return <ConsentCard act={act} live={live} />;
     case "projection":
-      return <ProjectionCard projection={card.projection} act={act} live={live} />;
+      return <ProjectionCard projection={card.projection} />;
+    case "help_options":
+      return <HelpOptionsCard text={card.text} act={act} live={live} />;
     case "draft":
       return <DraftCard draft={card.draft} />;
     case "review":

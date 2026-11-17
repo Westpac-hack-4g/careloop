@@ -30,8 +30,8 @@ Type the customer lines as written. Steps marked AI are answered by Claude; the 
 | 2 | Tap the banner | The chat opens on a card saying she may be about $620 short on 28 Nov. (The back arrow shows the same heads-up on her Home loan tile.) | Code (amount from the ML service's forecast) |
 | 3 | Type: `Will asking for help hurt my credit score?` | An answer taken from Westpac's own pages, with source links | **AI** |
 | 4 | Tap **Show me why** | A card asking permission to look at 90 days of transactions | Code |
-| 5 | Tap **Allow** | A 14 day balance forecast chart, with every known bill listed | Code |
-| 6 | Tap **Prepare a request** | A request form, part filled from her accounts, and the question "what's changed?" | Code |
+| 5 | Tap **Allow** | A 14 day balance forecast chart with every known bill listed, then Westpac's own wording about help and three buttons: **Fill in a request with me**, **Chat with a person**, **Something's missing** | Code |
+| 6 | Tap **Fill in a request with me** | A request form, part filled from her accounts, and the question "what's changed?" | Code |
 | 7 | Type: `My shifts were cut in October, probably until February. I also have a car loan, $320 a month.` | Four form fields fill from that one sentence, then the next question | **AI** |
 | 8 | Type: `No, just me` | The joint borrower field fills, then the last question | **AI** |
 | 9 | Type: `Lower repayments for a while` | The full request for her to check | **AI** |

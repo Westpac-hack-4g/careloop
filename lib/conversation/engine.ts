@@ -12,6 +12,7 @@ import { chatSoFar } from "./chat-summary";
 import { isSensitive, saysCantPay } from "./detectors";
 import { toDraft } from "./draft";
 import { handover } from "./handover";
+import { HELP_OPTIONS_TEXT } from "./help-options";
 import { MONEY_CHECK } from "./money-check";
 import { upsertDraftCard } from "./tools";
 
@@ -200,6 +201,9 @@ export function handleAction(customerId: CustomerId, action: Action): void {
         addMessage(session, { role: "careloop", card: { type: "money_check", items: MONEY_CHECK } });
         note(session, "Tier 1: the backend showed a money check card (budget, talk early, National Debt Helpline). The customer can still ask to prepare a request.");
       }
+      // Westpac's own wording about help, then the three ways to go on. The buttons live here, not on the chart.
+      addMessage(session, { role: "careloop", card: { type: "help_options", text: HELP_OPTIONS_TEXT } });
+      note(session, `The backend showed Westpac's wording about help: "${HELP_OPTIONS_TEXT}" It has three buttons: Fill in a request with me, Chat with a person, Something's missing.`);
       return;
     }
     case "prepare_request":
@@ -207,7 +211,7 @@ export function handleAction(customerId: CustomerId, action: Action): void {
       session.phase = "prepare";
       upsertDraftCard(session);
       say(session, "I've filled in what Westpac already knows from your accounts. Could you tell me in your own words what's changed?");
-      note(session, "The customer tapped Prepare a request. The backend pre-filled the form and asked what has changed.");
+      note(session, "The customer tapped Fill in a request with me. The backend pre-filled the form and asked what has changed.");
       return;
     case "confirm_review":
       if (session.phase !== "review") return;
