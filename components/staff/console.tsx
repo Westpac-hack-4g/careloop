@@ -57,7 +57,13 @@ function Timeline({ items }: { items: TimelineItem[] }) {
   );
 }
 
-const BAND_COLOR: Record<NonNullable<QueueRow["ml"]["band"]>, "danger" | "warning" | "success"> = { High: "danger", Elevated: "warning", Low: "success" };
+type Band = NonNullable<QueueRow["ml"]["band"]>;
+const BANDS: Band[] = ["Low", "Elevated", "High"];
+const BAND_ON: Record<Band, string> = {
+  Low: "bg-surface-success font-bold text-text-mono",
+  Elevated: "bg-surface-warning font-bold text-text-mono",
+  High: "bg-surface-danger font-bold text-text-mono",
+};
 
 /** The ML service's score as a second opinion. Shown beside the tier, never used to set it. */
 function MlSecondOpinion({ ml }: { ml: QueueRow["ml"] }) {
@@ -73,9 +79,17 @@ function MlSecondOpinion({ ml }: { ml: QueueRow["ml"] }) {
     <div className="mt-3 rounded-lg border border-dashed border-border-muted-mild p-3">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-[11px] font-bold uppercase text-text-muted">ML second opinion</span>
-        <Badge color={BAND_COLOR[ml.band]} soft>
-          {ml.band} risk
-        </Badge>
+        {/* The three bands side by side, this customer's one lit, so staff see where it sits. */}
+        <span className="inline-flex overflow-hidden rounded-sm border border-border-muted-soft text-[11px]" aria-label={`ML risk band: ${ml.band}`}>
+          {BANDS.map((band) => (
+            <span
+              key={band}
+              className={`border-r border-border-muted-soft px-2 py-0.5 last:border-r-0 ${band === ml.band ? BAND_ON[band] : "bg-background-white text-text-muted"}`}
+            >
+              {band}
+            </span>
+          ))}
+        </span>
         <span className="text-[11px] text-text-muted">
           {ml.aboveThreshold ? "Above" : "Below"} the model&apos;s flag line · does not change the tier
         </span>
