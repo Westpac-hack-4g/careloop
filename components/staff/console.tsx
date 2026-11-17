@@ -57,6 +57,51 @@ function Timeline({ items }: { items: TimelineItem[] }) {
   );
 }
 
+const BAND_COLOR: Record<NonNullable<QueueRow["ml"]["band"]>, "danger" | "warning" | "success"> = { High: "danger", Elevated: "warning", Low: "success" };
+
+/** The ML service's score as a second opinion. Shown beside the tier, never used to set it. */
+function MlSecondOpinion({ ml }: { ml: QueueRow["ml"] }) {
+  if (ml.status !== "available" || !ml.band) {
+    return (
+      <div className="mt-3 rounded-lg border border-dashed border-border-muted-soft p-3 text-[12px] text-text-muted">
+        ML second opinion: {ml.status === "not_applicable" ? "no repayment due in the next 14 days, so no score" : "model not available"}.
+      </div>
+    );
+  }
+  const largest = Math.max(...ml.drivers.map((d) => Math.abs(d.contribution)), 0.01);
+  return (
+    <div className="mt-3 rounded-lg border border-dashed border-border-muted-mild p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[11px] font-bold uppercase text-text-muted">ML second opinion</span>
+        <Badge color={BAND_COLOR[ml.band]} soft>
+          {ml.band} risk
+        </Badge>
+        <span className="text-[11px] text-text-muted">
+          {ml.aboveThreshold ? "Above" : "Below"} the model&apos;s flag line · does not change the tier
+        </span>
+      </div>
+      <div className="mt-2 text-[11px] text-text-muted">Biggest factors in this score</div>
+      <ul className="mt-1 space-y-1">
+        {ml.drivers.map((d) => (
+          <li key={d.feature} className="grid grid-cols-[minmax(0,1fr)_120px_52px] items-center gap-2 text-[12px]">
+            <span className="truncate" title={d.feature}>{d.label}</span>
+            <span className="h-1.5 rounded-full bg-surface-muted-pale">
+              <span
+                className={`block h-1.5 rounded-full ${d.contribution > 0 ? "bg-surface-primary" : "bg-surface-success"}`}
+                style={{ width: `${Math.max(3, (Math.abs(d.contribution) / largest) * 100)}%` }}
+              />
+            </span>
+            <span className="text-right tabular-nums text-text-muted">{d.contribution > 0 ? "+" : ""}{d.contribution.toFixed(2)}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[11px] leading-snug text-text-muted">
+        Logistic regression on 1,000 synthetic customers. A ranking, not a probability. Red raises the score, green lowers it.
+      </p>
+    </div>
+  );
+}
+
 export function StaffConsole({
   queue,
   selected,
@@ -130,12 +175,13 @@ export function StaffConsole({
           <Timeline items={row.timeline} />
           <div className="text-[14px] font-bold text-text-heading">Case summary · {row.customerName}</div>
           <div className="mb-2 text-[11px] text-text-muted">
-            {row.case ? `${row.case.id} · prepared by CareLoop; a person decides` : "No request yet. Signals from the rule engine:"}
+            {row.case ? `${row.case.id} · prepared by CareLoop; a person decides` : `No request yet. Tier ${row.tier} from the risk rules, because:`}
           </div>
           <ul className="space-y-0.5">
             {(row.case?.summary ?? row.reasons).map((line) => <li key={line}>{line}</li>)}
             {!row.case && !row.reasons.length && <li>No risk signals.</li>}
           </ul>
+          <MlSecondOpinion ml={row.ml} />
 
           {row.case && row.case.draft.fields.length > 0 && (
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border-muted-soft pt-3">

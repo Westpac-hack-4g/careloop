@@ -1,14 +1,16 @@
 import { assistantReply } from "../ai/assistant";
-import { addDays, DEMO_TODAY, formatDate, formatMoney } from "../clock";
+import { addDays, DEMO_TODAY, formatDate, formatMoney, nextBusinessDay } from "../clock";
 import type { Case, CustomerId, QueueRow, SessionView } from "../contract";
-import { getCustomer, getSchedule } from "../data";
+import { getCustomer, getMlRecord, getSchedule } from "../data";
 import { CHECK_IN_DAYS, DECISIONS, type DecisionKey } from "../decisions";
 import { addMessage, audit, createCase, customerIds, getOpenCase, getSession, type Session } from "../store";
 import { getTierResult } from "../tier";
 import { TIER_CONFIG } from "../tier/config";
+import { mlOpinion } from "../tier/ml";
 import { isSensitive, saysCantPay } from "./detectors";
 import { toDraft } from "./draft";
 import { handover } from "./handover";
+import { MONEY_CHECK } from "./money-check";
 import { upsertDraftCard } from "./tools";
 
 // The conversation engine. It owns the step (phase) the conversation is at.
@@ -18,6 +20,7 @@ export type Action =
   | "open_app"
   | "show_why"
   | "talk_to_someone"
+  | "request_callback"
   | "not_now"
   | "not_right"
   | "allow"
@@ -55,8 +58,12 @@ export function sendAlert(customerId: CustomerId): { sent: boolean; reason?: str
     tier.tier === 3
       ? "A repayment didn't go through. If things are tight, I can help you look at your options. No pressure."
       : "Your everyday balance has been getting lower over the last few months. Would you like to see why?";
-  addMessage(session, { role: "careloop", card: shortfall ? { type: "alert", shortfall: shortfall.amount, date: shortfall.date } : { type: "alert", text } });
-  note(session, `The backend sent the customer a heads-up card: "${shortfall ? "You may be short before your next repayment." : text}" It has four buttons: Show me why, Talk to someone, Not now, This isn't right.`);
+  // Tier 3 offers a call back first: a kind same-day message, and a person by the next business day.
+  addMessage(session, {
+    role: "careloop",
+    card: shortfall ? { type: "alert", shortfall: shortfall.amount, date: shortfall.date } : { type: "alert", text, ...(tier.tier === 3 ? { callback: true } : {}) },
+  });
+  note(session, `The backend sent the customer a heads-up card: "${shortfall ? "You may be short before your next repayment." : text}" It has these buttons: ${tier.tier === 3 ? "Ask for a call back, Show me why, Not now" : "Show me why, Talk to someone, Not now, This isn't right"}.`);
   audit(customerId, "message", `Heads-up sent (tier ${tier.tier})`);
   return { sent: true };
 }
@@ -185,6 +192,12 @@ export function handleAction(customerId: CustomerId, action: Action): void {
       );
       addMessage(session, { role: "careloop", card: { type: "projection", projection: tier.projection } });
       note(session, `The customer tapped Allow. The backend showed the ${TIER_CONFIG.forecastDays} day projection.`);
+      if (tier.tier === 1 && !shortfall) {
+        // Tier 1: nothing is short yet, so a light money check from Westpac's own pages, not a request.
+        say(session, "Nothing looks short right now. If money feels tight, these can help keep it that way:");
+        addMessage(session, { role: "careloop", card: { type: "money_check", items: MONEY_CHECK } });
+        note(session, "Tier 1: the backend showed a money check card (budget, talk early, National Debt Helpline). The customer can still ask to prepare a request.");
+      }
       return;
     }
     case "prepare_request":
@@ -241,6 +254,28 @@ export function handleAction(customerId: CustomerId, action: Action): void {
           : "I've passed that to the Westpac Assist team with everything you've already told us, so you won't need to explain again. A person will reply, and nothing changes until they do.",
       );
       note(session, `At the check-in the customer tapped: ${session.followUp}. The Assist team was told. A person decides.`);
+      return;
+    }
+    case "request_callback": {
+      // Tier 3: a person rings by the next business day. An open case gets the call added; otherwise one is opened.
+      const callbackBy = nextBusinessDay(DEMO_TODAY);
+      const existing = getOpenCase(customerId);
+      const target =
+        existing ??
+        createCase({
+          customerId,
+          customerName: getCustomer(customerId).name,
+          tier: getTierResult(customerId).tier,
+          status: "new",
+          summary: ["Asked for a call back after a missed repayment. No details given yet."],
+          draft: toDraft(session.draftFields),
+        });
+      target.callbackBy = callbackBy;
+      session.phase = "receipt";
+      say(session, "Thank you. A person from the Westpac Assist team will call you. You won't need to explain everything again.");
+      addMessage(session, { role: "careloop", card: { type: "callback", caseId: target.id, callbackBy } });
+      note(session, `The customer asked for a call back. Case ${target.id}: a person calls by ${callbackBy}.`);
+      audit(customerId, "case", `Call back requested on case ${target.id}, by ${callbackBy}`);
       return;
     }
     case "start_talk":
@@ -347,7 +382,10 @@ export function getQueue(): QueueRow[] {
         case: open,
         reasons: tier.reasons,
         timeline: tier.timeline,
-        ...(session.wantsHuman
+        ml: mlOpinion(getMlRecord(customerId)),
+        ...(open?.callbackBy && !["arrangement", "closed"].includes(open.status)
+          ? { note: `Call back by ${formatDate(open.callbackBy)}` }
+          : session.wantsHuman
           ? { note: "Asked to talk to someone" }
           : session.followUp
             ? { note: session.followUp }

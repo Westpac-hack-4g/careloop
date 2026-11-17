@@ -120,7 +120,11 @@ export interface Citation {
 
 export type Card =
   /** The heads-up. With a projected shortfall it shows the amount; otherwise it shows `text`. */
-  | { type: "alert"; shortfall?: number; date?: string; text?: string }
+  | { type: "alert"; shortfall?: number; date?: string; text?: string; callback?: boolean }
+  /** Tier 1: no shortfall ahead, so a few self-help steps from Westpac's own pages instead of a request. */
+  | { type: "money_check"; items: { title: string; text: string; source: Citation }[] }
+  /** Tier 3: a person will call by the next business day. */
+  | { type: "callback"; caseId: string; callbackBy: string }
   /** The customer said "not now": this chat is over until they write again. */
   | { type: "closed" }
   | { type: "consent" }
@@ -157,6 +161,8 @@ export interface Case {
   draft: DraftRequest;
   /** Recorded by a staff member. CareLoop never decides. */
   decision?: { outcome: string; approved: boolean; reviewOn: string };
+  /** Tier 3: the customer asked for a call; a person rings by this date (next business day). */
+  callbackBy?: string;
 }
 
 export interface AuditEntry {
@@ -178,6 +184,16 @@ export interface SessionView {
   home: { balance: number; tiles: { name: string; detail: string }[]; headsUp: boolean };
 }
 
+/** The ML service's experimental score, for staff only. A second opinion: it never sets the tier. */
+export interface MlOpinion {
+  status: "available" | "not_applicable" | "unavailable";
+  /** A ranking band against the model's own flag line, never a percentage. */
+  band: "High" | "Elevated" | "Low" | null;
+  aboveThreshold: boolean;
+  /** The four biggest contributions to this score: + raises it, - lowers it. */
+  drivers: { feature: string; label: string; contribution: number }[];
+}
+
 /** One row of the staff queue. */
 export interface QueueRow {
   customerId: CustomerId;
@@ -190,4 +206,5 @@ export interface QueueRow {
   note?: string;
   reasons: string[];
   timeline: TimelineItem[];
+  ml: MlOpinion;
 }
