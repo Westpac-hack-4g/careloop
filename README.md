@@ -71,7 +71,7 @@ How the three services fit together is in [docs/architecture.md](docs/architectu
 
 ## Still to do
 
-- Run the 24 test prompts from the build plan against the live AI and record the pass rate. Sarah's path and a handful of rule-breaking questions have been run by hand.
+- Live AI eval: 24 of 24 prompts passed on 17 Nov 2026 (see [docs/ai-eval.md](docs/ai-eval.md)). Rerun with `npm run eval:ai` after changing the prompt; it calls the paid API.
 - Staff case summary is built by code; the plan has the AI write it.
 - The four weeks before the check-in are simulated from the presenter bar; there is no real clock or later transaction data.
 - Screens are a first pass with GEL buttons only; the designer owns the rest.
