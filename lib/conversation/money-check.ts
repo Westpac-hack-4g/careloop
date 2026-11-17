@@ -11,8 +11,8 @@ export const MONEY_CHECK: Extract<Card, { type: "money_check" }>["items"] = [
   },
   {
     title: "Talk to us early",
-    text: "The sooner you talk with us, the sooner we can help. A conversation won't affect your credit report or your ability to borrow.",
-    source: { n: 2, title: "Ways to lower mortgage stress", url: "https://www.westpac.com.au/home-loans/manage-home-loan/lowering-stress" },
+    text: "You can talk to us about support as soon as you're worried about money or your income is reduced, not only once a repayment is missed.",
+    source: { n: 2, title: "Support with tough times", url: "https://www.westpac.com.au/help/support-with-tough-times/" },
   },
   {
     title: "Free, independent advice",
