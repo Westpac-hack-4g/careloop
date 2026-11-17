@@ -1,13 +1,13 @@
 """Export the ML service's results for the demo customers into data/ml-results.json.
 
-The app does not recompute risk. It renders what the Python service (the `ml` branch,
+The app does not recompute risk. It renders what the Python service (in the
 folder `ml/`) worked out: features, warning signals, tier, the 14-day forecast and the
 experimental ML score. Run this whenever the ML code or its demo customers change.
 
     <ml venv python> scripts/export-ml-results.py --ml-dir <path to the ml folder>
 
 Example (Windows):
-    D:\\careloop-ml\\ml\\.venv\\Scripts\\python.exe scripts\\export-ml-results.py --ml-dir D:\\careloop-ml\\ml
+    ml\\.venv\\Scripts\\python.exe scripts\\export-ml-results.py --ml-dir ml
 
 Synthetic data only. Thresholds are demo settings, not Westpac policy.
 """

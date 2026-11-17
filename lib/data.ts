@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { Customer, CustomerId, Product, Schedule } from "./contract";
 
-// Sample data only. Every figure comes from the ML service (the `ml` branch), exported
+// Sample data only. Every figure comes from the ML service (in `ml/`), exported
 // to data/ml-results.json by scripts/export-ml-results.py. In a real build this module is
 // the one place that would ask the Risk Tracking service instead of reading a file.
 

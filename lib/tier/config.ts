@@ -1,5 +1,5 @@
-// The tier rules and thresholds live in the ML service (careloop/tiers.py and config.py on
-// the `ml` branch). The app shows their result; these few values are only for wording.
+// The tier rules and thresholds live in the ML service (careloop/tiers.py and config.py in
+// `ml/`). The app shows their result; these few values are only for wording.
 export const TIER_CONFIG = {
   /** The base-case forecast looks this many days ahead (LOOKAHEAD_DAYS). */
   forecastDays: 14,

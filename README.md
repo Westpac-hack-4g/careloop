@@ -5,7 +5,7 @@ Hackathon prototype on made-up customers. Not a Westpac product.
 One Next.js app: the customer's phone on the left, the Westpac Assist staff console on the right.
 The logic is real (consent gate, form filling, case with a 21 day deadline); the data, login, push
 notification and handover to Westpac are simulated. Every risk figure (features, warning signals, tier,
-the 14-day forecast, the ML score) comes from the Python ML service on the `ml` branch.
+the 14-day forecast, the ML score) comes from the Python ML service in `ml/`.
 
 ## Run it
 
@@ -20,15 +20,22 @@ npm run kb         # save Westpac's public support pages again into data/kb
 
 ### Refresh the ML results
 
-The app reads `data/ml-results.json`. Rebuild it whenever the ML code or its demo customers change.
-You need Python 3.12 and a checkout of the `ml` branch (its `ml/` folder) with its virtual environment set up as in `ml/README.md`:
+The app reads `data/ml-results.json`, which is committed, so the app runs without Python.
+Rebuild it only when the ML code in `ml/` or its demo customers change. You need Python 3.12.
+Set up `ml/` once, as in `ml/README.md` (Windows paths shown; about two minutes):
 
 ```bash
-git worktree add ../careloop-ml origin/ml
+cd ml && py -3.12 -m venv .venv && .venv/Scripts/python.exe -m pip install -r requirements.txt
 ```
 
 ```bash
-../careloop-ml/ml/.venv/Scripts/python.exe scripts/export-ml-results.py --ml-dir ../careloop-ml/ml
+cd ml && .venv/Scripts/python.exe scripts/generate_data.py && .venv/Scripts/python.exe scripts/build_features.py && .venv/Scripts/python.exe scripts/train_model.py
+```
+
+Then, from the project folder:
+
+```bash
+ml/.venv/Scripts/python.exe scripts/export-ml-results.py --ml-dir ml
 ```
 
 No API key: the app runs in **sample mode** with a scripted assistant, so the whole demo path works offline.
