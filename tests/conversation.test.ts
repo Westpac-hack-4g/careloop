@@ -266,3 +266,28 @@ describe("nightly report", () => {
     expect(after.notContacted).toBe(before.notContacted - 1);
   });
 });
+
+describe("one demo per visitor", () => {
+  it("keeps two visitors' chats, cases and resets apart", async () => {
+    const { runAsVisitor } = await import("@/lib/store");
+    runAsVisitor("visitor-one", () => sendAlert("sarah"));
+    expect(runAsVisitor("visitor-one", () => cards("sarah"))).toEqual(["alert"]);
+    expect(runAsVisitor("visitor-two", () => cards("sarah"))).toEqual([]);
+
+    runAsVisitor("visitor-two", () => resetStore());
+    expect(runAsVisitor("visitor-one", () => cards("sarah"))).toEqual(["alert"]);
+  });
+
+  it("gives each visitor a fixed number of AI replies, which a reset does not refill", async () => {
+    const { runAsVisitor, takeAiCall } = await import("@/lib/store");
+    const used = runAsVisitor("visitor-three", () => {
+      let count = 0;
+      while (takeAiCall()) count++;
+      resetStore();
+      return { count, afterReset: takeAiCall() };
+    });
+    expect(used.count).toBe(40);
+    expect(used.afterReset).toBe(false);
+    expect(runAsVisitor("visitor-four", () => takeAiCall())).toBe(true);
+  });
+});

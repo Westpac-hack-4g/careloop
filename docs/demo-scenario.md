@@ -18,7 +18,7 @@ The app runs on made-up customers. Nothing in it is a real Westpac system.
 4. Check that **Sarah (tier 2)** is selected.
 5. Check the right end of the presenter bar. "AI: Claude (live)" means the real AI answers. "sample mode" means there is no key and scripted replies are used instead.
 
-The backtick key (left of the 1 key) hides and shows the presenter bar. Hide it on stage.
+The backtick key (left of the 1 key) hides and shows the presenter bar. Hide it on stage. Under the bar, a **Next** line tells a first-time visitor what to try; it hides with the bar.
 
 ## The script
 

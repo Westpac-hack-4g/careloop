@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { Citation } from "../contract";
 import { toDraft } from "../conversation/draft";
 import { runTool, TOOL_DEFINITIONS, TOOLS_BY_PHASE } from "../conversation/tools";
-import { audit, type Session } from "../store";
+import { audit, takeAiCall, type Session } from "../store";
 import { getTierResult } from "../tier";
 import { SYSTEM_PROMPT } from "./prompt";
 import { checkReply, SAFE_FALLBACK } from "./safety";
@@ -105,6 +105,11 @@ async function claudeReply(session: Session, text: string): Promise<AssistantRep
 /** Answer one customer message. Falls back to the scripted assistant on any failure. */
 export async function assistantReply(session: Session, text: string): Promise<AssistantReply> {
   if (aiMode() === "sample") return scriptedReply(session, text);
+  // The hosted demo is open to anyone, so each visitor gets a fixed number of AI replies.
+  if (!takeAiCall()) {
+    audit(session.customerId, "safety", "AI reply limit reached for this visitor; scripted reply used");
+    return scriptedReply(session, text);
+  }
   const historyLength = session.llmHistory.length;
   try {
     return await claudeReply(session, text);

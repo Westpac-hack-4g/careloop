@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Guide } from "@/components/guide";
 import { LoopSteps } from "@/components/loop-steps";
 import { Phone } from "@/components/phone/phone";
 import { PresenterBar } from "@/components/presenter-bar";
@@ -113,6 +114,8 @@ export default function Home() {
           }
         />
       )}
+      {/* Shown with the presenter bar and hidden with it (the backtick key), so it never appears on stage. */}
+      {showPresenter && <Guide view={view} row={queue.find((r) => r.customerId === customerId)} report={demo.report} />}
       <LoopSteps view={view} row={queue.find((r) => r.customerId === customerId)} />
       <div className="flex flex-wrap items-start justify-center gap-6">
         <Phone view={view} busy={busy} onText={sendText} onAction={(action) => run(() => api.sendAction(customerId, action))} />

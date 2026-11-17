@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import type Anthropic from "@anthropic-ai/sdk";
 import { addDays, DEMO_TODAY, nowIso } from "../clock";
 import type { AuditEntry, Case, ChatMessage, CustomerId, DraftField, NightlyReport, Phase } from "../contract";
@@ -6,6 +7,9 @@ import { allCustomers, getCustomer } from "../data";
 // In-memory store for the demo: sessions, cases and the audit log.
 // Everything else reads and writes through these functions, so this file is
 // the only one to change if the data moves to a real database.
+//
+// Each visitor (one browser) gets their own copy, so two people trying the hosted demo
+// never see or reset each other's chat. Memory only: a restart clears everything.
 
 export interface Session {
   customerId: CustomerId;
@@ -36,8 +40,27 @@ interface Store {
   report: NightlyReport | null;
 }
 
+/** One visitor's demo, plus how much AI they have used. Reset clears the demo, not the AI count. */
+interface Slot {
+  store: Store;
+  lastUsed: number;
+  aiCalls: number;
+}
+
+/** Requests with no visitor cookie (tests, scripts) share this one. */
+const SHARED = "shared";
+const MAX_VISITORS = 300;
+const IDLE_MS = 6 * 60 * 60 * 1000;
+/** AI replies one visitor may use, and all visitors together, before scripted replies take over. */
+const AI_LIMIT = Number(process.env.CARELOOP_AI_LIMIT) || 40;
+const AI_TOTAL_LIMIT = Number(process.env.CARELOOP_AI_TOTAL_LIMIT) || 1500;
+
 // Kept on globalThis so the dev server's hot reload does not wipe the demo.
-const g = globalThis as unknown as { __careloop?: Store };
+const g = globalThis as unknown as { __careloop?: Map<string, Slot>; __careloopAiTotal?: number };
+const visitor = new AsyncLocalStorage<string>();
+
+/** Run one request as a visitor: every store call inside reads and writes that visitor's copy. */
+export const runAsVisitor = <T>(id: string, work: () => T): T => visitor.run(id, work);
 
 function seed(): Store {
   const store: Store = { sessions: new Map(), cases: [], audit: [], nextId: 1, report: null };
@@ -57,10 +80,40 @@ function seed(): Store {
   return store;
 }
 
-const store = (): Store => (g.__careloop ??= seed());
+function slot(): Slot {
+  if (!(g.__careloop instanceof Map)) g.__careloop = new Map();
+  const all = g.__careloop;
+  const id = visitor.getStore() ?? SHARED;
+  let mine = all.get(id);
+  if (!mine) {
+    // Make room: drop visitors who have been away for hours, then the longest idle one.
+    const now = Date.now();
+    for (const [key, other] of all) if (now - other.lastUsed > IDLE_MS) all.delete(key);
+    if (all.size >= MAX_VISITORS) {
+      const oldest = [...all].sort((a, b) => a[1].lastUsed - b[1].lastUsed)[0];
+      if (oldest) all.delete(oldest[0]);
+    }
+    mine = { store: seed(), lastUsed: now, aiCalls: 0 };
+    all.set(id, mine);
+  }
+  mine.lastUsed = Date.now();
+  return mine;
+}
+
+const store = (): Store => slot().store;
 
 export function resetStore(): void {
-  g.__careloop = seed();
+  slot().store = seed();
+}
+
+/** Counts one AI reply for this visitor. False once this visitor, or the whole server, has used its share. */
+export function takeAiCall(): boolean {
+  const mine = slot();
+  const total = g.__careloopAiTotal ?? 0;
+  if (mine.aiCalls >= AI_LIMIT || total >= AI_TOTAL_LIMIT) return false;
+  mine.aiCalls += 1;
+  g.__careloopAiTotal = total + 1;
+  return true;
 }
 
 export function getSession(customerId: CustomerId): Session {

@@ -5,7 +5,7 @@ import { checkReply, numbersIn } from "../ai/safety";
 import { formatDate, formatMoney, nowIso } from "../clock";
 import type { BranchReport, CustomerId, NightlyReport, Tier } from "../contract";
 import { isCustomerId } from "../data";
-import { audit, getCases, getSession, saveReport } from "../store";
+import { audit, getCases, getSession, saveReport, takeAiCall } from "../store";
 import { TIER_NAMES } from "../tier/config";
 
 // The nightly report (the Risk Reporting service in docs/architecture.md).
@@ -171,7 +171,7 @@ export async function runNightlyReport(): Promise<NightlyReport> {
   const branches = await Promise.all(
     data.branches.map(async (branch): Promise<BranchReport> => {
       const figures = branchFigures(branch);
-      const written = useAi ? await aiSummary(figures, data.forecast_days) : null;
+      const written = useAi && takeAiCall() ? await aiSummary(figures, data.forecast_days) : null;
       return { ...figures, summary: written ? { text: written, by: "ai" } : { text: rulesSummary(figures, data.forecast_days), by: "rules" } };
     }),
   );

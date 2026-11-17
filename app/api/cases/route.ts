@@ -2,16 +2,15 @@ import { NextResponse } from "next/server";
 import { getQueue, recordDecision, staffReply, startReview } from "@/lib/conversation/engine";
 import { isCustomerId } from "@/lib/data";
 import { isDecisionKey } from "@/lib/decisions";
+import { withVisitor } from "@/lib/visitor";
 
 export const dynamic = "force-dynamic";
 
 /** The staff console polls this for the queue. */
-export async function GET() {
-  return NextResponse.json({ queue: getQueue() });
-}
+export const GET = withVisitor(() => NextResponse.json({ queue: getQueue() }));
 
 /** A staff member replies in the customer's chat, or picks up a new request. */
-export async function POST(request: Request) {
+export const POST = withVisitor(async (request) => {
   const body = (await request.json()) as { customerId?: unknown; text?: unknown; op?: unknown; outcome?: unknown };
   if (isCustomerId(body.customerId) && body.op === "decide" && isDecisionKey(body.outcome)) {
     recordDecision(body.customerId, body.outcome);
@@ -26,4 +25,4 @@ export async function POST(request: Request) {
   }
   staffReply(body.customerId, body.text.trim().slice(0, 2000));
   return NextResponse.json({ queue: getQueue() });
-}
+});

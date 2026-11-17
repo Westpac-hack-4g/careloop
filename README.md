@@ -18,6 +18,8 @@ npm run lint
 npm run kb         # save Westpac's public support pages again into data/kb
 ```
 
+To put it on a server for other people to open, see [docs/hosting.md](docs/hosting.md). Each visitor gets their own copy of the demo.
+
 ### Refresh the ML results
 
 The app reads `data/ml-results.json`, which is committed, so the app runs without Python.
